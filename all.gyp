@@ -1,0 +1,31 @@
+{
+	'includes':
+	[
+		"configurations.gypi",
+	],
+	'targets':
+	[
+		{
+			'target_name': "all",
+			'type': "none",
+			'sources':
+			[
+                'all.gyp',
+			],
+			'dependencies':
+			[
+				"libs/Flow/Flow.gyp:Flow",
+				"libs/Flow/Flow.gyp:FlowTest",
+				"libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
+				"libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr_test",
+				"libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary",
+				"libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary_test",
+				"external_libs/flatbuffers.gyp:flatbuffers",
+				"external_libs/flatbuffers.gyp:flatbuffers_compiler",
+				"external_libs/flatbuffers.gyp:flatbuffers_test",
+				"external_libs/flatbuffers.gyp:flatbuffers_sample_binary",
+				"external_libs/flatbuffers.gyp:flatbuffers_sample_text",
+			],
+		},
+	],
+}
