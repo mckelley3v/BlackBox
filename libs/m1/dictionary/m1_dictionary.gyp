@@ -1,0 +1,64 @@
+{
+	'includes':
+	[
+		"../../../configurations.gypi",
+	],
+	'targets':
+	[
+		{
+			'target_name': "m1_dictionary",
+			'type': "static_library",
+			'include_dirs':
+			[
+				"include",
+				"source",
+			],
+			'sources':
+			[
+				"include/m1/c_str_equal_to.hpp",
+				"include/m1/c_str_hash.hpp",
+				"include/m1/c_str_less.hpp",
+				"include/m1/string_equal_to.hpp",
+				"include/m1/string_hash.hpp",
+				"include/m1/string_less.hpp",
+				"include/m1/dictionary.hpp",
+				"source/m1/murmur3_32.hpp",
+				"source/m1/murmur3_32.cpp",
+				"source/m1/c_str_equal_to.cpp",
+				"source/m1/c_str_hash.cpp",
+				"source/m1/c_str_less.cpp",
+				"source/m1/string_equal_to.cpp",
+				"source/m1/string_hash.cpp",
+				"source/m1/string_less.cpp",
+				"source/m1/dictionary.cpp",
+				"m1_dictionary.gyp",
+			],
+			'direct_dependent_settings':
+			{
+				'include_dirs':
+				[
+					"include",
+				],
+			},
+		},
+		{
+			'target_name': "m1_dictionary_test",
+			'type': "executable",
+			'sources':
+			[
+				"test/test_main.cpp",
+				"test/m1/test_c_str_equal_to.cpp",
+				"test/m1/test_c_str_hash.cpp",
+				"test/m1/test_c_str_less.cpp",
+				"test/m1/test_string_equal_to.cpp",
+				"test/m1/test_string_hash.cpp",
+				"test/m1/test_string_less.cpp",
+				"test/m1/test_dictionary.cpp",
+			],
+			'dependencies':
+			[
+				"m1_dictionary",
+			],
+		},
+	],
+}
