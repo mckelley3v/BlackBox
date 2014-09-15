@@ -10,7 +10,7 @@
 			'type': "none",
 			'sources':
 			[
-                'all.gyp',
+				'all.gyp',
 			],
 			'dependencies':
 			[
