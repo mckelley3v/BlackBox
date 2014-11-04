@@ -1,0 +1,12 @@
+*Makefile
+*.mk
+*.pyc
+*.swp
+*.directory
+build
+build/*
+external_tools/gyp
+external_tools/libcxx
+external_tools/libcxxabi
+external_tools/llvm
+external_libs/flatbuffers 
