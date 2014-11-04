@@ -1,6 +1,5 @@
 #include "Flow/SystemGraph.hpp"
 #include "Flow/TypeManager.hpp"
-#include "Flow/Verify.hpp"
 
 // =====================================================================================================================
 
@@ -8,11 +7,11 @@
 static std::vector<Flow::SystemNode> MakeSystemNodes(Flow::SystemDefinition const &system_definition);
 
 // create map from component instance name to corresponding SystemNode
-static m1::c_str_dictionary<Flow::SystemNode*> MakeSystemNodePtrDict(std::vector<Flow::SystemNode> &system_nodes);
+static m1::dictionary<Flow::SystemNode*> MakeSystemNodePtrDict(std::vector<Flow::SystemNode> &system_nodes);
 
 // determine input/output edges, update SystemNodes and return edges
 static std::vector<Flow::SystemEdge> MakeSystemEdges(Flow::SystemDefinition const &system_definition,
-                                                     m1::c_str_dictionary<Flow::SystemNode*> const &system_node_ptr_dict);
+                                                     m1::dictionary<Flow::SystemNode*> const &system_node_ptr_dict);
 
 // helper function for topological sort, recursively visits output nodes and adds them to sorted_nodes_ptr
 // returns false if graph is not DAG
@@ -26,7 +25,7 @@ Flow::SystemGraph Flow::MakeSystemGraph(SystemDefinition const &system_definitio
 {
     std::vector<SystemNode> system_nodes = MakeSystemNodes(system_definition);
 
-    m1::c_str_dictionary<SystemNode*> const system_node_ptr_dict = MakeSystemNodePtrDict(/*ref*/ system_nodes);
+    m1::dictionary<SystemNode*> const system_node_ptr_dict = MakeSystemNodePtrDict(/*ref*/ system_nodes);
 
     std::vector<SystemEdge> system_edges = MakeSystemEdges(system_definition, system_node_ptr_dict);
 
@@ -84,11 +83,11 @@ std::vector<Flow::SystemNode const*> Flow::SortSystemGraph(SystemGraph const &sy
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-/*static*/ m1::c_str_dictionary<Flow::SystemNode*> MakeSystemNodePtrDict(std::vector<Flow::SystemNode> &system_nodes)
+/*static*/ m1::dictionary<Flow::SystemNode*> MakeSystemNodePtrDict(std::vector<Flow::SystemNode> &system_nodes)
 {
     using namespace Flow;
 
-    m1::c_str_dictionary<SystemNode*> result;
+    m1::dictionary<SystemNode*> result;
     //result.reserve(system_nodes.size());
 
     for(SystemNode &system_node : system_nodes)
@@ -102,7 +101,7 @@ std::vector<Flow::SystemNode const*> Flow::SortSystemGraph(SystemGraph const &sy
 // ---------------------------------------------------------------------------------------------------------------------
 
 /*static*/ std::vector<Flow::SystemEdge> MakeSystemEdges(Flow::SystemDefinition const &system_definition,
-                                                         m1::c_str_dictionary<Flow::SystemNode*> const &system_node_ptr_dict)
+                                                         m1::dictionary<Flow::SystemNode*> const &system_node_ptr_dict)
 {
     using namespace Flow;
 
@@ -112,8 +111,8 @@ std::vector<Flow::SystemNode const*> Flow::SortSystemGraph(SystemGraph const &sy
     for(SystemConnection const &connection_initializer : system_definition.Connections)
     {
         // ignore inputs from System::In and outputs to System::Out
-        if(std::strcmp(connection_initializer.SourcePort.ComponentInstanceName, System::In) == 0) continue;
-        if(std::strcmp(connection_initializer.TargetPort.ComponentInstanceName, System::Out) == 0) continue;
+        if(connection_initializer.SourcePort.ComponentInstanceName == System::In) continue;
+        if(connection_initializer.TargetPort.ComponentInstanceName == System::Out) continue;
 
         SystemNode * const source_node_ptr = system_node_ptr_dict.at(connection_initializer.SourcePort.ComponentInstanceName);
         SystemNode * const target_node_ptr = system_node_ptr_dict.at(connection_initializer.TargetPort.ComponentInstanceName);

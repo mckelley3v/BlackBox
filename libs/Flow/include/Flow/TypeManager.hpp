@@ -28,26 +28,53 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct TypeManagerComponentTypeEntry
+    class TypeManagerComponentTypeEntry
     {
+    public:
+        TypeManagerComponentTypeEntry() = delete;
+        TypeManagerComponentTypeEntry(TypeManagerComponentTypeEntry &&rhs) = default;
+        TypeManagerComponentTypeEntry(TypeManagerComponentTypeEntry const &rhs) = default;
+        TypeManagerComponentTypeEntry& operator = (TypeManagerComponentTypeEntry &&rhs) = default;
+        TypeManagerComponentTypeEntry& operator = (TypeManagerComponentTypeEntry const &rhs) = default;
+        ~TypeManagerComponentTypeEntry() = default;
+
+        // members:
         ComponentDefinition Definition;
         MakeSystemComponentInstanceFunc MakeInstanceFunc;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct TypeManagerConnectionTypeEntry
+    class TypeManagerConnectionTypeEntry
     {
-        char const *Name;
-        std::initializer_list<char const*> BaseNames;
+    public:
+        TypeManagerConnectionTypeEntry() = delete;
+        TypeManagerConnectionTypeEntry(TypeManagerConnectionTypeEntry &&rhs) = default;
+        TypeManagerConnectionTypeEntry(TypeManagerConnectionTypeEntry const &rhs) = default;
+        TypeManagerConnectionTypeEntry& operator = (TypeManagerConnectionTypeEntry &&rhs) = default;
+        TypeManagerConnectionTypeEntry& operator = (TypeManagerConnectionTypeEntry const &rhs) = default;
+        ~TypeManagerConnectionTypeEntry() = default;
+
+        // members:
+        std::string Name;
+        std::vector<std::string> BaseNames;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct TypeManagerDefinition
+    class TypeManagerDefinition
     {
-        std::initializer_list<TypeManagerComponentTypeEntry> ComponentTypes;
-        std::initializer_list<TypeManagerConnectionTypeEntry> ConnectionTypes;
+    public:
+        TypeManagerDefinition() = delete;
+        TypeManagerDefinition(TypeManagerDefinition &&rhs) = default;
+        TypeManagerDefinition(TypeManagerDefinition const &rhs) = default;
+        TypeManagerDefinition& operator = (TypeManagerDefinition &&rhs) = default;
+        TypeManagerDefinition& operator = (TypeManagerDefinition const &rhs) = default;
+        ~TypeManagerDefinition() = default;
+
+        // members:
+        std::vector<TypeManagerComponentTypeEntry> ComponentTypes;
+        std::vector<TypeManagerConnectionTypeEntry> ConnectionTypes;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -55,6 +82,7 @@ namespace Flow
     class TypeManager
     {
     public:
+        TypeManager() = delete;
         explicit TypeManager(TypeManagerDefinition definition);
         TypeManager(TypeManager&&) = default;
         TypeManager(TypeManager const&) = delete;

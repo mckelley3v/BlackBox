@@ -4,7 +4,7 @@
 
 // =====================================================================================================================
 
-/*static*/ Flow::SystemDefinition const Flow::Systems::AddNetwork::Definition =
+/*static*/ Flow::SystemDefinitionInitializer const Flow::Systems::AddNetwork::DefinitionInitializer =
 {
     // Interface
     {
@@ -50,11 +50,18 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/*static*/ Flow::SystemDefinition Flow::Systems::AddNetwork::GetDefinition()
+{
+    return SystemDefinition(DefinitionInitializer);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 Flow::Systems::AddNetwork::AddNetwork(TypeManager const &type_manager,
                                       std::string instance_name,
                                       ComponentInputConnectionPtrsDict input_connection_ptrs_dict)
     : System(type_manager,
-             Definition,
+             GetDefinition(),
              SystemInstance{std::move(instance_name),
                             std::move(input_connection_ptrs_dict)})
     , m_Result(GetOutputConnectionRef<int>(GetOutputPortDict(), "Result"))

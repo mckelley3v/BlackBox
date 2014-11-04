@@ -13,8 +13,10 @@ namespace Systems
         : public System
     {
     public:
-        static SystemDefinition const Definition;
+        static SystemDefinitionInitializer const DefinitionInitializer;
+        static SystemDefinition GetDefinition();
 
+        AddNetwork() = delete;
         AddNetwork(TypeManager const &type_manager,
                    std::string instance_name,
                    ComponentInputConnectionPtrsDict input_connection_ptrs_dict);

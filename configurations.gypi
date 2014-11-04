@@ -83,7 +83,7 @@
                     'CompilerType': 'clang++',
                     'Compiler':
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -02',
+                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -O2',
                     },
                     'Linker':
                     {
@@ -103,7 +103,7 @@
                     'CompilerType': 'clang++',
                     'Compiler':
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -02',
+                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -O2',
                     },
                     'Linker':
                     {

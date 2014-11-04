@@ -18,13 +18,20 @@ namespace IO
 {
     // =================================================================================================================
 
+    struct SystemComponentInstance;
+    struct SystemConnectionPort;
+    struct SystemConnection;
     struct SystemDefinition;
+
+    // =================================================================================================================
 
     enum class VerifyBuffer : bool
     {
         No,
         Yes,
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     SystemDefinition const* ParseSystemDefinitionBuffer(void const * const buffer_ptr,
                                                         std::size_t const buffer_size,
@@ -42,7 +49,7 @@ namespace Flow
 
     // =================================================================================================================
 
-    struct SystemComponentInstance
+    struct SystemComponentInstanceInitializer
     {
         char const *DefinitionName;
         char const *InstanceName;
@@ -50,7 +57,7 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct SystemConnectionPort
+    struct SystemConnectionPortInitializer
     {
         char const *ComponentInstanceName;
         char const *PortName;
@@ -58,30 +65,116 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct SystemConnection
+    struct SystemConnectionInitializer
     {
+        SystemConnectionPortInitializer SourcePort;
+        SystemConnectionPortInitializer TargetPort;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    struct SystemDefinitionInitializer
+    {
+        ComponentDefinitionInitializer Interface;
+        std::initializer_list<SystemComponentInstanceInitializer> ComponentInstances;
+        std::initializer_list<SystemConnectionInitializer> Connections;
+    };
+
+    // =================================================================================================================
+
+    class SystemComponentInstance
+    {
+    public:
+        SystemComponentInstance() = delete;
+        explicit SystemComponentInstance(SystemComponentInstanceInitializer definition_initializer);
+        explicit SystemComponentInstance(IO::SystemComponentInstance const * const definition_io_ptr);
+        SystemComponentInstance(SystemComponentInstance &&rhs) = default;
+        SystemComponentInstance(SystemComponentInstance const &rhs) = delete;
+        SystemComponentInstance& operator = (SystemComponentInstance &&rhs) = default;
+        SystemComponentInstance& operator = (SystemComponentInstance const &rhs) = delete;
+        ~SystemComponentInstance() = default;
+
+        // members:
+        std::string DefinitionName;
+        std::string InstanceName;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    class SystemConnectionPort
+    {
+    public:
+        SystemConnectionPort() = delete;
+        explicit SystemConnectionPort(SystemConnectionPortInitializer definition_initializer);
+        explicit SystemConnectionPort(IO::SystemConnectionPort const * const definition_io_ptr);
+        SystemConnectionPort(SystemConnectionPort &&rhs) = default;
+        SystemConnectionPort(SystemConnectionPort const &rhs) = delete;
+        SystemConnectionPort& operator = (SystemConnectionPort &&rhs) = default;
+        SystemConnectionPort& operator = (SystemConnectionPort const &rhs) = delete;
+        ~SystemConnectionPort() = default;
+
+        // members:
+        std::string ComponentInstanceName;
+        std::string PortName;
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    class SystemConnection
+    {
+    public:
+        SystemConnection() = delete;
+        explicit SystemConnection(SystemConnectionInitializer definition_initializer);
+        explicit SystemConnection(IO::SystemConnection const * const definition_io_ptr);
+        SystemConnection(SystemConnection &&rhs) = default;
+        SystemConnection(SystemConnection const &rhs) = delete;
+        SystemConnection& operator = (SystemConnection &&rhs) = default;
+        SystemConnection& operator = (SystemConnection const &rhs) = delete;
+        ~SystemConnection() = default;
+
+        // members:
         SystemConnectionPort SourcePort;
         SystemConnectionPort TargetPort;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct SystemDefinition
+    class SystemDefinition
     {
+    public:
+        SystemDefinition() = delete;
+        explicit SystemDefinition(SystemDefinitionInitializer definition_initializer);
+        explicit SystemDefinition(IO::SystemDefinition const * const definition_io_ptr);
+        SystemDefinition(SystemDefinition &&rhs) = default;
+        SystemDefinition(SystemDefinition const &rhs) = delete;
+        SystemDefinition& operator = (SystemDefinition &&rhs) = default;
+        SystemDefinition& operator = (SystemDefinition const &rhs) = delete;
+        ~SystemDefinition() = default;
+
+        // members:
         ComponentDefinition Interface;
-        std::initializer_list<SystemComponentInstance> ComponentInstances;
-        std::initializer_list<SystemConnection> Connections;
+        std::vector<SystemComponentInstance> ComponentInstances;
+        std::vector<SystemConnection> Connections;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
-    struct SystemInstance
+    class SystemInstance
     {
+    public:
+        SystemInstance() = delete;
+        SystemInstance(SystemInstance &&rhs) = default;
+        SystemInstance(SystemInstance const &rhs) = delete;
+        SystemInstance& operator = (SystemInstance &&rhs) = default;
+        SystemInstance& operator = (SystemInstance const &rhs) = delete;
+        ~SystemInstance() = default;
+
+        // members:
         std::string Name;
         ComponentInputConnectionPtrsDict InputConnectionPtrsDict;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
     class SystemBase
     {
@@ -89,9 +182,6 @@ namespace Flow
         SystemBase(TypeManager const &type_manager,
                    SystemDefinition const &definition,
                    ComponentInputConnectionPtrsDict const &input_connection_ptrs_dict);
-//        SystemBase(TypeManager const &type_manager,
-//                   IO::SystemDefinition const * const definition_ptr,
-//                   ComponentInputConnectionPtrsDict const &input_connection_ptrs_dict);
         SystemBase(SystemBase &&rhs) = default;
         SystemBase(SystemBase const &rhs) = delete;
         SystemBase& operator = (SystemBase &&rhs) = default;
@@ -120,12 +210,10 @@ namespace Flow
         static char const * const In;
         static char const * const Out;
 
+        System() = delete;
         System(TypeManager const &type_manager,
-               SystemDefinition definition,
+               SystemDefinition definition_initializer,
                SystemInstance instance);
-//        System(TypeManager const &type_manager,
-//               IO::SystemDefinition const * const definition_ptr,
-//               SystemInstance instance);
         System(System &&rhs) = default;
         System(System const &rhs) = delete;
         System& operator = (System &&rhs) = default;

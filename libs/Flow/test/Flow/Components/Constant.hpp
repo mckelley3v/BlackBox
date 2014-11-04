@@ -16,12 +16,19 @@ namespace Components
         : public Component
     {
     public:
-        static ComponentDefinition const Definition;
+        static ComponentDefinitionInitializer const DefinitionInitializer;
+        static ComponentDefinition GetDefinition();
 
+        Constant() = delete;
         Constant(TypeManager const &type_manager,
                  std::string instance_name,
                  ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
                  T value);
+        Constant(Constant &&rhs) = default;
+        Constant(Constant const &rhs) = delete;
+        Constant& operator = (Constant &&rhs) = default;
+        Constant& operator = (Constant const &rhs) = delete;
+        ~Constant() = default;
 
         T const& GetValue() const;
 
@@ -79,7 +86,7 @@ namespace Flow
 // =====================================================================================================================
 
 template <typename T>
-/*static*/ Flow::ComponentDefinition const Flow::Components::Constant<T>::Definition =
+/*static*/ Flow::ComponentDefinitionInitializer const Flow::Components::Constant<T>::DefinitionInitializer =
 {
     // Name
     Flow::GetTypeName<Constant<T>>(),
@@ -101,12 +108,20 @@ template <typename T>
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
+/*static*/ Flow::ComponentDefinition Flow::Components::Constant<T>::GetDefinition()
+{
+    return ComponentDefinition(DefinitionInitializer);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
 Flow::Components::Constant<T>::Constant(TypeManager const &type_manager,
                                         std::string instance_name,
                                         ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
                                         T value)
     : Component(type_manager,
-                Definition,
+                GetDefinition(),
                 ComponentInstance{std::move(instance_name),
                                   std::move(input_connection_ptrs_dict),
                                   {{"Value", &m_Value}}})

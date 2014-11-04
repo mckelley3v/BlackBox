@@ -51,29 +51,59 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct ComponentDefinition
+    struct ComponentDefinitionInitializer
     {
         char const *Name;
-        std::initializer_list<InputPortDefinition> InputPorts;
-        std::initializer_list<OutputPortDefinition> OutputPorts;
+        std::initializer_list<InputPortDefinitionInitializer> InputPorts;
+        std::initializer_list<OutputPortDefinitionInitializer> OutputPorts;
         ComponentAnnotations Annotations;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
+
+    class ComponentDefinition
+    {
+    public:
+        ComponentDefinition() = delete;
+        explicit ComponentDefinition(ComponentDefinitionInitializer definition_initializer);
+        explicit ComponentDefinition(IO::ComponentDefinition const * const definition_io_ptr);
+        ComponentDefinition(ComponentDefinition &&rhs) = default;
+        ComponentDefinition(ComponentDefinition const &rhs) = default;
+        ComponentDefinition& operator = (ComponentDefinition &&rhs) = default;
+        ComponentDefinition& operator = (ComponentDefinition const &rhs) = default;
+        ~ComponentDefinition() = default;
+
+        // members:
+        std::string Name;
+        std::vector<InputPortDefinition> InputPorts;
+        std::vector<OutputPortDefinition> OutputPorts;
+        ComponentAnnotations Annotations;
+    };
+
+    // =================================================================================================================
 
     typedef m1::dictionary<std::vector<m1::const_any_ptr>> ComponentInputConnectionPtrsDict;
     typedef m1::dictionary<m1::any_ptr> ComponentOutputConnectionPtrDict;
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
-    struct ComponentInstance
+    class ComponentInstance
     {
+    public:
+        ComponentInstance() = delete;
+        ComponentInstance(ComponentInstance &&rhs) = default;
+        ComponentInstance(ComponentInstance const &rhs) = default;
+        ComponentInstance& operator = (ComponentInstance &&rhs) = default;
+        ComponentInstance& operator = (ComponentInstance const &rhs) = default;
+        ~ComponentInstance() = default;
+
+        // members:
         std::string Name;
         ComponentInputConnectionPtrsDict InputConnectionPtrsDict;
         ComponentOutputConnectionPtrDict OutputConnectionPtrDict;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
     class Component
     {
@@ -81,12 +111,10 @@ namespace Flow
         typedef m1::dictionary<InputPort> InputPortDict;
         typedef m1::dictionary<OutputPort> OutputPortDict;
 
+        Component() = delete;
         Component(TypeManager const &type_manager,
                   ComponentDefinition definition,
                   ComponentInstance instance);
-//        Component(TypeManager const &type_manager,
-//                  IO::ComponentDefinition const * const definition_ptr,
-//                  ComponentInstance instance);
         Component(Component &&rhs) = default;
         Component(Component const &rhs) = delete;
         Component& operator = (Component &&rhs) = default;

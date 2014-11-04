@@ -16,8 +16,10 @@ namespace Components
         : public Component
     {
     public:
-        static ComponentDefinition const Definition;
+        static ComponentDefinitionInitializer const DefinitionInitializer;
+        static ComponentDefinition GetDefinition();
 
+        Add() = delete;
         Add(TypeManager const &type_manager,
             std::string instance_name,
             ComponentInputConnectionPtrsDict input_connection_ptrs_dict);
@@ -76,7 +78,7 @@ namespace Flow
 // =====================================================================================================================
 
 template <typename T>
-/*static*/ Flow::ComponentDefinition const Flow::Components::Add<T>::Definition =
+/*static*/ Flow::ComponentDefinitionInitializer const Flow::Components::Add<T>::DefinitionInitializer =
 {
     // Name
     GetTypeName<Add<T>>(),
@@ -112,11 +114,19 @@ template <typename T>
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
+/*static*/ Flow::ComponentDefinition Flow::Components::Add<T>::GetDefinition()
+{
+    return ComponentDefinition(DefinitionInitializer);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
 Flow::Components::Add<T>::Add(TypeManager const &type_manager,
                               std::string instance_name,
                               ComponentInputConnectionPtrsDict input_connection_ptrs_dict)
     : Component(type_manager,
-                Definition,
+                GetDefinition(),
                 ComponentInstance{std::move(instance_name),
                                   std::move(input_connection_ptrs_dict),
                                   {{"Result", &m_Result}}})

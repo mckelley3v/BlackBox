@@ -11,8 +11,8 @@ bool TestComponent_Add()
     {{
         // ComponentTypes
         {
-            //             Definition                 MakeInstanceFunc
-            {  Add<float>::Definition, MakeSystemComponent<Add<float>>},
+            //                  Definition                 MakeInstanceFunc
+            {  Add<float>::GetDefinition(), MakeSystemComponent<Add<float>>},
         },
         // ConnectionTypes
         {

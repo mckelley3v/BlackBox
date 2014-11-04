@@ -11,36 +11,50 @@
 namespace
 {
     using ComponentPtrs = std::vector<std::unique_ptr<Flow::Component>>;
-    using ComponentDefinitionPtrDict = m1::c_str_dictionary<Flow::ComponentDefinition const*>;
+    using ComponentDefinitionPtrDict = m1::dictionary<Flow::ComponentDefinition const*>;
 } // namespace
+
+// =====================================================================================================================
 
 // construct components in topological order, gathering inputs from dependencies
 static ComponentPtrs MakeSystemComponents(Flow::TypeManager const &type_manager,
                                           Flow::SystemDefinition const &definition,
                                           Flow::ComponentInputConnectionPtrsDict const &input_connection_ptrs_dict);
 
+// ---------------------------------------------------------------------------------------------------------------------
+
 // create a dictionary from each component's instance name to the component's definition
 // note: includes an entry for System::In and System::Out
 static ComponentDefinitionPtrDict MakeComponentInstanceDefinitionPtrDict(Flow::TypeManager const &type_manager,
                                                                          Flow::SystemDefinition const &definition);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // gather all the inputs for node from available_inputs into a single dictionary
 // to be passed to the node's MakeInstanceFunc
 static Flow::ComponentInputConnectionPtrsDict ResolveNodeInputs(Flow::TypeManager const &type_manager,
                                                                 Flow::SystemNode const &node,
                                                                 ComponentDefinitionPtrDict const &component_instance_definition_ptr_dict,
-                                                                m1::c_str_dictionary<Flow::ComponentInputConnectionPtrsDict> const &available_inputs_dict);
+                                                                m1::dictionary<Flow::ComponentInputConnectionPtrsDict> const &available_inputs_dict);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // search a component's definition for an input port with the given name, return that port's type name
 static char const* FindInputPortTypeName(Flow::ComponentDefinition const * const node_definition_ptr,
-                                         char const * const port_name);
+                                         std::string const &port_name);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // search a component's definition for an output port with the given name, return that port's type name
 static char const* FindOutputPortTypeName(Flow::ComponentDefinition const * const node_definition_ptr,
-                                          char const * const port_name);
+                                          std::string const &port_name);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // construct corresponding inputs for each output so component's outputs can be easily found and connected
 static Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::Component::OutputPortDict const &output_port_dict);
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 // construct dictionary of system outputs to initialize System's base Component with
 static Flow::ComponentOutputConnectionPtrDict MakeSystemOutputDict(Flow::SystemDefinition const &definition,
@@ -91,7 +105,7 @@ ComponentPtrs MakeSystemComponents(Flow::TypeManager const &type_manager,
 
     // dictionary from component instance name to input connection dictionary created from the component's outputs
     // note: adds a special entry for System::In
-    m1::c_str_dictionary<ComponentInputConnectionPtrsDict> available_inputs_dict;
+    m1::dictionary<ComponentInputConnectionPtrsDict> available_inputs_dict;
     //available_inputs_dict.reserve(sorted_node_ptrs.size() + 1);
     available_inputs_dict[System::In] = input_connection_ptrs_dict;
 
@@ -105,14 +119,14 @@ ComponentPtrs MakeSystemComponents(Flow::TypeManager const &type_manager,
     {
         assert(node_ptr != nullptr);
         assert(node_ptr->InstancePtr != nullptr);
-        assert(node_ptr->InstancePtr->InstanceName != nullptr);
-        FLOW_VERIFY(std::strcmp(node_ptr->InstancePtr->InstanceName, System::In) != 0,
+        assert(!node_ptr->InstancePtr->InstanceName.empty());
+        FLOW_VERIFY(node_ptr->InstancePtr->InstanceName != System::In,
                     std::runtime_error("Component name must not be a reserved name"));
-        FLOW_VERIFY(std::strcmp(node_ptr->InstancePtr->InstanceName, System::Out) != 0,
+        FLOW_VERIFY(node_ptr->InstancePtr->InstanceName != System::Out,
                     std::runtime_error("Component name must not be a reserved name"));
 
         SystemNode const &node = *node_ptr;
-        char const * const node_instance_name = node.InstancePtr->InstanceName;
+        std::string const &node_instance_name = node.InstancePtr->InstanceName;
 
         FLOW_VERIFY(available_inputs_dict.find(node_instance_name) == available_inputs_dict.end(),
                     std::runtime_error("Duplicate component name detected"));
@@ -124,8 +138,7 @@ ComponentPtrs MakeSystemComponents(Flow::TypeManager const &type_manager,
                                                                                              available_inputs_dict);
 
         // create node
-        // minor performance note: node_instance_name is implicitly converted to std::string
-        char const * const node_definition_name = node.InstancePtr->DefinitionName;
+        std::string const &node_definition_name = node.InstancePtr->DefinitionName;
         std::unique_ptr<Component> node_component_ptr = type_manager.MakeSystemComponent(node_definition_name,
                                                                                          node_instance_name,
                                                                                          std::move(node_input_connection_ptrs_dict));
@@ -157,11 +170,11 @@ ComponentDefinitionPtrDict MakeComponentInstanceDefinitionPtrDict(Flow::TypeMana
     result[System::In] = system_definition_ptr;
     result[System::Out] = system_definition_ptr;
 
-    for(SystemComponentInstance const &component_instance_initializer : definition.ComponentInstances)
+    for(SystemComponentInstance const &component_instance : definition.ComponentInstances)
     {
-        assert(component_instance_initializer.DefinitionName != nullptr);
-        assert(component_instance_initializer.InstanceName != nullptr);
-        result[component_instance_initializer.InstanceName] = type_manager.FindComponentDefinition(component_instance_initializer.DefinitionName);
+        assert(!component_instance.DefinitionName.empty());
+        assert(!component_instance.InstanceName.empty());
+        result[component_instance.InstanceName] = type_manager.FindComponentDefinition(component_instance.DefinitionName);
     }
 
     return result;
@@ -172,11 +185,11 @@ ComponentDefinitionPtrDict MakeComponentInstanceDefinitionPtrDict(Flow::TypeMana
 Flow::ComponentInputConnectionPtrsDict ResolveNodeInputs(Flow::TypeManager const &type_manager,
                                                          Flow::SystemNode const &node,
                                                          ComponentDefinitionPtrDict const &component_instance_definition_ptr_dict,
-                                                         m1::c_str_dictionary<Flow::ComponentInputConnectionPtrsDict> const &available_inputs_dict)
+                                                         m1::dictionary<Flow::ComponentInputConnectionPtrsDict> const &available_inputs_dict)
 {
     using namespace Flow;
 
-    char const * const node_instance_name = node.InstancePtr->InstanceName;
+    std::string const &node_instance_name = node.InstancePtr->InstanceName;
     ComponentDefinition const * const node_definition_ptr = component_instance_definition_ptr_dict.at(node_instance_name);
     FLOW_VERIFY(node_definition_ptr != nullptr,
                 std::runtime_error("Invalid definition name for component"));
@@ -194,15 +207,15 @@ Flow::ComponentInputConnectionPtrsDict ResolveNodeInputs(Flow::TypeManager const
 
         // get port name input is connected to
         assert(input_edge.ConnectionPtr != nullptr);
-        assert(std::strcmp(input_edge.ConnectionPtr->TargetPort.ComponentInstanceName, node_instance_name) == 0);
-        char const * const target_component_port_name = input_edge.ConnectionPtr->TargetPort.PortName;
+        assert(input_edge.ConnectionPtr->TargetPort.ComponentInstanceName == node_instance_name);
+        std::string const &target_component_port_name = input_edge.ConnectionPtr->TargetPort.PortName;
         char const * const target_component_port_type_name = FindInputPortTypeName(node_definition_ptr, target_component_port_name);
         assert(target_component_port_type_name != nullptr);
 
         // get component and port name input is connected from
         assert(node.InstancePtr != nullptr);
-        char const * const source_component_instance_name = input_edge.ConnectionPtr->SourcePort.ComponentInstanceName;
-        char const * const source_component_port_name = input_edge.ConnectionPtr->SourcePort.PortName;
+        std::string const &source_component_instance_name = input_edge.ConnectionPtr->SourcePort.ComponentInstanceName;
+        std::string const &source_component_port_name = input_edge.ConnectionPtr->SourcePort.PortName;
 
         ComponentDefinition const * const source_component_definition_ptr = component_instance_definition_ptr_dict.at(source_component_instance_name);
         char const * const source_component_port_type_name = FindOutputPortTypeName(source_component_definition_ptr, source_component_port_name);
@@ -231,15 +244,15 @@ Flow::ComponentInputConnectionPtrsDict ResolveNodeInputs(Flow::TypeManager const
 // ---------------------------------------------------------------------------------------------------------------------
 
 char const* FindInputPortTypeName(Flow::ComponentDefinition const * const node_definition_ptr,
-                                  char const * const port_name)
+                                  std::string const &port_name)
 {
     using namespace Flow;
 
     for(InputPortDefinition const &input_port : node_definition_ptr->InputPorts)
     {
-        if(std::strcmp(input_port.PortName, port_name) == 0)
+        if(input_port.PortName == port_name)
         {
-            return input_port.TypeName;
+            return input_port.TypeName.c_str();
         }
     }
 
@@ -249,15 +262,15 @@ char const* FindInputPortTypeName(Flow::ComponentDefinition const * const node_d
 // ---------------------------------------------------------------------------------------------------------------------
 
 char const* FindOutputPortTypeName(Flow::ComponentDefinition const * const node_definition_ptr,
-                                   char const * const port_name)
+                                   std::string const &port_name)
 {
     using namespace Flow;
 
     for(OutputPortDefinition const &output_port : node_definition_ptr->OutputPorts)
     {
-        if(std::strcmp(output_port.PortName, port_name) == 0)
+        if(output_port.PortName == port_name)
         {
-            return output_port.TypeName;
+            return output_port.TypeName.c_str();
         }
     }
 
@@ -294,12 +307,12 @@ Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::Component::O
 
     // first index all the nodes by name so this isn't a O(N^2) algorithm
     // TODO - consider if this can this be constructed in MakeSystemComponents
-    m1::c_str_dictionary<Component const*> component_ptr_dict;
+    m1::dictionary<Component const*> component_ptr_dict;
     //component_ptr_dict.reserve(component_ptrs.size());
     for(std::unique_ptr<Component> const &component_ptr : component_ptrs)
     {
         assert(component_ptr != nullptr);
-        component_ptr_dict[component_ptr->GetInstanceName().c_str()] = component_ptr.get();
+        component_ptr_dict[component_ptr->GetInstanceName()] = component_ptr.get();
     }
 
     ComponentOutputConnectionPtrDict result;
@@ -309,18 +322,18 @@ Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::Component::O
     //   copy the pointer that is assigned to connect to it
     for(SystemConnection const &connection : definition.Connections)
     {
-        char const * const target_component_instance_name = connection.TargetPort.ComponentInstanceName;
-        assert(target_component_instance_name != nullptr);
-        if(std::strcmp(target_component_instance_name, System::Out) == 0)
+        std::string const &target_component_instance_name = connection.TargetPort.ComponentInstanceName;
+        assert(!target_component_instance_name.empty());
+        if(target_component_instance_name == System::Out)
         {
-            char const * const target_component_port_name = connection.TargetPort.PortName;
-            assert(target_component_port_name != nullptr);
+            std::string const &target_component_port_name = connection.TargetPort.PortName;
+            assert(!target_component_port_name.empty());
 
-            char const * const source_component_instance_name = connection.SourcePort.ComponentInstanceName;
-            assert(source_component_instance_name != nullptr);
+            std::string const &source_component_instance_name = connection.SourcePort.ComponentInstanceName;
+            assert(!source_component_instance_name.empty());
 
-            char const * const source_component_port_name = connection.SourcePort.PortName;
-            assert(source_component_port_name != nullptr);
+            std::string const &source_component_port_name = connection.SourcePort.PortName;
+            assert(!source_component_port_name.empty());
 
             Component const *source_component_ptr = component_ptr_dict.at(source_component_instance_name);
             assert(source_component_ptr != nullptr);

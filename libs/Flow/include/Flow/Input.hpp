@@ -13,6 +13,18 @@
 
 namespace Flow
 {
+namespace IO
+{
+    // =================================================================================================================
+
+    struct InputPortDefinition;
+
+    // =================================================================================================================
+} // namespace IO
+} // namespace Flow
+
+namespace Flow
+{
     // =================================================================================================================
 
     enum class InputPortOptional : bool
@@ -31,7 +43,7 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct InputPortDefinition
+    struct InputPortDefinitionInitializer
     {
         char const *PortName;
         char const *TypeName;
@@ -39,18 +51,49 @@ namespace Flow
         InputPortMultiplex IsMultiplex;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
-    struct InputPortInstance
+    class InputPortDefinition
     {
+    public:
+        InputPortDefinition() = delete;
+        explicit InputPortDefinition(InputPortDefinitionInitializer definition_initializer);
+        explicit InputPortDefinition(IO::InputPortDefinition const * const definition_io_ptr);
+        InputPortDefinition(InputPortDefinition &&rhs) = default;
+        InputPortDefinition(InputPortDefinition const &rhs) = default;
+        InputPortDefinition& operator = (InputPortDefinition &&rhs) = default;
+        InputPortDefinition& operator = (InputPortDefinition const &rhs) = default;
+        ~InputPortDefinition() = default;
+
+        // members:
+        std::string PortName;
+        std::string TypeName;
+        InputPortOptional IsOptional;
+        InputPortMultiplex IsMultiplex;
+    };
+
+    // =================================================================================================================
+
+    class InputPortInstance
+    {
+    public:
+        InputPortInstance() = delete;
+        InputPortInstance(InputPortInstance &&rhs) = default;
+        InputPortInstance(InputPortInstance const &rhs) = default;
+        InputPortInstance& operator = (InputPortInstance &&rhs) = default;
+        InputPortInstance& operator = (InputPortInstance const &rhs) = default;
+        ~InputPortInstance() = default;
+
+        // members:
         std::vector<m1::const_any_ptr> ConnectionPtrs;
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // =================================================================================================================
 
     class InputPort
     {
     public:
+        InputPort() = delete;
         InputPort(InputPortDefinition definition,
                   InputPortInstance instance);
         InputPort(InputPort &&rhs) = default;

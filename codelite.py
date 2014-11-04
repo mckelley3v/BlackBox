@@ -86,7 +86,7 @@ def GenerateWorkspace(build_file, target_list, target_dicts, options):
     gyp.common.EnsureDirExists(workspace_path)
     with open(workspace_path, 'w') as out:
         writeln(out, 0, '<?xml version="1.0" encoding="UTF-8"?>')
-        writeln(out, 0, '<CodeLite_Workspace Name="%s" Database="">' % workspace_name)
+        writeln(out, 0, '<CodeLite_Workspace Name="%s" Database="%s.tags">' % (workspace_name, workspace_name))
         for project_target in project_targets:
             build_file, project_name = gyp.common.ParseQualifiedTarget(project_target)[0:2]
             project_dir = GetOutputDirForBuildFile(build_file, options)
