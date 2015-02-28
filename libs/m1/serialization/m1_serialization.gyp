@@ -1,0 +1,67 @@
+{
+    'includes':
+    [
+        "../../../configurations.gypi",
+    ],
+    'targets':
+    [
+        {
+            'target_name': "m1_serialization",
+            'type': "static_library",
+            'include_dirs':
+            [
+                "include",
+                "source",
+            ],
+            'sources':
+            [
+                "include/m1/crc32.hpp",
+                "include/m1/eval_json.hpp",
+                "include/m1/iarchive_json.hpp",
+                "include/m1/iarchive_ubjson.hpp",
+                "include/m1/parse_json.hpp",
+                "include/m1/property_id.hpp",
+                "source/m1/crc32.cpp",
+                "source/m1/eval_json.cpp",
+                "source/m1/iarchive_json.cpp",
+                "source/m1/iarchive_json_array.cpp",
+                "source/m1/iarchive_json_property.cpp",
+                "source/m1/iarchive_ubjson.cpp",
+                "source/m1/parse_json.cpp",
+                "m1_serialization.gyp",
+            ],
+            'dependencies':
+            [
+                "../../../external_libs/utf8-cpp.gyp:utf8-cpp",
+                "../log/m1_log.gyp:m1_log",
+            ],
+            'export_dependent_settings':
+            [
+                "../log/m1_log.gyp:m1_log",
+            ],
+            'direct_dependent_settings':
+            {
+                'include_dirs':
+                [
+                    "include",
+                ],
+            },
+        },
+        {
+            'target_name': "m1_serialization_test",
+            'type': "executable",
+            'sources':
+            [
+                "test/test_main.cpp",
+                "test/m1/test_crc32.cpp",
+                "test/m1/test_iarchive_json.cpp",
+                "test/m1/test_iarchive_ubjson.cpp",
+            ],
+            'dependencies':
+            [
+                "m1_serialization",
+                "../numeric/m1_numeric.gyp:m1_numeric",
+            ],
+        },
+    ],
+}
