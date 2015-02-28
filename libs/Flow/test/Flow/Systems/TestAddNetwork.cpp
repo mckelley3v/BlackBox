@@ -51,10 +51,10 @@ bool TestSystem_AddNetwork()
         {
             //                             Definition                 MakeInstanceFunc
             {          Constant<int>::GetDefinition(),                         nullptr},
-            {                           c0_definition,  GetMakeConstantInstanceFunc(0)}, // TODO - handle parameters
-            {                           c1_definition,  GetMakeConstantInstanceFunc(1)},
-            {                           c2_definition,  GetMakeConstantInstanceFunc(2)},
-            {                           c4_definition,  GetMakeConstantInstanceFunc(4)},
+            {                           c0_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 0); }}, // TODO - handle parameters
+            {                           c1_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 1); }},
+            {                           c2_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 2); }},
+            {                           c4_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 4); }},
             {               Add<int>::GetDefinition(),   MakeSystemComponent<Add<int>>},
             {   AddNetwork::GetDefinition().Interface, MakeSystemComponent<AddNetwork>},
         },

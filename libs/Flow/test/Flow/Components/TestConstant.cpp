@@ -7,22 +7,12 @@ bool TestComponent_Constant()
     using namespace Flow;
     using namespace Flow::Components;
 
-    ComponentDefinition const c0_definition
-    {{
-        // Name
-        "Constant<float>{0}",
-        Constant<float>::DefinitionInitializer.InputPorts,
-        Constant<float>::DefinitionInitializer.OutputPorts,
-        Constant<float>::DefinitionInitializer.Annotations,
-    }};
-
     TypeManager const type_manager
     {{
         // ComponentTypes
         {
-            //                     Definition                   MakeInstanceFunc
-            {Constant<float>::GetDefinition(),                           nullptr},
-            {                   c0_definition, GetMakeConstantInstanceFunc(1.0f)}, // TODO - handle parameters
+            //                     Definition  MakeInstanceFunc
+            {Constant<float>::GetDefinition(),          nullptr},
         },
         // ConnectionTypes
         {

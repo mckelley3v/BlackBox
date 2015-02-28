@@ -219,6 +219,7 @@ bool test_iarchive_json()
     m1::log logger(std::cout,
                    std::clog,
                    std::cerr);
+    // TODO - move logger out from iarchive_json and instead pass as arg to read_value functions
     m1::iarchive_json in(logger, json);
 
     scene data = {};

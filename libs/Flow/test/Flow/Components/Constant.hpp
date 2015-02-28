@@ -37,10 +37,6 @@ namespace Components
         T m_Value;
     };
 
-    // =================================================================================================================
-
-    template <typename T> MakeSystemComponentInstanceFunc const GetMakeConstantInstanceFunc(T value);
-
     // -----------------------------------------------------------------------------------------------------------------
 
     template <typename T> std::unique_ptr<Component> MakeConstantInstance(TypeManager const &type_manager,
@@ -135,22 +131,6 @@ template <typename T>
 T const& Flow::Components::Constant<T>::GetValue() const
 {
     return m_Value;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename T> Flow::MakeSystemComponentInstanceFunc const Flow::Components::GetMakeConstantInstanceFunc(T value)
-{
-    return
-        [=](TypeManager const &type_manager,
-            std::string instance_name,
-            ComponentInputConnectionPtrsDict input_connection_ptrs_dict)
-        {
-            return MakeConstantInstance(type_manager,
-                                        std::move(instance_name),
-                                        std::move(input_connection_ptrs_dict),
-                                        std::move(value));
-        };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
