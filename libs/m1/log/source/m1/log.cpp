@@ -17,6 +17,15 @@ m1::log::log(std::ostream &message_out,
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+void m1::log::clear()
+{
+    m_MessageCount = 0;
+    m_WarningCount = 0;
+    m_ErrorCount = 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 int m1::log::get_message_count() const
 {
     return m_MessageCount;
@@ -38,26 +47,26 @@ int m1::log::get_error_count() const
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-std::ostream& m1::log::message(char const * const file, int const line)
+std::ostream& m1::log::message(char const * const file, int const line, char const * const func)
 {
     ++m_MessageCount;
-    return m_MessageOut << file << "(" << line << ") : message: ";
+    return m_MessageOut << file << "(" << line << ") -- " << func << " : message: ";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-std::ostream& m1::log::warning(char const * const file, int const line)
+std::ostream& m1::log::warning(char const * const file, int const line, char const * const func)
 {
     ++m_WarningCount;
-    return m_WarningOut << file << "(" << line << ") : warning: ";
+    return m_WarningOut << file << "(" << line << ") -- " << func << " : warning: ";
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-std::ostream& m1::log::error(char const * const file, int const line)
+std::ostream& m1::log::error(char const * const file, int const line, char const * const func)
 {
     ++m_ErrorCount;
-    return m_ErrorOut << file << "(" << line << ") : error: ";
+    return m_ErrorOut << file << "(" << line << ") -- " << func << " : error: ";
 }
 
 // =====================================================================================================================

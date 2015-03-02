@@ -4,16 +4,14 @@
 #include <string>
 #include <vector>
 #include <iterator>
+#include <ostream>
 #include <cstdint>
 #include <cassert>
+#include "m1/log.hpp"
 #include "m1/property_id.hpp"
 
 namespace m1
 {
-    // =================================================================================================================
-
-    class log;
-
     // =================================================================================================================
 
     class iarchive_json
@@ -22,12 +20,9 @@ namespace m1
         class property_ids;
         class array_indices;
 
-        iarchive_json(log &logger,
-                      char const *buffer);
-        template <int N> explicit iarchive_json(log &logger,
-                                                char const (&buffer)[N]);
-        iarchive_json(log &logger,
-                      char const *buffer_begin,
+        iarchive_json(char const *buffer);
+        template <int N> explicit iarchive_json(char const (&buffer)[N]);
+        iarchive_json(char const *buffer_begin,
                       char const *buffer_end);
         iarchive_json(iarchive_json &&rhs) = default;
         iarchive_json& operator = (iarchive_json &&rhs) = default;
@@ -36,30 +31,29 @@ namespace m1
         bool operator ! () const;
         explicit operator bool () const;
 
-        property_ids get_property_ids();
-        array_indices get_array_indices();
+        property_ids get_property_ids(log &logger);
+        array_indices get_array_indices(log &logger);
 
-        bool read_property(property_id &id);
-        bool read_property(std::string &name);
+        bool read_property(log &logger, property_id &id);
+        bool read_property(log &logger, std::string &name);
 
-        bool read_value(bool &value);
-        bool read_value(int &value);
-        bool read_value(float &value);
-        bool read_value(crc32 &value);
-        bool read_value(std::string &value);
+        bool read_value(log &logger, bool &value);
+        bool read_value(log &logger, int &value);
+        bool read_value(log &logger, float &value);
+        bool read_value(log &logger, crc32 &value);
+        bool read_value(log &logger, std::string &value);
 
-        bool skip_value();
+        bool skip_value(log &logger);
 
     private:
         iarchive_json() = delete;
         iarchive_json(iarchive_json const &rhs) = delete;
         iarchive_json& operator = (iarchive_json const &rhs) = delete;
 
-        bool record_eval_state(bool error);
+        bool set_error_state(bool state);
         void set_error_state();
 
         // members:
-        log *m_LoggerPtr;
         char const * const m_Begin;
         char const * const m_End;
         char const * m_Current;
@@ -67,21 +61,23 @@ namespace m1
 
     // =================================================================================================================
 
-    bool read_property(iarchive_json &in, property_id &id);
-    bool read_property(iarchive_json &in, std::string &name);
+    bool read_property(iarchive_json &in, log &logger, property_id &id);
+    bool read_property(iarchive_json &in, log &logger, std::string &name);
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(iarchive_json &in, bool &value);
-    bool read_value(iarchive_json &in, int &value);
-    bool read_value(iarchive_json &in, float &value);
-    bool read_value(iarchive_json &in, crc32 &value);
-    bool read_value(iarchive_json &in, std::string &value);
-    template <typename T> bool read_value(iarchive_json &in, std::vector<T> &values);
+    bool read_value(iarchive_json &in, log &logger, bool &value);
+    bool read_value(iarchive_json &in, log &logger, int &value);
+    bool read_value(iarchive_json &in, log &logger, float &value);
+    bool read_value(iarchive_json &in, log &logger, crc32 &value);
+    bool read_value(iarchive_json &in, log &logger, std::string &value);
+    template <typename T> bool read_value(iarchive_json &in, log &logger, std::vector<T> &values);
+    template <typename T> bool read_value(iarchive_json &in, log &logger, T values[], int size);
+    template <typename T, int N> bool read_value(iarchive_json &in, log &logger, T (&values)[N]);
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool skip_value(iarchive_json &in);
+    bool skip_value(iarchive_json &in, log &logger);
 
     // =================================================================================================================
 
@@ -107,10 +103,11 @@ namespace m1
         property_ids& operator = (property_ids const &rhs) = delete;
 
         friend class iarchive_json;
-        property_ids(iarchive_json &archive);
+        property_ids(iarchive_json &archive, log &logger);
 
         // members:
         iarchive_json *m_ArchivePtr;
+        log *m_LoggerPtr;
     };
 
     // =================================================================================================================
@@ -148,13 +145,14 @@ namespace m1
 
     private:
         friend class property_ids;
-        const_iterator(iarchive_json &archive);
+        const_iterator(iarchive_json &archive, log &logger);
 
         void set_end_of_stream_state();
         void set_error_state();
 
         // members:
         iarchive_json *m_ArchivePtr;
+        log *m_LoggerPtr;
         property_id m_PropertyId;
         bool m_IsSingle;
     };
@@ -183,10 +181,11 @@ namespace m1
         array_indices& operator = (array_indices const &rhs) = delete;
 
         friend class iarchive_json;
-        array_indices(iarchive_json &archive);
+        array_indices(iarchive_json &archive, log &logger);
 
         // members:
         iarchive_json *m_ArchivePtr;
+        log *m_LoggerPtr;
     };
 
     // =================================================================================================================
@@ -224,13 +223,14 @@ namespace m1
 
     private:
         friend class array_indices;
-        const_iterator(iarchive_json &archive);
+        const_iterator(iarchive_json &archive, log &logger);
 
         void set_end_of_stream_state();
         void set_error_state();
 
         // members:
         iarchive_json *m_ArchivePtr;
+        log *m_LoggerPtr;
         int m_ArrayIndex;
         bool m_IsSingle;
     };
@@ -240,35 +240,70 @@ namespace m1
 
 // =====================================================================================================================
 
-template <int N> /*explicit*/ m1::iarchive_json::iarchive_json(log &logger,
-                                                               char const (&buffer)[N])
-    : iarchive_json(logger,
-                    buffer,
+template <int N> /*explicit*/ m1::iarchive_json::iarchive_json(char const (&buffer)[N])
+    : iarchive_json(buffer,
                     buffer + N)
 {
 }
 
 // =====================================================================================================================
 
-template <typename T> bool m1::read_value(iarchive_json &in, std::vector<T> &values)
+template <typename T> bool m1::read_value(iarchive_json &in, log &logger, std::vector<T> &values)
 {
     T temp{};
     values.clear();
-    for(int const array_index : in.get_array_indices())
+    for(int const array_index : in.get_array_indices(logger))
     {
         // allow user-defined overloads
         using m1::read_value;
-        if(read_value(in, temp))
+        if(read_value(in, logger, temp))
         {
             values.push_back(std::move(temp));
         }
         else
         {
+            M1_ERROR(logger, "Unable to read value at index: " << array_index << "\n");
             return false;
         }
     }
 
     return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> bool m1::read_value(iarchive_json &in, log &logger, T values[], int size)
+{
+    T temp{};
+    for(int const array_index : in.get_array_indices(logger))
+    {
+        if(array_index >= size)
+        {
+            skip_value(in, logger);
+            continue;
+        }
+
+        // allow user-defined overloads
+        using m1::read_value;
+        if(read_value(in, logger, temp))
+        {
+            values[array_index] = std::move(temp);
+        }
+        else
+        {
+            M1_ERROR(logger, "Unable to read value at index: " << array_index << "\n");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T, int N> bool m1::read_value(iarchive_json &in, log &logger, T (&values)[N])
+{
+    return read_value(in, logger, values, N);
 }
 
 // =====================================================================================================================

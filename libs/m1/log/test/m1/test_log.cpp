@@ -9,9 +9,9 @@ bool test_log()
                    std::cerr);
     M1_MSG(logger, "Test\n");
 
+    logger.clear();
     int const test_count = 3;
-    int i;
-    for(i = 0; i < test_count; ++i)
+    for(int i = 0; i < test_count; ++i)
     {
         M1_MSG(logger, "Test " << i << "\n");
         M1_WARN(logger, "Test " << i << "\n");

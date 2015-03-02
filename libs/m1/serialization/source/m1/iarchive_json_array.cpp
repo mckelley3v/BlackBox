@@ -1,15 +1,12 @@
 #include "m1/iarchive_json.hpp"
 #include "m1/parse_json.hpp"
-#include "m1/eval_json.hpp"
-#include "m1/log.hpp"
-#include <ostream>
 #include <cassert>
 
 // =====================================================================================================================
 
 m1::iarchive_json::array_indices::const_iterator m1::iarchive_json::array_indices::begin() const
 {
-    return const_iterator(*m_ArchivePtr);
+    return const_iterator(*m_ArchivePtr, *m_LoggerPtr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,7 +20,7 @@ m1::iarchive_json::array_indices::const_iterator m1::iarchive_json::array_indice
 
 m1::iarchive_json::array_indices::const_iterator m1::iarchive_json::array_indices::cbegin() const
 {
-    return const_iterator(*m_ArchivePtr);
+    return const_iterator(*m_ArchivePtr, *m_LoggerPtr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -35,8 +32,9 @@ m1::iarchive_json::array_indices::const_iterator m1::iarchive_json::array_indice
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-m1::iarchive_json::array_indices::array_indices(iarchive_json &archive)
+m1::iarchive_json::array_indices::array_indices(iarchive_json &archive, log &logger)
     : m_ArchivePtr(&archive)
+    , m_LoggerPtr(&logger)
 {
 }
 
@@ -44,6 +42,7 @@ m1::iarchive_json::array_indices::array_indices(iarchive_json &archive)
 
 m1::iarchive_json::array_indices::const_iterator::const_iterator()
     : m_ArchivePtr(nullptr)
+    , m_LoggerPtr(nullptr)
     , m_ArrayIndex(0)
     , m_IsSingle(false)
 {
@@ -51,8 +50,9 @@ m1::iarchive_json::array_indices::const_iterator::const_iterator()
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-m1::iarchive_json::array_indices::const_iterator::const_iterator(iarchive_json &archive)
+m1::iarchive_json::array_indices::const_iterator::const_iterator(iarchive_json &archive, log &logger)
     : m_ArchivePtr(&archive)
+    , m_LoggerPtr(&logger)
     , m_ArrayIndex(0)
     , m_IsSingle(false)
 {
@@ -66,7 +66,6 @@ m1::iarchive_json::array_indices::const_iterator::const_iterator(iarchive_json &
         found_array,
     };
 
-    log &logger = *m_ArchivePtr->m_LoggerPtr;
     char const *&curr = m_ArchivePtr->m_Current;
     char const * const end = m_ArchivePtr->m_End;
 
@@ -193,7 +192,7 @@ m1::iarchive_json::array_indices::const_iterator& m1::iarchive_json::array_indic
         found_value_or_end,
     };
 
-    log &logger = *m_ArchivePtr->m_LoggerPtr;
+    log &logger = *m_LoggerPtr;
     char const *&curr = m_ArchivePtr->m_Current;
     char const * const end = m_ArchivePtr->m_End;
 
@@ -308,6 +307,7 @@ void m1::iarchive_json::array_indices::const_iterator::set_error_state()
 {
     m_ArchivePtr->set_error_state();
     m_ArchivePtr = nullptr;
+    m_LoggerPtr = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -315,6 +315,7 @@ void m1::iarchive_json::array_indices::const_iterator::set_error_state()
 void m1::iarchive_json::array_indices::const_iterator::set_end_of_stream_state()
 {
     m_ArchivePtr = nullptr;
+    m_LoggerPtr = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
