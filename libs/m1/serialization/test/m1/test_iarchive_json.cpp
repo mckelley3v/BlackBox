@@ -1,6 +1,6 @@
 #include "m1/iarchive_json.hpp"
-#include "m1/numeric/is_close.hpp"
 #include <iostream>
+#include "catch.hpp"
 
 struct vector3f
 {
@@ -139,7 +139,7 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, scene &value);
 // int (positive, negative)
 // float (positive, negative, int, frac, exp)
 // true, false
-bool test_iarchive_json()
+TEST_CASE("Test m1::iarchive_json", "[m1]")
 {
     char const * const json =
         "{\n"
@@ -221,105 +221,102 @@ bool test_iarchive_json()
 
     scene data = {};
     bool const is_data_valid = read_value(in, logger, data);
-    assert(is_data_valid);
-
-    using m1::is_close;
+    REQUIRE(is_data_valid);
 
     std::vector<entity> const &entities = data.entities;
-    assert(entities.size() == 4);
+    REQUIRE(entities.size() == 4);
 
     {
         entity const &entity = entities[0];
-        assert(entity.name == "Entity0");
+        CHECK(entity.name == "Entity0");
+        REQUIRE(entity.components.size() == 1);
 
         transform_component const * const transform = dynamic_cast<transform_component const*>(entity.components[0].get());
-        assert(transform != nullptr);
-        assert(is_close(transform->position.x, 0.0f));
-        assert(is_close(transform->position.y, 0.0f));
-        assert(is_close(transform->position.z, 1.0f));
+        CHECK(transform != nullptr);
+        CHECK(transform->position.x == Approx(0.0f));
+        CHECK(transform->position.y == Approx(0.0f));
+        CHECK(transform->position.z == Approx(1.0f));
 
-        assert(is_close(transform->scale.x, 1.0f));
-        assert(is_close(transform->scale.y, 1.0f));
-        assert(is_close(transform->scale.z, 2.0f));
+        CHECK(transform->scale.x == Approx(1.0f));
+        CHECK(transform->scale.y == Approx(1.0f));
+        CHECK(transform->scale.z == Approx(2.0f));
 
-        assert(is_close(transform->orientation.real, 1.0f));
-        assert(is_close(transform->orientation.imag.x, 0.0f));
-        assert(is_close(transform->orientation.imag.y, 0.0f));
-        assert(is_close(transform->orientation.imag.z, 0.0f));
+        CHECK(transform->orientation.real == Approx(1.0f));
+        CHECK(transform->orientation.imag.x == Approx(0.0f));
+        CHECK(transform->orientation.imag.y == Approx(0.0f));
+        CHECK(transform->orientation.imag.z == Approx(0.0f));
     }
 
     {
         entity const &entity = entities[1];
-        assert(entity.name == "Entity1");
-        assert(entity.components.size() == 1);
+        CHECK(entity.name == "Entity1");
+        REQUIRE(entity.components.size() == 1);
 
         transform_component const * const transform = dynamic_cast<transform_component const*>(entity.components[0].get());
-        assert(transform != nullptr);
-        assert(is_close(transform->position.x, 2.0f));
-        assert(is_close(transform->position.y, 0.0f));
-        assert(is_close(transform->position.z, 1.0f));
+        CHECK(transform != nullptr);
+        CHECK(transform->position.x == Approx(2.0f));
+        CHECK(transform->position.y == Approx(0.0f));
+        CHECK(transform->position.z == Approx(1.0f));
 
-        assert(is_close(transform->scale.x, 1.0f));
-        assert(is_close(transform->scale.y, 1.0f));
-        assert(is_close(transform->scale.z, 2.0f));
+        CHECK(transform->scale.x == Approx(1.0f));
+        CHECK(transform->scale.y == Approx(1.0f));
+        CHECK(transform->scale.z == Approx(2.0f));
 
-        assert(is_close(transform->orientation.real, 1.0f));
-        assert(is_close(transform->orientation.imag.x, 0.0f));
-        assert(is_close(transform->orientation.imag.y, 0.0f));
-        assert(is_close(transform->orientation.imag.z, 0.0f));
+        CHECK(transform->orientation.real == Approx(1.0f));
+        CHECK(transform->orientation.imag.x == Approx(0.0f));
+        CHECK(transform->orientation.imag.y == Approx(0.0f));
+        CHECK(transform->orientation.imag.z == Approx(0.0f));
     }
 
     {
         entity const &entity = entities[2];
-        assert(entity.name == "Entity2");
-        assert(entity.components.size() == 2);
+        CHECK(entity.name == "Entity2");
+        REQUIRE(entity.components.size() == 2);
 
         transform_component const * const transform = dynamic_cast<transform_component const*>(entity.components[0].get());
-        assert(transform != nullptr);
-        assert(is_close(transform->position.x, 0.0f));
-        assert(is_close(transform->position.y, 0.0f));
-        assert(is_close(transform->position.z, 5.0f));
+        CHECK(transform != nullptr);
+        CHECK(transform->position.x == Approx(0.0f));
+        CHECK(transform->position.y == Approx(0.0f));
+        CHECK(transform->position.z == Approx(5.0f));
 
-        assert(is_close(transform->scale.x, 1.0f));
-        assert(is_close(transform->scale.y, 1.0f));
-        assert(is_close(transform->scale.z, 1.0f));
+        CHECK(transform->scale.x == Approx(1.0f));
+        CHECK(transform->scale.y == Approx(1.0f));
+        CHECK(transform->scale.z == Approx(1.0f));
 
-        assert(is_close(transform->orientation.real, 1.0f));
-        assert(is_close(transform->orientation.imag.x, 0.0f));
-        assert(is_close(transform->orientation.imag.y, 0.0f));
-        assert(is_close(transform->orientation.imag.z, 0.0f));
+        CHECK(transform->orientation.real == Approx(1.0f));
+        CHECK(transform->orientation.imag.x == Approx(0.0f));
+        CHECK(transform->orientation.imag.y == Approx(0.0f));
+        CHECK(transform->orientation.imag.z == Approx(0.0f));
 
         light_component const * const light = dynamic_cast<light_component const*>(entity.components[1].get());
-        assert(light != nullptr);
-        assert(light->type == light_type::directional);
-        assert(is_close(light->distance_range.inner_radius, 0.0f));
-        assert(is_close(light->distance_range.outer_radius, 0.0f));
-        assert(is_close(light->angle_range.inner_angle, 0.0f));
-        assert(is_close(light->angle_range.outer_angle, 0.0f));
-        assert(is_close(light->direct_color.r, 100.0f));
-        assert(is_close(light->direct_color.g, 101.0f));
-        assert(is_close(light->direct_color.b, 80.0f));
-        assert(is_close(light->bounce_color.r, 9.5f));
-        assert(is_close(light->bounce_color.g, 8.0f));
-        assert(is_close(light->bounce_color.b, 5.25f));
-        assert(is_close(light->ambient_color.r, 1.0f));
-        assert(is_close(light->ambient_color.g, 1.0f));
-        assert(is_close(light->ambient_color.b, 1.5f));
-        assert(!light->shadow_map.enabled);
-        assert(light->shadow_map.texture_size == shadow_map_texture_size::x1024);
-        assert(light->shadow_map.cascade_count == shadow_map_cascade_count::x4);
-        assert(is_close(light->shadow_map.depth_bias.offset, 2.0f));
-        assert(is_close(light->shadow_map.depth_bias.slope_scale, 4.0f));
-        assert(is_close(light->shadow_map.depth_bias.clamp, 0.0f));
+        CHECK(light != nullptr);
+        CHECK(light->type == light_type::directional);
+        CHECK(light->distance_range.inner_radius == Approx(0.0f));
+        CHECK(light->distance_range.outer_radius == Approx(0.0f));
+        CHECK(light->angle_range.inner_angle == Approx(0.0f));
+        CHECK(light->angle_range.outer_angle == Approx(0.0f));
+        CHECK(light->direct_color.r == Approx(100.0f));
+        CHECK(light->direct_color.g == Approx(101.0f));
+        CHECK(light->direct_color.b == Approx(80.0f));
+        CHECK(light->bounce_color.r == Approx(9.5f));
+        CHECK(light->bounce_color.g == Approx(8.0f));
+        CHECK(light->bounce_color.b == Approx(5.25f));
+        CHECK(light->ambient_color.r == Approx(1.0f));
+        CHECK(light->ambient_color.g == Approx(1.0f));
+        CHECK(light->ambient_color.b == Approx(1.5f));
+        CHECK(!light->shadow_map.enabled);
+        CHECK(light->shadow_map.texture_size == shadow_map_texture_size::x1024);
+        CHECK(light->shadow_map.cascade_count == shadow_map_cascade_count::x4);
+        CHECK(light->shadow_map.depth_bias.offset == Approx(2.0f));
+        CHECK(light->shadow_map.depth_bias.slope_scale == Approx(4.0f));
+        CHECK(light->shadow_map.depth_bias.clamp == Approx(0.0f));
     }
 
     {
         entity const &entity = entities[3];
-        assert(entity.name.empty());
-        assert(entity.components.empty());
+        CHECK(entity.name.empty());
+        CHECK(entity.components.empty());
     }
-
-    return true;
 }
 
 bool read_value(m1::iarchive_json &in, m1::log &logger, vector3f &value)
@@ -457,7 +454,7 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light_type &value)
                 return true;
 
             default:
-                assert(false && "Invalid light_type");
+                M1_ERROR(logger, "Invalid light_type");
                 return false;
         }
     }

@@ -59,8 +59,8 @@
             ],
             'dependencies':
             [
+                "../../../external_libs/catch.gyp:catch",
                 "m1_serialization",
-                "../numeric/m1_numeric.gyp:m1_numeric",
             ],
         },
     ],

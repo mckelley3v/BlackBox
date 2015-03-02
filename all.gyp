@@ -1,37 +1,39 @@
 {
-	'includes':
-	[
-		"configurations.gypi",
-	],
-	'targets':
-	[
-		{
-			'target_name': "all",
-			'type': "none",
-			'sources':
-			[
-				'all.gyp',
-			],
-			'dependencies':
-			[
-				"libs/Flow/Flow.gyp:Flow",
-				"libs/Flow/Flow.gyp:FlowTest",
-				"libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
-				"libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr_test",
-				"libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary",
-				"libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary_test",
+    'includes':
+    [
+        "configurations.gypi",
+    ],
+    'targets':
+    [
+        {
+            'target_name': "all",
+            'type': "none",
+            'sources':
+            [
+                'all.gyp',
+            ],
+            'dependencies':
+            [
+                "libs/Flow/Flow.gyp:Flow",
+                "libs/Flow/Flow.gyp:FlowTest",
+                "libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
+                "libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr_test",
+                "libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary",
+                "libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary_test",
                 "libs/m1/log/m1_log.gyp:m1_log",
                 "libs/m1/log/m1_log.gyp:m1_log_test",
                 "libs/m1/numeric/m1_numeric.gyp:m1_numeric",
                 "libs/m1/numeric/m1_numeric.gyp:m1_numeric_test",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization_test",
-				"external_libs/flatbuffers.gyp:flatbuffers",
-				"external_libs/flatbuffers.gyp:flatbuffers_compiler",
-				"external_libs/flatbuffers.gyp:flatbuffers_test",
-				"external_libs/flatbuffers.gyp:flatbuffers_sample_binary",
-				"external_libs/flatbuffers.gyp:flatbuffers_sample_text",
-			],
-		},
-	],
+                "external_libs/catch.gyp:catch",
+                "external_libs/flatbuffers.gyp:flatbuffers",
+                "external_libs/flatbuffers.gyp:flatbuffers_compiler",
+                "external_libs/flatbuffers.gyp:flatbuffers_test",
+                "external_libs/flatbuffers.gyp:flatbuffers_sample_binary",
+                "external_libs/flatbuffers.gyp:flatbuffers_sample_text",
+                "external_libs/utf8-cpp.gyp:utf8-cpp",
+            ],
+        },
+    ],
 }
