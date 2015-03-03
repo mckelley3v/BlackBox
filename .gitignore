@@ -9,4 +9,6 @@ external_tools/gyp
 external_tools/libcxx
 external_tools/libcxxabi
 external_tools/llvm
+external_libs/catch
 external_libs/flatbuffers
+external_libs/utf8-cpp

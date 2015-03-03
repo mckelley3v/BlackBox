@@ -36,6 +36,7 @@
             ],
             'dependencies':
             [
+                "../../../external_libs/catch.gyp:catch",
                 "m1_log",
             ],
         },

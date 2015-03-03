@@ -1,8 +1,8 @@
 #include "Flow/Components/Constant.hpp"
 #include "Flow/TypeManager.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool TestComponent_Constant()
+TEST_CASE("Test m1::Components::Constant", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;
@@ -24,7 +24,6 @@ bool TestComponent_Constant()
     }};
 
     Constant<float> const_one(type_manager, "one", {}, 1.0f);
-    assert(GetOutputConnectionPtr<float>(const_one, "Value") == &const_one.GetValue());
-    assert(const_one.GetValue() == 1.0f);
-    return true;
+    CHECK(GetOutputConnectionPtr<float>(const_one, "Value") == &const_one.GetValue());
+    CHECK(const_one.GetValue() == 1.0f);
 }

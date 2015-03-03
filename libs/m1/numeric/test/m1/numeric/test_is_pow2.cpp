@@ -1,18 +1,18 @@
 #include "m1/numeric/is_pow2.hpp"
 #include <limits>
 #include <cstdlib>
-#include <cassert>
+#include "catch.hpp"
 
-bool test_is_pow2()
+TEST_CASE("Test m1::is_pow2", "[m1][m1::numeric]")
 {
     using m1::is_pow2;
 
     // check all powers of two
-    assert(!is_pow2(0));
+    CHECK(!is_pow2(0));
     for(int i = 1; i < std::numeric_limits<int>::digits; ++i)
     {
         int const value = 1 << i;
-        assert(is_pow2(value));
+        CHECK(is_pow2(value));
     }
 
     // check several non-power of two numbers (at least 2 bits set)
@@ -32,9 +32,7 @@ bool test_is_pow2()
                 }
             }
 
-            assert(!is_pow2(random_value));
+            CHECK(!is_pow2(random_value));
         }
     }
-
-    return true;
 }

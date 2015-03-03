@@ -1,35 +1,31 @@
 #include "m1/numeric/step.hpp"
-#include "m1/numeric/is_close.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool test_step()
+TEST_CASE("Test m1::step", "[m1][m1::numeric]")
 {
     using m1::step;
-    using m1::is_close;
 
-    assert(is_close(step(0.5f, -2.0f), 0.0f));
-    assert(is_close(step(0.5f, -1.5f), 0.0f));
-    assert(is_close(step(0.5f, -1.0f), 0.0f));
-    assert(is_close(step(0.5f, -0.5f), 0.0f));
-    assert(is_close(step(0.5f,  0.0f), 0.0f));
-    assert(is_close(step(0.5f, +0.5f), 1.0f));
-    assert(is_close(step(0.5f, +1.0f), 1.0f));
-    assert(is_close(step(0.5f, +1.5f), 1.0f));
-    assert(is_close(step(0.5f, +2.0f), 1.0f));
-    assert(is_close(step(0.5f, +2.5f), 1.0f));
-    assert(is_close(step(0.5f, +3.0f), 1.0f));
+    CHECK(step(0.5f, -2.0f) == Approx(0.0f));
+    CHECK(step(0.5f, -1.5f) == Approx(0.0f));
+    CHECK(step(0.5f, -1.0f) == Approx(0.0f));
+    CHECK(step(0.5f, -0.5f) == Approx(0.0f));
+    CHECK(step(0.5f,  0.0f) == Approx(0.0f));
+    CHECK(step(0.5f, +0.5f) == Approx(1.0f));
+    CHECK(step(0.5f, +1.0f) == Approx(1.0f));
+    CHECK(step(0.5f, +1.5f) == Approx(1.0f));
+    CHECK(step(0.5f, +2.0f) == Approx(1.0f));
+    CHECK(step(0.5f, +2.5f) == Approx(1.0f));
+    CHECK(step(0.5f, +3.0f) == Approx(1.0f));
 
-    assert(is_close(step(0.5, -2.0), 0.0));
-    assert(is_close(step(0.5, -1.5), 0.0));
-    assert(is_close(step(0.5, -1.0), 0.0));
-    assert(is_close(step(0.5, -0.5), 0.0));
-    assert(is_close(step(0.5,  0.0), 0.0));
-    assert(is_close(step(0.5, +0.5), 1.0));
-    assert(is_close(step(0.5, +1.0), 1.0));
-    assert(is_close(step(0.5, +1.5), 1.0));
-    assert(is_close(step(0.5, +2.0), 1.0));
-    assert(is_close(step(0.5, +2.5), 1.0));
-    assert(is_close(step(0.5, +3.0), 1.0));
-
-    return true;
+    CHECK(step(0.5, -2.0) == Approx(0.0));
+    CHECK(step(0.5, -1.5) == Approx(0.0));
+    CHECK(step(0.5, -1.0) == Approx(0.0));
+    CHECK(step(0.5, -0.5) == Approx(0.0));
+    CHECK(step(0.5,  0.0) == Approx(0.0));
+    CHECK(step(0.5, +0.5) == Approx(1.0));
+    CHECK(step(0.5, +1.0) == Approx(1.0));
+    CHECK(step(0.5, +1.5) == Approx(1.0));
+    CHECK(step(0.5, +2.0) == Approx(1.0));
+    CHECK(step(0.5, +2.5) == Approx(1.0));
+    CHECK(step(0.5, +3.0) == Approx(1.0));
 }

@@ -1,29 +1,27 @@
 #include "m1/numeric/mod.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool test_mod()
+TEST_CASE("Test m1::mod", "[m1][m1::numeric]")
 {
     using m1::mod;
 
-    assert(mod(-9, 5) == 1);
-    assert(mod(-8, 5) == 2);
-    assert(mod(-7, 5) == 3);
-    assert(mod(-6, 5) == 4);
-    assert(mod(-5, 5) == 0);
-    assert(mod(-4, 5) == 1);
-    assert(mod(-3, 5) == 2);
-    assert(mod(-2, 5) == 3);
-    assert(mod(-1, 5) == 4);
-    assert(mod( 0, 5) == 0);
-    assert(mod( 1, 5) == 1);
-    assert(mod( 2, 5) == 2);
-    assert(mod( 3, 5) == 3);
-    assert(mod( 4, 5) == 4);
-    assert(mod( 5, 5) == 0);
-    assert(mod( 6, 5) == 1);
-    assert(mod( 7, 5) == 2);
-    assert(mod( 8, 5) == 3);
-    assert(mod( 9, 5) == 4);
-
-    return true;
+    CHECK(mod(-9, 5) == 1);
+    CHECK(mod(-8, 5) == 2);
+    CHECK(mod(-7, 5) == 3);
+    CHECK(mod(-6, 5) == 4);
+    CHECK(mod(-5, 5) == 0);
+    CHECK(mod(-4, 5) == 1);
+    CHECK(mod(-3, 5) == 2);
+    CHECK(mod(-2, 5) == 3);
+    CHECK(mod(-1, 5) == 4);
+    CHECK(mod( 0, 5) == 0);
+    CHECK(mod( 1, 5) == 1);
+    CHECK(mod( 2, 5) == 2);
+    CHECK(mod( 3, 5) == 3);
+    CHECK(mod( 4, 5) == 4);
+    CHECK(mod( 5, 5) == 0);
+    CHECK(mod( 6, 5) == 1);
+    CHECK(mod( 7, 5) == 2);
+    CHECK(mod( 8, 5) == 3);
+    CHECK(mod( 9, 5) == 4);
 }

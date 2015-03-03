@@ -1,8 +1,8 @@
 #include "Flow/Components/Add.hpp"
 #include "Flow/TypeManager.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool TestComponent_Add()
+TEST_CASE("Test m1::Components::Add", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;
@@ -31,9 +31,8 @@ bool TestComponent_Add()
                     {"Rhs", {&rhs}}});
 
     add.Process();
-    assert(GetInputConnectionPtr<float>(add, "Lhs") == &lhs);
-    assert(GetInputConnectionPtr<float>(add, "Rhs") == &rhs);
-    assert(GetOutputConnectionPtr<float>(add, "Result") == &add.GetResult());
-    assert(add.GetResult() == 3.0f);
-    return true;
+    CHECK(GetInputConnectionPtr<float>(add, "Lhs") == &lhs);
+    CHECK(GetInputConnectionPtr<float>(add, "Rhs") == &rhs);
+    CHECK(GetOutputConnectionPtr<float>(add, "Result") == &add.GetResult());
+    CHECK(add.GetResult() == 3.0f);
 }

@@ -1,14 +1,14 @@
 #include "m1/dictionary.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool test_dictionary()
+TEST_CASE("Test m1::dictionary", "[m1][m1::dictionary]")
 {
     {
         m1::dictionary<int> word_count;
         ++word_count["a"];
         ++word_count["a"];
         ++word_count["a"];
-        assert(word_count.at("a") == 3);
+        CHECK(word_count.at("a") == 3);
     }
 
     {
@@ -20,7 +20,6 @@ bool test_dictionary()
             {"string", "represents a piece of text"},
         };
 
-        assert(types.at("bool") == "false or true");
+        CHECK(types.at("bool") == "false or true");
     }
-    return true;
 }

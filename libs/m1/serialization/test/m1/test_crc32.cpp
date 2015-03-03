@@ -1,7 +1,7 @@
 #include "m1/crc32.hpp"
 #include "catch.hpp"
 
-TEST_CASE("Test m1::crc32", "[m1]" )
+TEST_CASE("Test m1::crc32", "[m1][m1::serialization]" )
 {
     using m1::crc32;
     using m1::calc_crc32;

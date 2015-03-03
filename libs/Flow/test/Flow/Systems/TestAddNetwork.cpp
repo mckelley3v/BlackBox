@@ -2,8 +2,9 @@
 #include "Flow/Components/Add.hpp"
 #include "Flow/Components/Constant.hpp"
 #include "Flow/TypeManager.hpp"
+#include "catch.hpp"
 
-bool TestSystem_AddNetwork()
+TEST_CASE("Test m1::Systems::AddNetwork", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;
@@ -69,7 +70,5 @@ bool TestSystem_AddNetwork()
 
     Systems::AddNetwork add_network(type_manager, "add_network", {});
     add_network.Process();
-    assert(add_network.GetResult() == 7);
-
-    return true;
+    CHECK(add_network.GetResult() == 7);
 }

@@ -139,7 +139,7 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, scene &value);
 // int (positive, negative)
 // float (positive, negative, int, frac, exp)
 // true, false
-TEST_CASE("Test m1::iarchive_json", "[m1]")
+TEST_CASE("Test m1::iarchive_json", "[m1][m1::serialization]")
 {
     char const * const json =
         "{\n"

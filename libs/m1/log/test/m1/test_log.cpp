@@ -1,8 +1,8 @@
 #include "m1/log.hpp"
+#include "catch.hpp"
 #include <iostream>
-#include <cassert>
 
-bool test_log()
+TEST_CASE("Test m1::log", "[m1][m1::log]")
 {
     m1::log logger(std::cout,
                    std::clog,
@@ -18,9 +18,7 @@ bool test_log()
         M1_ERROR(logger, "Test " << i << "\n");
     }
 
-    assert(logger.get_message_count() == test_count);
-    assert(logger.get_warning_count() == test_count);
-    assert(logger.get_error_count() == test_count);
-
-    return true;
+    CHECK(logger.get_message_count() == test_count);
+    CHECK(logger.get_warning_count() == test_count);
+    CHECK(logger.get_error_count() == test_count);
 }

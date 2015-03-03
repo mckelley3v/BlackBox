@@ -1,25 +1,21 @@
 #include "m1/numeric/lerp.hpp"
-#include "m1/numeric/is_close.hpp"
-#include <cassert>
+#include "catch.hpp"
 
-bool test_lerp()
+TEST_CASE("Test m1::lerp", "[m1][m1::numeric]")
 {
     using m1::lerp;
-    using m1::is_close;
 
-    assert(is_close(lerp(0.0f, 1.0f, -0.1f), -0.1f));
-    assert(is_close(lerp(0.0f, 1.0f,  0.0f),  0.0f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-    assert(is_close(lerp(0.0f, 1.0f, +0.1f), +0.1f));
-
-    return true;
+    CHECK(lerp(0.0f, 1.0f, -0.1f) == Approx(-0.1f));
+    CHECK(lerp(0.0f, 1.0f,  0.0f) == Approx( 0.0f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
+    CHECK(lerp(0.0f, 1.0f, +0.1f) == Approx(+0.1f));
 }
