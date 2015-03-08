@@ -10,59 +10,37 @@
 #include "m1/any_ptr.hpp"
 #include <string>
 
+namespace m1
+{
+    // =================================================================================================================
+
+    class log;
+    class iarchive_json;
+    class iarchive_ubjson;
+
+    // =================================================================================================================
+} // namespace m1
+
 namespace Flow
 {
-namespace IO
-{
     // =================================================================================================================
 
-    struct OutputPortDefinition;
-
-    // =================================================================================================================
-} // namespace IO
-} // namespace Flow
-
-namespace Flow
-{
-    // =================================================================================================================
-
-    struct OutputPortDefinitionInitializer
+    struct OutputPortDefinition
     {
-        char const *PortName;
-        char const *TypeName;
-    };
-
-    // =================================================================================================================
-
-    class OutputPortDefinition
-    {
-    public:
-        OutputPortDefinition() = delete;
-        explicit OutputPortDefinition(OutputPortDefinitionInitializer definition_initializer);
-        explicit OutputPortDefinition(IO::OutputPortDefinition const * const definition_io_ptr);
-        OutputPortDefinition(OutputPortDefinition &&rhs) = default;
-        OutputPortDefinition(OutputPortDefinition const &rhs) = default;
-        OutputPortDefinition& operator = (OutputPortDefinition &&rhs) = default;
-        OutputPortDefinition& operator = (OutputPortDefinition const &rhs) = default;
-        ~OutputPortDefinition() = default;
-
         // members:
         std::string PortName;
         std::string TypeName;
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, OutputPortDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, OutputPortDefinition &value);
+
     // =================================================================================================================
 
-    class OutputPortInstance
+    struct OutputPortInstance
     {
-    public:
-        OutputPortInstance() = delete;
-        OutputPortInstance(OutputPortInstance &&rhs) = default;
-        OutputPortInstance(OutputPortInstance const &rhs) = default;
-        OutputPortInstance& operator = (OutputPortInstance &&rhs) = default;
-        OutputPortInstance& operator = (OutputPortInstance const &rhs) = default;
-        ~OutputPortInstance() = default;
-
         // members:
         m1::any_ptr ConnectionPtr;
     };
@@ -72,13 +50,10 @@ namespace Flow
     class OutputPort
     {
     public:
-        OutputPort() = delete;
         OutputPort(OutputPortDefinition definition,
                    OutputPortInstance instance);
         OutputPort(OutputPort &&rhs) = default;
-        OutputPort(OutputPort const &rhs) = delete;
         OutputPort& operator = (OutputPort &&rhs) = default;
-        OutputPort& operator = (OutputPort const &rhs) = delete;
         ~OutputPort() = default;
 
         // definition:
@@ -89,6 +64,10 @@ namespace Flow
         m1::any_ptr const& GetConnectionPtr() const;
 
     private:
+        OutputPort() = delete;
+        OutputPort(OutputPort const &rhs) = delete;
+        OutputPort& operator = (OutputPort const &rhs) = delete;
+
         // members:
         std::string m_PortName;
         std::string m_TypeName;

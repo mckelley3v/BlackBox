@@ -8,10 +8,6 @@
         {
             'target_name': "Flow",
             'type': "static_library",
-            'includes':
-            [
-                "../../external_libs/flatbuffers_generator.gypi",
-            ],
             'include_dirs':
             [
                 "include",
@@ -36,16 +32,13 @@
                 "source/Flow/SystemGraph.cpp",
                 "source/Flow/TypeManager.cpp",
                 "source/Flow/Verify.hpp",
-                "source/Flow/FlowIO.hpp",
-                "source/Flow/FlowIO.cpp",
-                "source/Flow/FlowIO.fbs",
                 "Flow.gyp",
             ],
             'dependencies':
             [
                 "../m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
                 "../m1/dictionary/m1_dictionary.gyp:m1_dictionary",
-                "../../external_libs/flatbuffers.gyp:flatbuffers",
+                "../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],
             'export_dependent_settings':
             [

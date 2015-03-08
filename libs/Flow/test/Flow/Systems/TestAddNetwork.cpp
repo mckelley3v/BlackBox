@@ -10,41 +10,42 @@ TEST_CASE("Test m1::Systems::AddNetwork", "[Flow]")
     using namespace Flow::Components;
     using namespace Flow::Systems;
 
+    ComponentDefinition const constant_int_definition = Constant<int>::GetDefinition();
     ComponentDefinition const c0_definition
-    {{
+    {
         // Name
         "Constant<int>{0}",
-        Constant<int>::DefinitionInitializer.InputPorts,
-        Constant<int>::DefinitionInitializer.OutputPorts,
-        Constant<int>::DefinitionInitializer.Annotations,
-    }};
+        constant_int_definition.InputPorts,
+        constant_int_definition.OutputPorts,
+        constant_int_definition.Annotations,
+    };
 
     ComponentDefinition const c1_definition
-    {{
+    {
         // Name
         "Constant<int>{1}",
-        Constant<int>::DefinitionInitializer.InputPorts,
-        Constant<int>::DefinitionInitializer.OutputPorts,
-        Constant<int>::DefinitionInitializer.Annotations,
-    }};
+        constant_int_definition.InputPorts,
+        constant_int_definition.OutputPorts,
+        constant_int_definition.Annotations,
+    };
 
     ComponentDefinition const c2_definition
-    {{
+    {
         // Name
         "Constant<int>{2}",
-        Constant<int>::DefinitionInitializer.InputPorts,
-        Constant<int>::DefinitionInitializer.OutputPorts,
-        Constant<int>::DefinitionInitializer.Annotations,
-    }};
+        constant_int_definition.InputPorts,
+        constant_int_definition.OutputPorts,
+        constant_int_definition.Annotations,
+    };
 
     ComponentDefinition const c4_definition
-    {{
+    {
         // Name
         "Constant<int>{4}",
-        Constant<int>::DefinitionInitializer.InputPorts,
-        Constant<int>::DefinitionInitializer.OutputPorts,
-        Constant<int>::DefinitionInitializer.Annotations,
-    }};
+        constant_int_definition.InputPorts,
+        constant_int_definition.OutputPorts,
+        constant_int_definition.Annotations,
+    };
 
     TypeManager const type_manager
     {{

@@ -12,34 +12,16 @@
 #include <string>
 #include <memory>
 
-namespace Flow
-{
-namespace IO
+namespace m1
 {
     // =================================================================================================================
 
-    struct SystemComponentInstance;
-    struct SystemConnectionPort;
-    struct SystemConnection;
-    struct SystemDefinition;
+    class log;
+    class iarchive_json;
+    class iarchive_ubjson;
 
     // =================================================================================================================
-
-    enum class VerifyBuffer : bool
-    {
-        No,
-        Yes,
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    SystemDefinition const* ParseSystemDefinitionBuffer(void const * const buffer_ptr,
-                                                        std::size_t const buffer_size,
-                                                        VerifyBuffer const verify_buffer = VerifyBuffer::Yes);
-
-    // =================================================================================================================
-} // namespace IO
-} // namespace Flow
+} // namespace m1
 
 namespace Flow
 {
@@ -49,51 +31,8 @@ namespace Flow
 
     // =================================================================================================================
 
-    struct SystemComponentInstanceInitializer
+    struct SystemComponentInstance
     {
-        char const *DefinitionName;
-        char const *InstanceName;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    struct SystemConnectionPortInitializer
-    {
-        char const *ComponentInstanceName;
-        char const *PortName;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    struct SystemConnectionInitializer
-    {
-        SystemConnectionPortInitializer SourcePort;
-        SystemConnectionPortInitializer TargetPort;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    struct SystemDefinitionInitializer
-    {
-        ComponentDefinitionInitializer Interface;
-        std::initializer_list<SystemComponentInstanceInitializer> ComponentInstances;
-        std::initializer_list<SystemConnectionInitializer> Connections;
-    };
-
-    // =================================================================================================================
-
-    class SystemComponentInstance
-    {
-    public:
-        SystemComponentInstance() = delete;
-        explicit SystemComponentInstance(SystemComponentInstanceInitializer definition_initializer);
-        explicit SystemComponentInstance(IO::SystemComponentInstance const * const definition_io_ptr);
-        SystemComponentInstance(SystemComponentInstance &&rhs) = default;
-        SystemComponentInstance(SystemComponentInstance const &rhs) = delete;
-        SystemComponentInstance& operator = (SystemComponentInstance &&rhs) = default;
-        SystemComponentInstance& operator = (SystemComponentInstance const &rhs) = delete;
-        ~SystemComponentInstance() = default;
-
         // members:
         std::string DefinitionName;
         std::string InstanceName;
@@ -101,18 +40,13 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    class SystemConnectionPort
-    {
-    public:
-        SystemConnectionPort() = delete;
-        explicit SystemConnectionPort(SystemConnectionPortInitializer definition_initializer);
-        explicit SystemConnectionPort(IO::SystemConnectionPort const * const definition_io_ptr);
-        SystemConnectionPort(SystemConnectionPort &&rhs) = default;
-        SystemConnectionPort(SystemConnectionPort const &rhs) = delete;
-        SystemConnectionPort& operator = (SystemConnectionPort &&rhs) = default;
-        SystemConnectionPort& operator = (SystemConnectionPort const &rhs) = delete;
-        ~SystemConnectionPort() = default;
+    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemComponentInstance &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemComponentInstance &value);
 
+    // =================================================================================================================
+
+    struct SystemConnectionPort
+    {
         // members:
         std::string ComponentInstanceName;
         std::string PortName;
@@ -120,18 +54,13 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    class SystemConnection
-    {
-    public:
-        SystemConnection() = delete;
-        explicit SystemConnection(SystemConnectionInitializer definition_initializer);
-        explicit SystemConnection(IO::SystemConnection const * const definition_io_ptr);
-        SystemConnection(SystemConnection &&rhs) = default;
-        SystemConnection(SystemConnection const &rhs) = delete;
-        SystemConnection& operator = (SystemConnection &&rhs) = default;
-        SystemConnection& operator = (SystemConnection const &rhs) = delete;
-        ~SystemConnection() = default;
+    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemConnectionPort &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnectionPort &value);
 
+    // =================================================================================================================
+
+    struct SystemConnection
+    {
         // members:
         SystemConnectionPort SourcePort;
         SystemConnectionPort TargetPort;
@@ -139,36 +68,28 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    class SystemDefinition
-    {
-    public:
-        SystemDefinition() = delete;
-        explicit SystemDefinition(SystemDefinitionInitializer definition_initializer);
-        explicit SystemDefinition(IO::SystemDefinition const * const definition_io_ptr);
-        SystemDefinition(SystemDefinition &&rhs) = default;
-        SystemDefinition(SystemDefinition const &rhs) = delete;
-        SystemDefinition& operator = (SystemDefinition &&rhs) = default;
-        SystemDefinition& operator = (SystemDefinition const &rhs) = delete;
-        ~SystemDefinition() = default;
+    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemConnection &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnection &value);
 
+    // =================================================================================================================
+
+    struct SystemDefinition
+    {
         // members:
         ComponentDefinition Interface;
         std::vector<SystemComponentInstance> ComponentInstances;
         std::vector<SystemConnection> Connections;
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemDefinition &value);
+
     // =================================================================================================================
 
-    class SystemInstance
+    struct SystemInstance
     {
-    public:
-        SystemInstance() = delete;
-        SystemInstance(SystemInstance &&rhs) = default;
-        SystemInstance(SystemInstance const &rhs) = delete;
-        SystemInstance& operator = (SystemInstance &&rhs) = default;
-        SystemInstance& operator = (SystemInstance const &rhs) = delete;
-        ~SystemInstance() = default;
-
         // members:
         std::string Name;
         ComponentInputConnectionPtrsDict InputConnectionPtrsDict;
@@ -183,9 +104,7 @@ namespace Flow
                    SystemDefinition const &definition,
                    ComponentInputConnectionPtrsDict const &input_connection_ptrs_dict);
         SystemBase(SystemBase &&rhs) = default;
-        SystemBase(SystemBase const &rhs) = delete;
         SystemBase& operator = (SystemBase &&rhs) = default;
-        SystemBase& operator = (SystemBase const &rhs) = delete;
         ~SystemBase() = default;
 
     protected:
@@ -195,6 +114,10 @@ namespace Flow
         ComponentOutputConnectionPtrDict& OutputConnectionPtrDict();
 
     private:
+        SystemBase() = delete;
+        SystemBase& operator = (SystemBase const &rhs) = delete;
+        SystemBase(SystemBase const &rhs) = delete;
+
         // members:
         ComponentPtrs m_ComponentPtrs;
         ComponentOutputConnectionPtrDict m_OutputConnectionPtrDict;
@@ -210,20 +133,22 @@ namespace Flow
         static char const * const In;
         static char const * const Out;
 
-        System() = delete;
         System(TypeManager const &type_manager,
                SystemDefinition definition_initializer,
                SystemInstance instance);
         System(System &&rhs) = default;
-        System(System const &rhs) = delete;
         System& operator = (System &&rhs) = default;
-        System& operator = (System const &rhs) = delete;
         ~System() = default;
 
         virtual void Process() override;
 
     private:
+        System() = delete;
+        System(System const &rhs) = delete;
+        System& operator = (System const &rhs) = delete;
+
         // members:
+        int m_ProcessCount;
         std::vector<Component*> m_ActiveComponentPtrs;
     };
 

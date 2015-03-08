@@ -16,7 +16,6 @@ namespace Components
         : public Component
     {
     public:
-        static ComponentDefinitionInitializer const DefinitionInitializer;
         static ComponentDefinition GetDefinition();
 
         Add() = delete;
@@ -78,45 +77,40 @@ namespace Flow
 // =====================================================================================================================
 
 template <typename T>
-/*static*/ Flow::ComponentDefinitionInitializer const Flow::Components::Add<T>::DefinitionInitializer =
-{
-    // Name
-    GetTypeName<Add<T>>(),
-    // InputPorts
-    {
-        {
-            "Lhs",
-            GetTypeName<T>(),
-            InputPortOptional::No,
-            InputPortMultiplex::No,
-        },
-        {
-            "Rhs",
-            GetTypeName<T>(),
-            InputPortOptional::No,
-            InputPortMultiplex::No,
-        },
-    },
-    // OutputPorts
-    {
-        {
-            "Result",
-            GetTypeName<T>(),
-        },
-    },
-    // Annotations
-    {
-        // TODO - consider if inputs are all Process::Ignore, then this instance should be Process::Ignore too
-        ComponentProcessAnnotation::Default, // Process
-    },
-};
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename T>
 /*static*/ Flow::ComponentDefinition Flow::Components::Add<T>::GetDefinition()
 {
-    return ComponentDefinition(DefinitionInitializer);
+    return
+    {
+        // Name
+        GetTypeName<Add<T>>(),
+        // InputPorts
+        {
+            {
+                "Lhs",
+                GetTypeName<T>(),
+                InputPortOptional::No,
+                InputPortMultiplex::No,
+            },
+            {
+                "Rhs",
+                GetTypeName<T>(),
+                InputPortOptional::No,
+                InputPortMultiplex::No,
+            },
+        },
+        // OutputPorts
+        {
+            {
+                "Result",
+                GetTypeName<T>(),
+            },
+        },
+        // Annotations
+        {
+            // TODO - consider if inputs are all Process::Never/Once, then this instance should be Process::Never/Once too
+            ComponentProcessAnnotation::Always, // Process
+        },
+    };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

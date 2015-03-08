@@ -212,7 +212,7 @@ def GenerateProject(project_target, target_list, target_dicts, params, options, 
     project_type = project_dict.get('type', 'none')
     project_sources = project_dict.get('sources', [])
     (project_output_prefix, project_output_suffix) = GetProjectOutputAffix(project_type, default_variables)
-    project_dependencies = gyp.common.DeepDependencyTargets(target_dicts, [project_target])
+    project_dependencies = project_dict.get('dependencies', [])
     project_rules = project_dict.get('rules', [])
 
     codelite_project_dict = project_dict.get('configurations', {}).get('codelite_settings', {})

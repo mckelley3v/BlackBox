@@ -16,7 +16,6 @@ namespace Components
         : public Component
     {
     public:
-        static ComponentDefinitionInitializer const DefinitionInitializer;
         static ComponentDefinition GetDefinition();
 
         Constant() = delete;
@@ -82,31 +81,26 @@ namespace Flow
 // =====================================================================================================================
 
 template <typename T>
-/*static*/ Flow::ComponentDefinitionInitializer const Flow::Components::Constant<T>::DefinitionInitializer =
-{
-    // Name
-    Flow::GetTypeName<Constant<T>>(),
-    // InputPorts
-    {},
-    // OutputPorts
-    {
-        {
-            "Value",
-            Flow::GetTypeName<T>(),
-        },
-    },
-    // Annotations
-    {
-        ComponentProcessAnnotation::Ignore, // Process
-    },
-};
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename T>
 /*static*/ Flow::ComponentDefinition Flow::Components::Constant<T>::GetDefinition()
 {
-    return ComponentDefinition(DefinitionInitializer);
+    return
+    {
+        // Name
+        Flow::GetTypeName<Constant<T>>(),
+        // InputPorts
+        {},
+        // OutputPorts
+        {
+            {
+                "Value",
+                Flow::GetTypeName<T>(),
+            },
+        },
+        // Annotations
+        {
+            ComponentProcessAnnotation::Never, // Process
+        },
+    };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

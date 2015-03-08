@@ -13,7 +13,6 @@ namespace Systems
         : public System
     {
     public:
-        static SystemDefinitionInitializer const DefinitionInitializer;
         static SystemDefinition GetDefinition();
 
         AddNetwork() = delete;

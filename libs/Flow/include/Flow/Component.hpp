@@ -16,17 +16,16 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace Flow
-{
-namespace IO
+namespace m1
 {
     // =================================================================================================================
 
-    struct ComponentDefinition;
+    class log;
+    class iarchive_json;
+    class iarchive_ubjson;
 
     // =================================================================================================================
-} // namespace IO
-} // namespace Flow
+} // namespace m1
 
 namespace Flow
 {
@@ -38,11 +37,17 @@ namespace Flow
 
     enum class ComponentProcessAnnotation
     {
-        Default,
-        Ignore,
+        Always,
+        Once,
+        Never,
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentProcessAnnotation &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentProcessAnnotation &value);
+
+    // =================================================================================================================
 
     struct ComponentAnnotations
     {
@@ -51,34 +56,24 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct ComponentDefinitionInitializer
-    {
-        char const *Name;
-        std::initializer_list<InputPortDefinitionInitializer> InputPorts;
-        std::initializer_list<OutputPortDefinitionInitializer> OutputPorts;
-        ComponentAnnotations Annotations;
-    };
+    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentAnnotations &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentAnnotations &value);
 
     // =================================================================================================================
 
-    class ComponentDefinition
+    struct ComponentDefinition
     {
-    public:
-        ComponentDefinition() = delete;
-        explicit ComponentDefinition(ComponentDefinitionInitializer definition_initializer);
-        explicit ComponentDefinition(IO::ComponentDefinition const * const definition_io_ptr);
-        ComponentDefinition(ComponentDefinition &&rhs) = default;
-        ComponentDefinition(ComponentDefinition const &rhs) = default;
-        ComponentDefinition& operator = (ComponentDefinition &&rhs) = default;
-        ComponentDefinition& operator = (ComponentDefinition const &rhs) = default;
-        ~ComponentDefinition() = default;
-
         // members:
         std::string Name;
         std::vector<InputPortDefinition> InputPorts;
         std::vector<OutputPortDefinition> OutputPorts;
         ComponentAnnotations Annotations;
     };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentDefinition &value);
 
     // =================================================================================================================
 
@@ -87,16 +82,8 @@ namespace Flow
 
     // =================================================================================================================
 
-    class ComponentInstance
+    struct ComponentInstance
     {
-    public:
-        ComponentInstance() = delete;
-        ComponentInstance(ComponentInstance &&rhs) = default;
-        ComponentInstance(ComponentInstance const &rhs) = default;
-        ComponentInstance& operator = (ComponentInstance &&rhs) = default;
-        ComponentInstance& operator = (ComponentInstance const &rhs) = default;
-        ~ComponentInstance() = default;
-
         // members:
         std::string Name;
         ComponentInputConnectionPtrsDict InputConnectionPtrsDict;
@@ -111,14 +98,11 @@ namespace Flow
         typedef m1::dictionary<InputPort> InputPortDict;
         typedef m1::dictionary<OutputPort> OutputPortDict;
 
-        Component() = delete;
         Component(TypeManager const &type_manager,
                   ComponentDefinition definition,
                   ComponentInstance instance);
         Component(Component &&rhs) = default;
-        Component(Component const &rhs) = delete;
         Component& operator = (Component &&rhs) = default;
-        Component& operator = (Component const &rhs) = delete;
         virtual ~Component() = default;
 
         // definition:
@@ -133,6 +117,10 @@ namespace Flow
         virtual void Process();
 
     private:
+        Component() = delete;
+        Component(Component const &rhs) = delete;
+        Component& operator = (Component const &rhs) = delete;
+
         // members:
         std::string m_DefinitionName;
         ComponentAnnotations m_Annotations;

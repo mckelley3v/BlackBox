@@ -4,55 +4,51 @@
 
 // =====================================================================================================================
 
-/*static*/ Flow::SystemDefinitionInitializer const Flow::Systems::AddNetwork::DefinitionInitializer =
-{
-    // Interface
-    {
-        // Name
-        "AddNetwork",
-        // InputPorts
-        {
-        },
-        // OutputPorts
-        {
-            //   Name   Type
-            {"Result", "int"},
-        },
-        // Annotations
-        {
-            ComponentProcessAnnotation::Default,
-        },
-    },
-    // ComponentInstances
-    {
-        //   DefinitionName   InstanceName
-        {"Constant<int>{0}", "const_int_0"},
-        {"Constant<int>{1}", "const_int_1"},
-        {"Constant<int>{2}", "const_int_2"},
-        {"Constant<int>{4}", "const_int_4"},
-        {        "Add<int>",       "add_0"},
-        {        "Add<int>",       "add_1"},
-        {        "Add<int>",       "add_2"},
-    },
-    // Connections
-    {
-        //                SourcePort                               TargetPort
-        // ComponentInstanceName    PortName        ComponentInstanceName    PortName
-        {{         "const_int_0",    "Value"}, {                  "add_0",      "Lhs"}},
-        {{         "const_int_1",    "Value"}, {                  "add_0",      "Rhs"}},
-        {{         "const_int_2",    "Value"}, {                  "add_1",      "Lhs"}},
-        {{         "const_int_4",    "Value"}, {                  "add_1",      "Rhs"}},
-        {{               "add_0",   "Result"}, {                  "add_2",      "Lhs"}},
-        {{               "add_1",   "Result"}, {                  "add_2",      "Rhs"}},
-        {{               "add_2",   "Result"}, {              System::Out,   "Result"}},
-    },
-};
-
-// ---------------------------------------------------------------------------------------------------------------------
-
 /*static*/ Flow::SystemDefinition Flow::Systems::AddNetwork::GetDefinition()
 {
-    return SystemDefinition(DefinitionInitializer);
+    return
+    {
+        // Interface
+        {
+            // Name
+            "AddNetwork",
+            // InputPorts
+            {
+            },
+            // OutputPorts
+            {
+                //   Name   Type
+                {"Result", "int"},
+            },
+            // Annotations
+            {
+                ComponentProcessAnnotation::Always,
+            },
+        },
+        // ComponentInstances
+        {
+            //   DefinitionName   InstanceName
+            {"Constant<int>{0}", "const_int_0"},
+            {"Constant<int>{1}", "const_int_1"},
+            {"Constant<int>{2}", "const_int_2"},
+            {"Constant<int>{4}", "const_int_4"},
+            {        "Add<int>",       "add_0"},
+            {        "Add<int>",       "add_1"},
+            {        "Add<int>",       "add_2"},
+        },
+        // Connections
+        {
+            //                SourcePort                               TargetPort
+            // ComponentInstanceName    PortName        ComponentInstanceName    PortName
+            {{         "const_int_0",    "Value"}, {                  "add_0",      "Lhs"}},
+            {{         "const_int_1",    "Value"}, {                  "add_0",      "Rhs"}},
+            {{         "const_int_2",    "Value"}, {                  "add_1",      "Lhs"}},
+            {{         "const_int_4",    "Value"}, {                  "add_1",      "Rhs"}},
+            {{               "add_0",   "Result"}, {                  "add_2",      "Lhs"}},
+            {{               "add_1",   "Result"}, {                  "add_2",      "Rhs"}},
+            {{               "add_2",   "Result"}, {              System::Out,   "Result"}},
+        },
+    };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

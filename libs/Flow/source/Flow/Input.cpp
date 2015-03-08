@@ -1,6 +1,8 @@
 #include "Flow/Input.hpp"
-#include "Flow/FlowIO.hpp"
 #include "Flow/Verify.hpp"
+#include "m1/log.hpp"
+#include "m1/iarchive_json.hpp"
+#include "m1/iarchive_ubjson.hpp"
 #include <utility>
 #include <stdexcept>
 #include <cassert>
@@ -9,24 +11,55 @@
 
 static bool is_input_connection_ptrs_valid(std::vector<m1::const_any_ptr> const &connection_ptrs);
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::InputPortOptional &value);
+template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::InputPortMultiplex &value);
+template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::InputPortDefinition &value);
+
 // =====================================================================================================================
 
-/*explicit*/ Flow::InputPortDefinition::InputPortDefinition(InputPortDefinitionInitializer definition_initializer)
-    : PortName(IO::get_c_str(definition_initializer.PortName))
-    , TypeName(IO::get_c_str(definition_initializer.TypeName))
-    , IsOptional(definition_initializer.IsOptional)
-    , IsMultiplex(definition_initializer.IsMultiplex)
+bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, InputPortOptional &value)
 {
+    return ::read_value<m1::iarchive_json>(in, logger, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-/*explicit*/ Flow::InputPortDefinition::InputPortDefinition(IO::InputPortDefinition const * const definition_io_ptr)
-    : PortName(FLOWIO_GET_STR_MEMBER(definition_io_ptr, PortName()))
-    , TypeName(FLOWIO_GET_STR_MEMBER(definition_io_ptr, TypeName()))
-    , IsOptional(FLOWIO_GET_BOOL_MEMBER(definition_io_ptr, IsOptional()) ? InputPortOptional::Yes : InputPortOptional::No)
-    , IsMultiplex(FLOWIO_GET_BOOL_MEMBER(definition_io_ptr, IsMultiplex()) ? InputPortMultiplex::Yes : InputPortMultiplex::No)
+bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortOptional &value)
 {
+    return false;
+    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+}
+
+// =====================================================================================================================
+
+bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, InputPortMultiplex &value)
+{
+    return ::read_value<m1::iarchive_json>(in, logger, value);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortMultiplex &value)
+{
+    return false;
+    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+}
+
+// =====================================================================================================================
+
+bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, InputPortDefinition &value)
+{
+    return ::read_value<m1::iarchive_json>(in, logger, value);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortDefinition &value)
+{
+    return false;
+    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
 }
 
 // =====================================================================================================================
@@ -95,6 +128,74 @@ std::vector<m1::const_any_ptr> const& Flow::InputPort::GetConnectionPtrs() const
     }
 
     return true;
+}
+
+// =====================================================================================================================
+
+template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::InputPortOptional &value)
+{
+    using namespace Flow;
+
+    bool bool_value = false;
+    if(read_value(in, logger, bool_value))
+    {
+        value = bool_value ? InputPortOptional::Yes : InputPortOptional::No;
+        return true;
+    }
+
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::InputPortMultiplex &value)
+{
+    using namespace Flow;
+
+    bool bool_value = false;
+    if(read_value(in, logger, bool_value))
+    {
+        value = bool_value ? InputPortMultiplex::Yes : InputPortMultiplex::No;
+        return true;
+    }
+
+    return false;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::InputPortDefinition &value)
+{
+    using namespace Flow;
+
+    bool result = true;
+    for(m1::property_id const &id : in.get_property_ids(logger))
+    {
+        switch(id)
+        {
+            case m1::property_id("PortName"):
+                result &= read_value(in, logger, value.PortName);
+                break;
+
+            case m1::property_id("TypeName"):
+                result &= read_value(in, logger, value.TypeName);
+                break;
+
+            case m1::property_id("IsOptional"):
+                result &= read_value(in, logger, value.IsOptional);
+                break;
+
+            case m1::property_id("IsMultiplex"):
+                result &= read_value(in, logger, value.IsMultiplex);
+                break;
+
+            default:
+                M1_WARN(logger, "Unknown property");
+                break;
+        }
+    }
+
+    return result;
 }
 
 // =====================================================================================================================

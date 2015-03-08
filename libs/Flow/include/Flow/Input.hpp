@@ -11,17 +11,16 @@
 #include <vector>
 #include <string>
 
-namespace Flow
-{
-namespace IO
+namespace m1
 {
     // =================================================================================================================
 
-    struct InputPortDefinition;
+    class log;
+    class iarchive_json;
+    class iarchive_ubjson;
 
     // =================================================================================================================
-} // namespace IO
-} // namespace Flow
+} // namespace m1
 
 namespace Flow
 {
@@ -35,6 +34,11 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortOptional &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortOptional &value);
+
+    // =================================================================================================================
+
     enum class InputPortMultiplex : bool
     {
         No = false,
@@ -43,28 +47,13 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    struct InputPortDefinitionInitializer
-    {
-        char const *PortName;
-        char const *TypeName;
-        InputPortOptional IsOptional;
-        InputPortMultiplex IsMultiplex;
-    };
+    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortMultiplex &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortMultiplex &value);
 
     // =================================================================================================================
 
-    class InputPortDefinition
+    struct InputPortDefinition
     {
-    public:
-        InputPortDefinition() = delete;
-        explicit InputPortDefinition(InputPortDefinitionInitializer definition_initializer);
-        explicit InputPortDefinition(IO::InputPortDefinition const * const definition_io_ptr);
-        InputPortDefinition(InputPortDefinition &&rhs) = default;
-        InputPortDefinition(InputPortDefinition const &rhs) = default;
-        InputPortDefinition& operator = (InputPortDefinition &&rhs) = default;
-        InputPortDefinition& operator = (InputPortDefinition const &rhs) = default;
-        ~InputPortDefinition() = default;
-
         // members:
         std::string PortName;
         std::string TypeName;
@@ -72,18 +61,15 @@ namespace Flow
         InputPortMultiplex IsMultiplex;
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortDefinition &value);
+
     // =================================================================================================================
 
-    class InputPortInstance
+    struct InputPortInstance
     {
-    public:
-        InputPortInstance() = delete;
-        InputPortInstance(InputPortInstance &&rhs) = default;
-        InputPortInstance(InputPortInstance const &rhs) = default;
-        InputPortInstance& operator = (InputPortInstance &&rhs) = default;
-        InputPortInstance& operator = (InputPortInstance const &rhs) = default;
-        ~InputPortInstance() = default;
-
         // members:
         std::vector<m1::const_any_ptr> ConnectionPtrs;
     };
@@ -93,13 +79,10 @@ namespace Flow
     class InputPort
     {
     public:
-        InputPort() = delete;
         InputPort(InputPortDefinition definition,
                   InputPortInstance instance);
         InputPort(InputPort &&rhs) = default;
-        InputPort(InputPort const &rhs) = delete;
         InputPort& operator = (InputPort &&rhs) = default;
-        InputPort& operator = (InputPort const &rhs) = delete;
         ~InputPort() = default;
 
         // definition:
@@ -112,6 +95,10 @@ namespace Flow
         std::vector<m1::const_any_ptr> const& GetConnectionPtrs() const;
 
     private:
+        InputPort() = delete;
+        InputPort(InputPort const &rhs) = delete;
+        InputPort& operator = (InputPort const &rhs) = delete;
+
         // members:
         std::string m_PortName;
         std::string m_TypeName;

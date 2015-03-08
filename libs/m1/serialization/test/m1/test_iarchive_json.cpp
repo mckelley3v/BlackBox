@@ -1,6 +1,6 @@
 #include "m1/iarchive_json.hpp"
-#include <iostream>
 #include "catch.hpp"
+#include <iostream>
 
 struct vector3f
 {
@@ -142,76 +142,78 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, scene &value);
 TEST_CASE("Test m1::iarchive_json", "[m1][m1::serialization]")
 {
     char const * const json =
-        "{\n"
-        "    \"entities\":\n"
-        "    [\n"
-        "        {\n"
-        "            \"name\": \"Entity0\",\n"
-        "            \"components\":\n"
-        "            [\n"
-        "                {\n"
-        "                    \"type\": \"transform\",\n"
-        "                    \"data\":\n"
-        "                    {\n"
-        "                        \"position\":    {\"x\": 0.0, \"y\": 0.0, \"z\": 1.0},\n"
-        "                        \"scale\":       {\"x\": 1.0, \"y\": 1.0, \"z\": 2.0},\n"
-        "                        \"orientation\": {\"real\": 1.0, \"imag\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0}}\n"
-        "                    }\n"
-        "                }\n"
-        "            ]\n"
-        "        },\n"
-        "        {\n"
-        "            \"name\":  \"Entity1\",\n"
-        "            \"components\":\n"
-        "            [\n"
-        "                {\n"
-        "                    \"type\": \"transform\",\n"
-        "                    \"data\":\n"
-        "                    {\n"
-        "                        \"position\":    {\"x\": 2.0, \"y\": 0.0, \"z\": 1.0},\n"
-        "                        \"scale\":       {\"x\": 1.0, \"y\": 1.0, \"z\": 2.0},\n"
-        "                        \"orientation\": {\"real\": 1.0, \"imag\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0}}\n"
-        "                    }\n"
-        "                }\n"
-        "            ]\n"
-        "        },\n"
-        "        {\n"
-        "            \"name\": \"Entity2\",\n"
-        "            \"components\":\n"
-        "            [\n"
-        "                {\n"
-        "                    \"type\": \"transform\",\n"
-        "                    \"data\":\n"
-        "                    {\n"
-        "                        \"position\":    {\"x\": 0.0, \"y\": 0.0, \"z\": 5},\n"
-        "                        \"scale\":       {\"x\": 1.0, \"y\": 1.0, \"z\": 1.0},\n"
-        "                        \"orientation\": {\"real\": 1.0, \"imag\": {\"x\": 0.0, \"y\": 0.0, \"z\": 0.0}}\n"
-        "                    }\n"
-        "                },\n"
-        "                {\n"
-        "                    \"type\": \"light\",\n"
-        "                    \"data\":\n"
-        "                    {\n"
-        "                        \"type\": \"directional\",\n"
-        "                        \"distance_range\": null,\n"
-        "                        \"angle_range\": null,\n"
-        "                        \"direct_color\": {\"r\": 1e2, \"g\": 1.01e2, \"b\": 0.8e2},\n"
-        "                        \"bounce_color\": {\"r\": 9.5, \"g\": 8.0, \"b\": 5.25},\n"
-        "                        \"ambient_color\": {\"r\": 1.0, \"g\": 1.0, \"b\": 1.5},\n"
-        "                        \"shadow_map\":\n"
-        "                        {\n"
-        "                            \"enabled\": false,\n"
-        "                            \"texture_size\": 1024,\n"
-        "                            \"cascade_count\": 4,\n"
-        "                            \"depth_bias\": \"default\"\n"
-        "                        }\n"
-        "                    }\n"
-        "                }\n"
-        "            ]\n"
-        "        },\n"
-        "        null\n"
-        "    ]\n"
-        "}";
+R"json(
+{
+    "entities":
+    [
+        {
+            "name": "Entity0",
+            "components":
+            [
+                {
+                    "type": "transform",
+                    "data":
+                    {
+                        "position":    {"x": 0.0, "y": 0.0, "z": 1.0},
+                        "scale":       {"x": 1.0, "y": 1.0, "z": 2.0},
+                        "orientation": {"real": 1.0, "imag": {"x": 0.0, "y": 0.0, "z": 0.0}}
+                    }
+                }
+            ]
+        },
+        {
+            "name":  "Entity1",
+            "components":
+            [
+                {
+                    "type": "transform",
+                    "data":
+                    {
+                        "position":    {"x": 2.0, "y": 0.0, "z": 1.0},
+                        "scale":       {"x": 1.0, "y": 1.0, "z": 2.0},
+                        "orientation": {"real": 1.0, "imag": {"x": 0.0, "y": 0.0, "z": 0.0}}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Entity2",
+            "components":
+            [
+                {
+                    "type": "transform",
+                    "data":
+                    {
+                        "position":    {"x": 0.0, "y": 0.0, "z": 5},
+                        "scale":       {"x": 1.0, "y": 1.0, "z": 1.0},
+                        "orientation": {"real": 1.0, "imag": {"x": 0.0, "y": 0.0, "z": 0.0}}
+                    }
+                },
+                {
+                    "type": "light",
+                    "data":
+                    {
+                        "type": "directional",
+                        "distance_range": null,
+                        "angle_range": null,
+                        "direct_color": {"r": 1e2, "g": 1.01e2, "b": 0.8e2},
+                        "bounce_color": {"r": 9.5, "g": 8.0, "b": 5.25},
+                        "ambient_color": {"r": 1.0, "g": 1.0, "b": 1.5},
+                        "shadow_map":
+                        {
+                            "enabled": false,
+                            "texture_size": 1024,
+                            "cascade_count": 4,
+                            "depth_bias": "default"
+                        }
+                    }
+                }
+            ]
+        },
+        null
+    ]
+}"
+)json";
 
     m1::log logger(std::cout,
                    std::clog,
