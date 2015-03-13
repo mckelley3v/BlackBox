@@ -76,6 +76,7 @@
             [
                 "../../external_libs/catch.gyp:catch",
                 "Flow",
+                "../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],
         },
     ],

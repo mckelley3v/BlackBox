@@ -6,6 +6,9 @@
 
 /*static*/ Flow::SystemDefinition Flow::Systems::AddNetwork::GetDefinition()
 {
+    using namespace Flow;
+    using namespace Flow::Components;
+
     return
     {
         // Interface
@@ -27,14 +30,14 @@
         },
         // ComponentInstances
         {
-            //   DefinitionName   InstanceName
-            {"Constant<int>{0}", "const_int_0"},
-            {"Constant<int>{1}", "const_int_1"},
-            {"Constant<int>{2}", "const_int_2"},
-            {"Constant<int>{4}", "const_int_4"},
-            {        "Add<int>",       "add_0"},
-            {        "Add<int>",       "add_1"},
-            {        "Add<int>",       "add_2"},
+            //   DefinitionName   InstanceName                                      InstanceData
+            {"Constant<int>", "const_int_0",    std::make_shared<Constant<int>::InstanceData>(0)},
+            {"Constant<int>", "const_int_1",    std::make_shared<Constant<int>::InstanceData>(1)},
+            {"Constant<int>", "const_int_2",    std::make_shared<Constant<int>::InstanceData>(2)},
+            {"Constant<int>", "const_int_4",    std::make_shared<Constant<int>::InstanceData>(4)},
+            {     "Add<int>",       "add_0", },
+            {     "Add<int>",       "add_1", },
+            {     "Add<int>",       "add_2", },
         },
         // Connections
         {

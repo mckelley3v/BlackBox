@@ -4,6 +4,8 @@
 #include "Flow/Component.hpp"
 #include "Flow/TypeManager.hpp"
 #include "Flow/TypeName.hpp"
+#include "m1/iarchive_json.hpp"
+#include "m1/iarchive_ubjson.hpp"
 
 namespace Flow
 {
@@ -16,13 +18,14 @@ namespace Components
         : public Component
     {
     public:
+        class InstanceData;
         static ComponentDefinition GetDefinition();
 
         Constant() = delete;
         Constant(TypeManager const &type_manager,
                  std::string instance_name,
                  ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                 T value);
+                 T &&value);
         Constant(Constant &&rhs) = default;
         Constant(Constant const &rhs) = delete;
         Constant& operator = (Constant &&rhs) = default;
@@ -41,7 +44,35 @@ namespace Components
     template <typename T> std::unique_ptr<Component> MakeConstantInstance(TypeManager const &type_manager,
                                                                           std::string instance_name,
                                                                           ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                                                          T value);
+                                                                          Component::InstanceData *instance_data_ptr);
+
+    // =================================================================================================================
+
+    template <typename T>
+    class Constant<T>::InstanceData
+        : public Component::InstanceData
+    {
+    public:
+        InstanceData() = default;
+        InstanceData(T &&value);
+        InstanceData(T const &value);
+        InstanceData(InstanceData &&rhs) = default;
+        InstanceData& operator = (InstanceData &&rhs) = default;
+        virtual ~InstanceData() = default;
+
+        T&& Value() &&;
+        T const& GetValue() const;
+
+    private:
+        InstanceData(InstanceData const &rhs) = delete;
+        InstanceData& operator = (InstanceData const &rhs) = delete;
+
+        virtual bool ReadArchive(m1::iarchive_json &in, m1::log &logger);
+        virtual bool ReadArchive(m1::iarchive_ubjson &in, m1::log &logger);
+
+        // members:
+        T m_Value;
+    };
 
     // =================================================================================================================
 } // namespace Components
@@ -109,7 +140,7 @@ template <typename T>
 Flow::Components::Constant<T>::Constant(TypeManager const &type_manager,
                                         std::string instance_name,
                                         ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                        T value)
+                                        T &&value)
     : Component(type_manager,
                 GetDefinition(),
                 ComponentInstance{std::move(instance_name),
@@ -132,12 +163,61 @@ T const& Flow::Components::Constant<T>::GetValue() const
 template <typename T> std::unique_ptr<Flow::Component> Flow::Components::MakeConstantInstance(TypeManager const &type_manager,
                                                                                               std::string instance_name,
                                                                                               ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                                                                              T value)
+                                                                                              Component::InstanceData * const instance_data_ptr)
 {
+    typedef typename Constant<T>::InstanceData InstanceData;
+    assert(dynamic_cast<InstanceData*>(instance_data_ptr) != nullptr);
+
     return std::make_unique<Constant<T>>(type_manager,
                                          std::move(instance_name),
                                          std::move(input_connection_ptrs_dict),
-                                         std::move(value));
+                                         std::move(static_cast<InstanceData&>(*instance_data_ptr)).Value());
+}
+
+// =====================================================================================================================
+
+template <typename T> Flow::Components::Constant<T>::InstanceData::InstanceData(T &&value)
+    : m_Value(std::move(value))
+{
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> Flow::Components::Constant<T>::InstanceData::InstanceData(T const &value)
+    : m_Value(value)
+{
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> T&& Flow::Components::Constant<T>::InstanceData::Value() &&
+{
+    return std::move(m_Value);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> T const& Flow::Components::Constant<T>::InstanceData::GetValue() const
+{
+    return m_Value;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_json &in, m1::log &logger)
+{
+    using m1::read_value;
+    using Flow::read_value;
+    return read_value(in, logger, m_Value);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_ubjson &in, m1::log &logger)
+{
+    //using m1::read_value;
+    //return read_value(in, logger, m_Value);
+    return false;
 }
 
 // =====================================================================================================================

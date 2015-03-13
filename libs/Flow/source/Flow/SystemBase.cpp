@@ -139,9 +139,11 @@ ComponentPtrs MakeSystemComponents(Flow::TypeManager const &type_manager,
 
         // create node
         std::string const &node_definition_name = node.InstancePtr->DefinitionName;
+        Component::InstanceData * const node_instance_data_ptr = node.InstancePtr->InstanceDataPtr.get();
         std::unique_ptr<Component> node_component_ptr = type_manager.MakeSystemComponent(node_definition_name,
                                                                                          node_instance_name,
-                                                                                         std::move(node_input_connection_ptrs_dict));
+                                                                                         std::move(node_input_connection_ptrs_dict),
+                                                                                         node_instance_data_ptr);
         FLOW_VERIFY(node_component_ptr != nullptr,
                     std::runtime_error("Unable to create component"));
 

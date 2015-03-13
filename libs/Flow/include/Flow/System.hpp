@@ -36,12 +36,13 @@ namespace Flow
         // members:
         std::string DefinitionName;
         std::string InstanceName;
+        std::shared_ptr<Component::InstanceData> InstanceDataPtr;
     };
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemComponentInstance &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemComponentInstance &value);
+    bool read_value(m1::iarchive_json &in, m1::log &logger, TypeManager const &type_manager, SystemComponentInstance &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, TypeManager const &type_manager, SystemComponentInstance &value);
 
     // =================================================================================================================
 
@@ -54,8 +55,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemConnectionPort &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnectionPort &value);
+    bool read_value(m1::iarchive_json &in, m1::log &logger, TypeManager const &type_manager, SystemConnectionPort &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, TypeManager const &type_manager, SystemConnectionPort &value);
 
     // =================================================================================================================
 
@@ -68,8 +69,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemConnection &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnection &value);
+    bool read_value(m1::iarchive_json &in, m1::log &logger, TypeManager const &type_manager, SystemConnection &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, TypeManager const &type_manager, SystemConnection &value);
 
     // =================================================================================================================
 
@@ -83,8 +84,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, SystemDefinition &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemDefinition &value);
+    bool read_value(m1::iarchive_json &in, m1::log &logger, TypeManager const &type_manager, SystemDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, TypeManager const &type_manager, SystemDefinition &value);
 
     // =================================================================================================================
 

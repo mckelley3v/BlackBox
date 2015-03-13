@@ -1,4 +1,5 @@
 #include "Flow/System.hpp"
+#include "Flow/TypeManager.hpp"
 #include "Flow/Verify.hpp"
 #include "m1/log.hpp"
 #include "m1/iarchive_json.hpp"
@@ -11,69 +12,113 @@ static std::vector<Flow::Component*> FilterActiveComponents(std::vector<std::uni
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::SystemComponentInstance &value);
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::SystemConnectionPort &value);
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::SystemConnection &value);
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::SystemDefinition &value);
+template <typename IArchive, typename T> static bool read_value(IArchive &in,
+                                                                m1::log &logger,
+                                                                Flow::TypeManager const &type_manager,
+                                                                std::vector<T> &values);
+
+template <typename IArchive> static bool read_value(IArchive &in,
+                                                    m1::log &logger,
+                                                    Flow::TypeManager const &type_manager,
+                                                    Flow::SystemComponentInstance &value);
+
+template <typename IArchive> static bool read_value(IArchive &in,
+                                                    m1::log &logger,
+                                                    Flow::TypeManager const &type_manager,
+                                                    Flow::SystemConnectionPort &value);
+
+template <typename IArchive> static bool read_value(IArchive &in,
+                                                    m1::log &logger,
+                                                    Flow::TypeManager const &type_manager,
+                                                    Flow::SystemConnection &value);
+
+template <typename IArchive> static bool read_value(IArchive &in,
+                                                    m1::log &logger,
+                                                    Flow::TypeManager const &type_manager,
+                                                    Flow::SystemDefinition &value);
 
 // =====================================================================================================================
 
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, SystemComponentInstance &value)
+bool Flow::read_value(m1::iarchive_json &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemComponentInstance &value)
 {
-    return ::read_value<m1::iarchive_json>(in, logger, value);
+    return ::read_value(in, logger, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemComponentInstance &value)
+bool Flow::read_value(m1::iarchive_ubjson &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemComponentInstance &value)
 {
     return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+    //return ::read_value(in, logger, type_manager, value);
 }
 
 // =====================================================================================================================
 
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, SystemConnectionPort &value)
+bool Flow::read_value(m1::iarchive_json &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemConnectionPort &value)
 {
-    return ::read_value<m1::iarchive_json>(in, logger, value);
+    return ::read_value(in, logger, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnectionPort &value)
+bool Flow::read_value(m1::iarchive_ubjson &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemConnectionPort &value)
 {
     return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+    //return ::read_value(in, logger, type_manager, value);
 }
 
 // =====================================================================================================================
 
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, SystemConnection &value)
+bool Flow::read_value(m1::iarchive_json &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemConnection &value)
 {
-    return ::read_value<m1::iarchive_json>(in, logger, value);
+    return ::read_value(in, logger, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemConnection &value)
+bool Flow::read_value(m1::iarchive_ubjson &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemConnection &value)
 {
     return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+    //return ::read_value(in, logger, type_manager, value);
 }
 
 // =====================================================================================================================
 
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, SystemDefinition &value)
+bool Flow::read_value(m1::iarchive_json &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemDefinition &value)
 {
-    return ::read_value<m1::iarchive_json>(in, logger, value);
+    return ::read_value(in, logger, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, SystemDefinition &value)
+bool Flow::read_value(m1::iarchive_ubjson &in,
+                      m1::log &logger,
+                      TypeManager const &type_manager,
+                      SystemDefinition &value)
 {
     return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
+    //return ::read_value(in, logger, type_manager, value);
 }
 
 // =====================================================================================================================
@@ -145,7 +190,37 @@ Flow::System::System(TypeManager const &type_manager,
 
 // =====================================================================================================================
 
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::SystemComponentInstance &value)
+template <typename IArchive, typename T> /*static*/ bool read_value(IArchive &in,
+                                                                    m1::log &logger,
+                                                                    Flow::TypeManager const &type_manager,
+                                                                    std::vector<T> &values)
+{
+    T temp{};
+    values.clear();
+    for(int const array_index : in.get_array_indices(logger))
+    {
+        // allow user-defined overloads
+        using m1::read_value;
+        if(read_value(in, logger, type_manager, temp))
+        {
+            values.push_back(std::move(temp));
+        }
+        else
+        {
+            M1_ERROR(logger, "Unable to read value at index: " << array_index << "\n");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename IArchive> /*static*/ bool read_value(IArchive &in,
+                                                        m1::log &logger,
+                                                        Flow::TypeManager const &type_manager,
+                                                        Flow::SystemComponentInstance &value)
 {
     using namespace Flow;
     using Flow::read_value;
@@ -163,6 +238,11 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
                 result &= read_value(in, logger, value.InstanceName);
                 break;
 
+            case m1::property_id("InstanceData"):
+                value.InstanceDataPtr = type_manager.MakeComponentInstanceData(value.DefinitionName);
+                result &= read_value(in, logger, *value.InstanceDataPtr);
+                break;
+
             default:
                 M1_WARN(logger, "Unknown property");
                 break;
@@ -174,7 +254,10 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::SystemConnectionPort &value)
+template <typename IArchive> /*static*/ bool read_value(IArchive &in,
+                                                        m1::log &logger,
+                                                        Flow::TypeManager const &type_manager,
+                                                        Flow::SystemConnectionPort &value)
 {
     using namespace Flow;
     using Flow::read_value;
@@ -203,7 +286,10 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::SystemConnection &value)
+template <typename IArchive> /*static*/ bool read_value(IArchive &in,
+                                                        m1::log &logger,
+                                                        Flow::TypeManager const &type_manager,
+                                                        Flow::SystemConnection &value)
 {
     using namespace Flow;
     using Flow::read_value;
@@ -214,11 +300,11 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
         switch(id)
         {
             case m1::property_id("SourcePort"):
-                result &= read_value(in, logger, value.SourcePort);
+                result &= read_value(in, logger, type_manager, value.SourcePort);
                 break;
 
             case m1::property_id("TargetPort"):
-                result &= read_value(in, logger, value.TargetPort);
+                result &= read_value(in, logger, type_manager, value.TargetPort);
                 break;
 
             default:
@@ -232,9 +318,13 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::SystemDefinition &value)
+template <typename IArchive> /*static*/ bool read_value(IArchive &in,
+                                                        m1::log &logger,
+                                                        Flow::TypeManager const &type_manager,
+                                                        Flow::SystemDefinition &value)
 {
     using namespace Flow;
+    using ::read_value;
     using Flow::read_value;
 
     bool result = true;
@@ -247,11 +337,11 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &l
                 break;
 
             case m1::property_id("ComponentInstances"):
-                result &= read_value(in, logger, value.ComponentInstances);
+                result &= read_value(in, logger, type_manager, value.ComponentInstances);
                 break;
 
             case m1::property_id("Connections"):
-                result &= read_value(in, logger, value.Connections);
+                result &= read_value(in, logger, type_manager, value.Connections);
                 break;
 
             default:

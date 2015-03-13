@@ -250,6 +250,20 @@ template <typename OutputPortDefinitionIterator>
 
 // =====================================================================================================================
 
+bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, Component::InstanceData &value)
+{
+    return value.ReadArchive(in, logger);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, Component::InstanceData &value)
+{
+    return value.ReadArchive(in, logger);
+}
+
+// =====================================================================================================================
+
 template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::ComponentProcessAnnotation &value)
 {
     using namespace Flow;

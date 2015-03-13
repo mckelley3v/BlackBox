@@ -10,53 +10,12 @@ TEST_CASE("Test m1::Systems::AddNetwork", "[Flow]")
     using namespace Flow::Components;
     using namespace Flow::Systems;
 
-    ComponentDefinition const constant_int_definition = Constant<int>::GetDefinition();
-    ComponentDefinition const c0_definition
-    {
-        // Name
-        "Constant<int>{0}",
-        constant_int_definition.InputPorts,
-        constant_int_definition.OutputPorts,
-        constant_int_definition.Annotations,
-    };
-
-    ComponentDefinition const c1_definition
-    {
-        // Name
-        "Constant<int>{1}",
-        constant_int_definition.InputPorts,
-        constant_int_definition.OutputPorts,
-        constant_int_definition.Annotations,
-    };
-
-    ComponentDefinition const c2_definition
-    {
-        // Name
-        "Constant<int>{2}",
-        constant_int_definition.InputPorts,
-        constant_int_definition.OutputPorts,
-        constant_int_definition.Annotations,
-    };
-
-    ComponentDefinition const c4_definition
-    {
-        // Name
-        "Constant<int>{4}",
-        constant_int_definition.InputPorts,
-        constant_int_definition.OutputPorts,
-        constant_int_definition.Annotations,
-    };
-
     TypeManager const type_manager
     {{
         // ComponentTypes
         {
-            //                             Definition                 MakeInstanceFunc
-            {          Constant<int>::GetDefinition(),                         nullptr},
-            {                           c0_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 0); }}, // TODO - handle parameters
-            {                           c1_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 1); }},
-            {                           c2_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 2); }},
-            {                           c4_definition,  [](TypeManager const &type_manager, std::string instance_name, ComponentInputConnectionPtrsDict input_connection_ptrs_dict) { return MakeConstantInstance(type_manager, std::move(instance_name), std::move(input_connection_ptrs_dict), 4); }},
+            //                             Definition                 MakeInstanceFunc                           MakeInstanceDataFunc
+            {          Constant<int>::GetDefinition(),       MakeConstantInstance<int>, std::make_shared<Constant<int>::InstanceData>},
             {               Add<int>::GetDefinition(),   MakeSystemComponent<Add<int>>},
             {   AddNetwork::GetDefinition().Interface, MakeSystemComponent<AddNetwork>},
         },

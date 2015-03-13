@@ -120,22 +120,57 @@ Flow::ComponentDefinition const* Flow::TypeManager::FindComponentDefinition(std:
 
 std::unique_ptr<Flow::Component> Flow::TypeManager::MakeSystemComponent(char const * const definition_name,
                                                                         std::string instance_name,
-                                                                        ComponentInputConnectionPtrsDict input_connection_ptrs_dict) const
+                                                                        ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
+                                                                        Component::InstanceData * const instance_data_ptr) const
 {
     return m_ComponentTypeEntryDict.at(definition_name).MakeInstanceFunc(*this,
                                                                          std::move(instance_name),
-                                                                         std::move(input_connection_ptrs_dict));
+                                                                         std::move(input_connection_ptrs_dict),
+                                                                         instance_data_ptr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 std::unique_ptr<Flow::Component> Flow::TypeManager::MakeSystemComponent(std::string const &definition_name,
                                                                         std::string instance_name,
-                                                                        ComponentInputConnectionPtrsDict input_connection_ptrs_dict) const
+                                                                        ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
+                                                                        Component::InstanceData * const instance_data_ptr) const
 {
     return m_ComponentTypeEntryDict.at(definition_name).MakeInstanceFunc(*this,
                                                                          std::move(instance_name),
-                                                                         std::move(input_connection_ptrs_dict));
+                                                                         std::move(input_connection_ptrs_dict),
+                                                                         instance_data_ptr);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+std::shared_ptr<Flow::Component::InstanceData> Flow::TypeManager::MakeComponentInstanceData(char const *definition_name) const
+{
+    return MakeComponentInstanceData(m_ComponentTypeEntryDict.find(definition_name));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+std::shared_ptr<Flow::Component::InstanceData> Flow::TypeManager::MakeComponentInstanceData(std::string const &definition_name) const
+{
+    return MakeComponentInstanceData(m_ComponentTypeEntryDict.find(definition_name));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+std::shared_ptr<Flow::Component::InstanceData> Flow::TypeManager::MakeComponentInstanceData(ComponentTypeEntryDict::const_iterator const &component_entry_itr) const
+{
+    if(component_entry_itr != m_ComponentTypeEntryDict.end())
+    {
+        TypeManagerComponentTypeEntry const &component_entry = component_entry_itr->second;
+        MakeComponentInstanceDataFunc const &make_instance_data_func = component_entry.MakeInstanceDataFunc;
+        if(make_instance_data_func)
+        {
+            return make_instance_data_func();
+        }
+    }
+
+    return nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

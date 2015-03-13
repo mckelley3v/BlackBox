@@ -95,6 +95,7 @@ namespace Flow
     class Component
     {
     public:
+        class InstanceData;
         typedef m1::dictionary<InputPort> InputPortDict;
         typedef m1::dictionary<OutputPort> OutputPortDict;
 
@@ -164,6 +165,30 @@ namespace Flow
 
     template <typename T> T const& GetOutputConnectionRef(Component const &component,
                                                           char const * const port_name);
+
+    // =================================================================================================================
+
+    bool read_value(m1::iarchive_json &in, m1::log &logger, Component::InstanceData &value);
+    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, Component::InstanceData &value);
+
+    class Component::InstanceData
+    {
+    public:
+        InstanceData() = default;
+        InstanceData(InstanceData &&rhs) = default;
+        InstanceData& operator = (InstanceData &&rhs) = default;
+        virtual ~InstanceData() = default;
+
+        friend bool read_value(m1::iarchive_json &in, m1::log &logger, InstanceData &value);
+        friend bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InstanceData &value);
+
+    private:
+        InstanceData(InstanceData const &rhs) = delete;
+        InstanceData& operator = (InstanceData const &rhs) = delete;
+
+        virtual bool ReadArchive(m1::iarchive_json &in, m1::log &logger) = 0;
+        virtual bool ReadArchive(m1::iarchive_ubjson &in, m1::log &logger) = 0;
+    };
 
     // =================================================================================================================
 } // namespace Flow
