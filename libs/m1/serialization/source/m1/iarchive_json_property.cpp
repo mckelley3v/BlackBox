@@ -7,7 +7,7 @@
 
 m1::iarchive_json::property_ids::const_iterator m1::iarchive_json::property_ids::begin() const
 {
-    return const_iterator(*m_ArchivePtr, *m_LoggerPtr);
+    return const_iterator(*m_ArchivePtr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ m1::iarchive_json::property_ids::const_iterator m1::iarchive_json::property_ids:
 
 m1::iarchive_json::property_ids::const_iterator m1::iarchive_json::property_ids::cbegin() const
 {
-    return const_iterator(*m_ArchivePtr, *m_LoggerPtr);
+    return const_iterator(*m_ArchivePtr);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ m1::iarchive_json::property_ids::const_iterator m1::iarchive_json::property_ids:
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-m1::iarchive_json::property_ids::property_ids(iarchive_json &archive, log &logger)
+m1::iarchive_json::property_ids::property_ids(iarchive_json &archive)
     : m_ArchivePtr(&archive)
 {
 }
@@ -42,7 +42,6 @@ m1::iarchive_json::property_ids::property_ids(iarchive_json &archive, log &logge
 
 m1::iarchive_json::property_ids::const_iterator::const_iterator()
     : m_ArchivePtr(nullptr)
-    , m_LoggerPtr(nullptr)
     , m_PropertyId(0u)
     , m_IsSingle(false)
 {
@@ -50,9 +49,8 @@ m1::iarchive_json::property_ids::const_iterator::const_iterator()
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-m1::iarchive_json::property_ids::const_iterator::const_iterator(iarchive_json &archive, log &logger)
+m1::iarchive_json::property_ids::const_iterator::const_iterator(iarchive_json &archive)
     : m_ArchivePtr(&archive)
-    , m_LoggerPtr(&logger)
     , m_PropertyId(0u)
     , m_IsSingle(false)
 {
@@ -66,6 +64,7 @@ m1::iarchive_json::property_ids::const_iterator::const_iterator(iarchive_json &a
         found_object,
     };
 
+    log &logger = m_ArchivePtr->logger();
     char const *&curr = m_ArchivePtr->m_Current;
     char const * const end = m_ArchivePtr->m_End;
 
@@ -197,7 +196,7 @@ m1::iarchive_json::property_ids::const_iterator& m1::iarchive_json::property_ids
         found_property_or_end,
     };
 
-    log &logger = *m_LoggerPtr;
+    log &logger = m_ArchivePtr->logger();
     char const *&curr = m_ArchivePtr->m_Current;
     char const * const end = m_ArchivePtr->m_End;
 
@@ -315,7 +314,6 @@ m1::property_id const& m1::iarchive_json::property_ids::const_iterator::operator
 void m1::iarchive_json::property_ids::const_iterator::set_end_of_stream_state()
 {
     m_ArchivePtr = nullptr;
-    m_LoggerPtr = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -324,7 +322,6 @@ void m1::iarchive_json::property_ids::const_iterator::set_error_state()
 {
     m_ArchivePtr->set_error_state();
     m_ArchivePtr = nullptr;
-    m_LoggerPtr = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

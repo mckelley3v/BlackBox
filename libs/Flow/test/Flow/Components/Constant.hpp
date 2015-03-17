@@ -67,8 +67,8 @@ namespace Components
         InstanceData(InstanceData const &rhs) = delete;
         InstanceData& operator = (InstanceData const &rhs) = delete;
 
-        virtual bool ReadArchive(m1::iarchive_json &in, m1::log &logger);
-        virtual bool ReadArchive(m1::iarchive_ubjson &in, m1::log &logger);
+        virtual bool ReadArchive(m1::iarchive_json &in);
+        virtual bool ReadArchive(m1::iarchive_ubjson &in);
 
         // members:
         T m_Value;
@@ -204,19 +204,15 @@ template <typename T> T const& Flow::Components::Constant<T>::InstanceData::GetV
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_json &in, m1::log &logger)
+template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_json &in)
 {
-    using m1::read_value;
-    using Flow::read_value;
-    return read_value(in, logger, m_Value);
+    return read_value(in, m_Value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_ubjson &in, m1::log &logger)
+template <typename T> /*virtual*/ bool Flow::Components::Constant<T>::InstanceData::ReadArchive(m1::iarchive_ubjson &in)
 {
-    //using m1::read_value;
-    //return read_value(in, logger, m_Value);
     return false;
 }
 

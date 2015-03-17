@@ -15,7 +15,6 @@ namespace m1
 {
     // =================================================================================================================
 
-    class log;
     class iarchive_json;
     class iarchive_ubjson;
 
@@ -34,8 +33,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortOptional &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortOptional &value);
+    bool read_value(m1::iarchive_json &in, InputPortOptional &value);
+    bool read_value(m1::iarchive_ubjson &in, InputPortOptional &value);
 
     // =================================================================================================================
 
@@ -47,8 +46,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortMultiplex &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortMultiplex &value);
+    bool read_value(m1::iarchive_json &in, InputPortMultiplex &value);
+    bool read_value(m1::iarchive_ubjson &in, InputPortMultiplex &value);
 
     // =================================================================================================================
 
@@ -63,8 +62,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, InputPortDefinition &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InputPortDefinition &value);
+    bool read_value(m1::iarchive_json &in, InputPortDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, InputPortDefinition &value);
 
     // =================================================================================================================
 

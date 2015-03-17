@@ -116,21 +116,21 @@ struct scene
     std::vector<entity> entities;
 };
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, vector3f &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, color3f &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, quaternionf &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, transformf &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_type &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_distance_range &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_angle_range &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_texture_size &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_cascade_count &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_depth_bias &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, light &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<component> &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, entity &value);
-bool read_value(m1::iarchive_json &in, m1::log &logger, scene &value);
+bool read_value(m1::iarchive_json &in, vector3f &value);
+bool read_value(m1::iarchive_json &in, color3f &value);
+bool read_value(m1::iarchive_json &in, quaternionf &value);
+bool read_value(m1::iarchive_json &in, transformf &value);
+bool read_value(m1::iarchive_json &in, light_type &value);
+bool read_value(m1::iarchive_json &in, light_distance_range &value);
+bool read_value(m1::iarchive_json &in, light_angle_range &value);
+bool read_value(m1::iarchive_json &in, shadow_map_texture_size &value);
+bool read_value(m1::iarchive_json &in, shadow_map_cascade_count &value);
+bool read_value(m1::iarchive_json &in, shadow_map_depth_bias &value);
+bool read_value(m1::iarchive_json &in, shadow_map &value);
+bool read_value(m1::iarchive_json &in, light &value);
+bool read_value(m1::iarchive_json &in, std::unique_ptr<component> &value);
+bool read_value(m1::iarchive_json &in, entity &value);
+bool read_value(m1::iarchive_json &in, scene &value);
 
 // object (null, empty, unbracketed, regular)
 // array (null, empty, unbracketed, regular)
@@ -212,17 +212,17 @@ R"json(
         },
         null
     ]
-}"
+}
 )json";
 
     m1::log logger(std::cout,
                    std::clog,
                    std::cerr);
 
-    m1::iarchive_json in(json);
+    m1::iarchive_json in(logger, json);
 
     scene data = {};
-    bool const is_data_valid = read_value(in, logger, data);
+    bool const is_data_valid = read_value(in, data);
     REQUIRE(is_data_valid);
 
     std::vector<entity> const &entities = data.entities;
@@ -321,28 +321,28 @@ R"json(
     }
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, vector3f &value)
+bool read_value(m1::iarchive_json &in, vector3f &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("x"):
-                result &= read_value(in, logger, value.x);
+                result &= read_value(in, value.x);
                 break;
 
             case m1::property_id("y"):
-                result &= read_value(in, logger, value.y);
+                result &= read_value(in, value.y);
                 break;
 
             case m1::property_id("z"):
-                result &= read_value(in, logger, value.z);
+                result &= read_value(in, value.z);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -350,31 +350,31 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, vector3f &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, color3f &value)
+bool read_value(m1::iarchive_json &in, color3f &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("r"):
             case m1::property_id("red"):
-                result &= read_value(in, logger, value.r);
+                result &= read_value(in, value.r);
                 break;
 
             case m1::property_id("g"):
             case m1::property_id("green"):
-                result &= read_value(in, logger, value.g);
+                result &= read_value(in, value.g);
                 break;
 
             case m1::property_id("b"):
             case m1::property_id("blue"):
-                result &= read_value(in, logger, value.b);
+                result &= read_value(in, value.b);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -382,24 +382,24 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, color3f &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, quaternionf &value)
+bool read_value(m1::iarchive_json &in, quaternionf &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("real"):
-                result &= read_value(in, logger, value.real);
+                result &= read_value(in, value.real);
                 break;
 
             case m1::property_id("imag"):
-                result &= read_value(in, logger, value.imag);
+                result &= read_value(in, value.imag);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -407,28 +407,28 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, quaternionf &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, transformf &value)
+bool read_value(m1::iarchive_json &in, transformf &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("position"):
-                result &= read_value(in, logger, value.position);
+                result &= read_value(in, value.position);
                 break;
 
             case m1::property_id("scale"):
-                result &= read_value(in, logger, value.scale);
+                result &= read_value(in, value.scale);
                 break;
 
             case m1::property_id("orientation"):
-                result &= read_value(in, logger, value.orientation);
+                result &= read_value(in, value.orientation);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -436,10 +436,10 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, transformf &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_type &value)
+bool read_value(m1::iarchive_json &in, light_type &value)
 {
     m1::crc32 type;
-    if(read_value(in, logger, type))
+    if(read_value(in, type))
     {
         switch(type)
         {
@@ -456,7 +456,8 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light_type &value)
                 return true;
 
             default:
-                M1_ERROR(logger, "Invalid light_type");
+                M1_ERROR(in.logger(), "Invalid light_type");
+                in.set_error_state();
                 return false;
         }
     }
@@ -464,24 +465,24 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light_type &value)
     return false;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_distance_range &value)
+bool read_value(m1::iarchive_json &in, light_distance_range &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("inner_radius"):
-                result &= read_value(in, logger, value.inner_radius);
+                result &= read_value(in, value.inner_radius);
                 break;
 
             case m1::property_id("outer_radius"):
-                result &= read_value(in, logger, value.outer_radius);
+                result &= read_value(in, value.outer_radius);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -489,24 +490,24 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light_distance_range &va
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, light_angle_range &value)
+bool read_value(m1::iarchive_json &in, light_angle_range &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("inner_angle"):
-                result &= read_value(in, logger, value.inner_angle);
+                result &= read_value(in, value.inner_angle);
                 break;
 
             case m1::property_id("outer_angle"):
-                result &= read_value(in, logger, value.outer_angle);
+                result &= read_value(in, value.outer_angle);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -514,10 +515,10 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light_angle_range &value
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_texture_size &value)
+bool read_value(m1::iarchive_json &in, shadow_map_texture_size &value)
 {
     int size = 0;
-    if(read_value(in, logger, size))
+    if(read_value(in, size))
     {
         switch(size)
         {
@@ -542,6 +543,8 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_texture_size 
                 return true;
 
             default:
+                M1_ERROR(in.logger(), "Invalid shadow_map_texture_size");
+                in.set_error_state();
                 return false;
         }
     }
@@ -549,10 +552,10 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_texture_size 
     return false;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_cascade_count &value)
+bool read_value(m1::iarchive_json &in, shadow_map_cascade_count &value)
 {
     int size = 0;
-    if(read_value(in, logger, size))
+    if(read_value(in, size))
     {
         switch(size)
         {
@@ -569,6 +572,8 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_cascade_count
                 return true;
 
             default:
+                M1_ERROR(in.logger(), "Invalid shadow_map_cascade_count");
+                in.set_error_state();
                 return false;
         }
     }
@@ -576,17 +581,17 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_cascade_count
     return false;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_depth_bias &value)
+bool read_value(m1::iarchive_json &in, shadow_map_depth_bias &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case 0:
             {
                 m1::crc32 crc;
-                if(result &= read_value(in, logger, crc))
+                if(result &= read_value(in, crc))
                 {
                     switch(crc)
                     {
@@ -597,7 +602,8 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_depth_bias &v
                             break;
 
                         default:
-                            M1_ERROR(logger, "Unknown value");
+                            M1_ERROR(in.logger(), "Unknown value");
+                            in.set_error_state();
                             return false;
                     }
                 }
@@ -605,20 +611,20 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_depth_bias &v
             }
 
             case m1::property_id("offset"):
-                result &= read_value(in, logger, value.offset);
+                result &= read_value(in, value.offset);
                 break;
 
             case m1::property_id("slope_scale"):
-                result &= read_value(in, logger, value.slope_scale);
+                result &= read_value(in, value.slope_scale);
                 break;
 
             case m1::property_id("clamp"):
-                result &= read_value(in, logger, value.clamp);
+                result &= read_value(in, value.clamp);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -626,34 +632,34 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map_depth_bias &v
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map &value)
+bool read_value(m1::iarchive_json &in, shadow_map &value)
 {
     bool result = true;
     bool use_default_enable = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("enabled"):
-                result &= read_value(in, logger, value.enabled);
+                result &= read_value(in, value.enabled);
                 use_default_enable = false;
                 break;
 
             case m1::property_id("texture_size"):
-                result &= read_value(in, logger, value.texture_size);
+                result &= read_value(in, value.texture_size);
                 break;
 
             case m1::property_id("cascade_count"):
-                result &= read_value(in, logger, value.cascade_count);
+                result &= read_value(in, value.cascade_count);
                 break;
 
             case m1::property_id("depth_bias"):
-                result &= read_value(in, logger, value.depth_bias);
+                result &= read_value(in, value.depth_bias);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -666,44 +672,44 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, shadow_map &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, light &value)
+bool read_value(m1::iarchive_json &in, light &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("type"):
-                result &= read_value(in, logger, value.type);
+                result &= read_value(in, value.type);
                 break;
 
             case m1::property_id("distance_range"):
-                result &= read_value(in, logger, value.distance_range);
+                result &= read_value(in, value.distance_range);
                 break;
 
             case m1::property_id("angle_range"):
-                result &= read_value(in, logger, value.angle_range);
+                result &= read_value(in, value.angle_range);
                 break;
 
             case m1::property_id("direct_color"):
-                result &= read_value(in, logger, value.direct_color);
+                result &= read_value(in, value.direct_color);
                 break;
 
             case m1::property_id("bounce_color"):
-                result &= read_value(in, logger, value.bounce_color);
+                result &= read_value(in, value.bounce_color);
                 break;
 
             case m1::property_id("ambient_color"):
-                result &= read_value(in, logger, value.ambient_color);
+                result &= read_value(in, value.ambient_color);
                 break;
 
             case m1::property_id("shadow_map"):
-                result &= read_value(in, logger, value.shadow_map);
+                result &= read_value(in, value.shadow_map);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -711,7 +717,7 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, light &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<component> &value)
+bool read_value(m1::iarchive_json &in, std::unique_ptr<component> &value)
 {
     value.reset();
 
@@ -719,14 +725,14 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<componen
     transform_component *transform = nullptr;
     light_component *light = nullptr;
 
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("type"):
             {
                 m1::crc32 type;
-                if(result &= read_value(in, logger, type))
+                if(result &= read_value(in, type))
                 {
                     switch(type)
                     {
@@ -739,7 +745,7 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<componen
                             break;
 
                         default:
-                            M1_WARN(logger, "Unknown component type");
+                            M1_WARN(in.logger(), "Unknown component type");
                             break;
                     }
                     break;
@@ -749,21 +755,21 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<componen
             case m1::property_id("data"):
                 if(transform != nullptr)
                 {
-                    result &= read_value(in, logger, *transform);
+                    result &= read_value(in, *transform);
                 }
                 else if(light != nullptr)
                 {
-                    result &= read_value(in, logger, *light);
+                    result &= read_value(in, *light);
                 }
                 else
                 {
-                    skip_value(in, logger);
+                    result &= skip_value(in);
                 }
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -771,24 +777,24 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, std::unique_ptr<componen
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, entity &value)
+bool read_value(m1::iarchive_json &in, entity &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("name"):
-                result &= read_value(in, logger, value.name);
+                result &= read_value(in, value.name);
                 break;
 
             case m1::property_id("components"):
-                result &= read_value(in, logger, value.components);
+                result &= read_value(in, value.components);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }
@@ -796,20 +802,20 @@ bool read_value(m1::iarchive_json &in, m1::log &logger, entity &value)
     return result;
 }
 
-bool read_value(m1::iarchive_json &in, m1::log &logger, scene &value)
+bool read_value(m1::iarchive_json &in, scene &value)
 {
     bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
+    for(m1::property_id const &id : in.get_property_ids())
     {
         switch(id)
         {
             case m1::property_id("entities"):
-                result &= read_value(in, logger, value.entities);
+                result &= read_value(in, value.entities);
                 break;
 
             default:
-                M1_WARN(logger, "Unknown property");
-                skip_value(in, logger);
+                M1_WARN(in.logger(), "Unknown property");
+                result &= skip_value(in);
                 break;
         }
     }

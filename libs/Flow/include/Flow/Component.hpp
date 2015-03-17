@@ -20,7 +20,6 @@ namespace m1
 {
     // =================================================================================================================
 
-    class log;
     class iarchive_json;
     class iarchive_ubjson;
 
@@ -44,8 +43,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentProcessAnnotation &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentProcessAnnotation &value);
+    bool read_value(m1::iarchive_json &in, ComponentProcessAnnotation &value);
+    bool read_value(m1::iarchive_ubjson &in, ComponentProcessAnnotation &value);
 
     // =================================================================================================================
 
@@ -56,8 +55,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentAnnotations &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentAnnotations &value);
+    bool read_value(m1::iarchive_json &in, ComponentAnnotations &value);
+    bool read_value(m1::iarchive_ubjson &in, ComponentAnnotations &value);
 
     // =================================================================================================================
 
@@ -72,8 +71,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, ComponentDefinition &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentDefinition &value);
+    bool read_value(m1::iarchive_json &in, ComponentDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, ComponentDefinition &value);
 
     // =================================================================================================================
 
@@ -168,8 +167,8 @@ namespace Flow
 
     // =================================================================================================================
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, Component::InstanceData &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, Component::InstanceData &value);
+    bool read_value(m1::iarchive_json &in, Component::InstanceData &value);
+    bool read_value(m1::iarchive_ubjson &in, Component::InstanceData &value);
 
     class Component::InstanceData
     {
@@ -179,15 +178,15 @@ namespace Flow
         InstanceData& operator = (InstanceData &&rhs) = default;
         virtual ~InstanceData() = default;
 
-        friend bool read_value(m1::iarchive_json &in, m1::log &logger, InstanceData &value);
-        friend bool read_value(m1::iarchive_ubjson &in, m1::log &logger, InstanceData &value);
+        friend bool read_value(m1::iarchive_json &in, InstanceData &value);
+        friend bool read_value(m1::iarchive_ubjson &in, InstanceData &value);
 
     private:
         InstanceData(InstanceData const &rhs) = delete;
         InstanceData& operator = (InstanceData const &rhs) = delete;
 
-        virtual bool ReadArchive(m1::iarchive_json &in, m1::log &logger) = 0;
-        virtual bool ReadArchive(m1::iarchive_ubjson &in, m1::log &logger) = 0;
+        virtual bool ReadArchive(m1::iarchive_json &in) = 0;
+        virtual bool ReadArchive(m1::iarchive_ubjson &in) = 0;
     };
 
     // =================================================================================================================

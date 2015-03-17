@@ -26,6 +26,7 @@
                 "source/Flow/Connection.cpp",
                 "source/Flow/Input.cpp",
                 "source/Flow/Output.cpp",
+                "source/Flow/Serialization.cpp",
                 "source/Flow/System.cpp",
                 "source/Flow/SystemBase.cpp",
                 "source/Flow/SystemGraph.hpp",

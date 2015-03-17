@@ -14,7 +14,6 @@ namespace m1
 {
     // =================================================================================================================
 
-    class log;
     class iarchive_json;
     class iarchive_ubjson;
 
@@ -34,8 +33,8 @@ namespace Flow
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    bool read_value(m1::iarchive_json &in, m1::log &logger, OutputPortDefinition &value);
-    bool read_value(m1::iarchive_ubjson &in, m1::log &logger, OutputPortDefinition &value);
+    bool read_value(m1::iarchive_json &in, OutputPortDefinition &value);
+    bool read_value(m1::iarchive_ubjson &in, OutputPortDefinition &value);
 
     // =================================================================================================================
 

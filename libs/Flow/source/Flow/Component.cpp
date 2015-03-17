@@ -1,9 +1,6 @@
 #include "Flow/Component.hpp"
 #include "Flow/TypeManager.hpp"
 #include "Flow/Verify.hpp"
-#include "m1/log.hpp"
-#include "m1/iarchive_json.hpp"
-#include "m1/iarchive_ubjson.hpp"
 
 // =====================================================================================================================
 
@@ -28,57 +25,6 @@ template <typename OutputPortDefinitionIterator>
 static Flow::Component::OutputPortDict MakeOutputPortDict(OutputPortDefinitionIterator const output_port_definitions_begin,
                                                           OutputPortDefinitionIterator const output_port_definitions_end,
                                                           Flow::ComponentOutputConnectionPtrDict &&output_ptr_dict);
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::ComponentProcessAnnotation &value);
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::ComponentAnnotations &value);
-template <typename IArchive> static bool read_value(IArchive &in, m1::log &logger, Flow::ComponentDefinition &value);
-
-// =====================================================================================================================
-
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, ComponentProcessAnnotation &value)
-{
-    return ::read_value<m1::iarchive_json>(in, logger, value);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentProcessAnnotation &value)
-{
-    return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
-}
-
-// =====================================================================================================================
-
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, ComponentAnnotations &value)
-{
-    return ::read_value<m1::iarchive_json>(in, logger, value);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentAnnotations &value)
-{
-    return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
-}
-
-// =====================================================================================================================
-
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, ComponentDefinition &value)
-{
-    return ::read_value<m1::iarchive_json>(in, logger, value);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, ComponentDefinition &value)
-{
-    return false;
-    //return ::read_value<m1::iarchive_ubjson>(in, logger, value);
-}
 
 // =====================================================================================================================
 
@@ -243,114 +189,6 @@ template <typename OutputPortDefinitionIterator>
 
         result.emplace(std::move(output_port_name),
                        std::move(output_port));
-    }
-
-    return result;
-}
-
-// =====================================================================================================================
-
-bool Flow::read_value(m1::iarchive_json &in, m1::log &logger, Component::InstanceData &value)
-{
-    return value.ReadArchive(in, logger);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-bool Flow::read_value(m1::iarchive_ubjson &in, m1::log &logger, Component::InstanceData &value)
-{
-    return value.ReadArchive(in, logger);
-}
-
-// =====================================================================================================================
-
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::ComponentProcessAnnotation &value)
-{
-    using namespace Flow;
-
-    m1::crc32 crc;
-    if(read_value(in, logger, crc))
-    {
-        switch(crc)
-        {
-            case m1::crc32("Always"):
-                value = ComponentProcessAnnotation::Always;
-                return true;
-
-            case m1::crc32("Once"):
-                value = ComponentProcessAnnotation::Once;
-                return true;
-
-            case m1::crc32("Never"):
-                value = ComponentProcessAnnotation::Never;
-                return true;
-
-            default:
-                M1_ERROR(logger, "Invalid Flow::ComponentProcessAnnotation");
-                return false;
-        }
-    }
-
-    return false;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::ComponentAnnotations &value)
-{
-    using namespace Flow;
-    using Flow::read_value;
-
-    bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
-    {
-        switch(id)
-        {
-            case m1::property_id("Process"):
-                result &= read_value(in, logger, value.Process);
-                break;
-
-            default:
-                M1_WARN(logger, "Unknown property");
-                break;
-        }
-    }
-
-    return result;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename IArchive> /*static*/ bool read_value(IArchive &in, m1::log &logger, Flow::ComponentDefinition &value)
-{
-    using namespace Flow;
-    using Flow::read_value;
-
-    bool result = true;
-    for(m1::property_id const &id : in.get_property_ids(logger))
-    {
-        switch(id)
-        {
-            case m1::property_id("Name"):
-                result &= read_value(in, logger, value.Name);
-                break;
-
-            case m1::property_id("InputPorts"):
-                result &= read_value(in, logger, value.InputPorts);
-                break;
-
-            case m1::property_id("OutputPorts"):
-                result &= read_value(in, logger, value.OutputPorts);
-                break;
-
-            case m1::property_id("Annotations"):
-                result &= read_value(in, logger, value.Annotations);
-                break;
-
-            default:
-                M1_WARN(logger, "Unknown property");
-                break;
-        }
     }
 
     return result;

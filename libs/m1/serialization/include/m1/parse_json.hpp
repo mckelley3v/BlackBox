@@ -5,6 +5,12 @@ namespace m1
 {
     // =================================================================================================================
 
+    // return true if [begin, end) is valid utf8 json text
+//    bool parse_json(char const *begin,
+//                    char const *end);
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     enum class json_token_id
     {
         invalid,
@@ -24,6 +30,7 @@ namespace m1
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    // return true if id is one of json_token_id::value_*
     bool is_json_value(json_token_id id);
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -37,6 +44,7 @@ namespace m1
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    // extract the next json token from [curr, end) and advance curr to the end of the token returned
     json_token parse_json_token(char const *&curr,
                                 char const *end);
 
