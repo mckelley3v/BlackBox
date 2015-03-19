@@ -87,7 +87,7 @@ m1::iarchive_json::array_indices::const_iterator::const_iterator(iarchive_json &
                     case json_token_id::array_end:
                     case json_token_id::separator:
                     case json_token_id::property:
-                        M1_ERROR(logger, "Unexpected token, expected array");
+                        M1_ERROR(logger, "Unexpected token, expected array\n");
                         set_error_state();
                         return;
 
@@ -129,7 +129,7 @@ m1::iarchive_json::array_indices::const_iterator::const_iterator(iarchive_json &
                     case json_token_id::object_end:
                     case json_token_id::separator:
                     case json_token_id::property:
-                        M1_ERROR(logger, "Unexpected token, expected value");
+                        M1_ERROR(logger, "Unexpected token, expected value\n");
                         set_error_state();
                         return;
 
@@ -220,7 +220,7 @@ m1::iarchive_json::array_indices::const_iterator& m1::iarchive_json::array_indic
                     case json_token_id::value_int:
                     case json_token_id::value_float:
                     case json_token_id::value_string:
-                        M1_ERROR(logger, "Unexpected token, expected , or ]");
+                        M1_ERROR(logger, "Unexpected token, expected , or ]\n");
                         set_error_state();
                         return *this;
 
@@ -252,7 +252,7 @@ m1::iarchive_json::array_indices::const_iterator& m1::iarchive_json::array_indic
                     case json_token_id::array_end:
                     case json_token_id::separator:
                     case json_token_id::property:
-                        M1_ERROR(logger, "Unexpected token, expected value");
+                        M1_ERROR(logger, "Unexpected token, expected value\n");
                         set_error_state();
                         return *this;
 

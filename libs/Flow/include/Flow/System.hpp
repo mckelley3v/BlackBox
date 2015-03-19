@@ -134,7 +134,7 @@ namespace Flow
         static char const * const Out;
 
         System(TypeManager const &type_manager,
-               SystemDefinition definition_initializer,
+               SystemDefinition definition,
                SystemInstance instance);
         System(System &&rhs) = default;
         System& operator = (System &&rhs) = default;

@@ -2,6 +2,7 @@
 #define FLOW_TYPEMANAGER_HPP
 
 #include "Flow/Component.hpp"
+#include "Flow/System.hpp"
 #include "m1/dictionary.hpp"
 #include <string>
 #include <vector>
@@ -25,12 +26,18 @@ namespace Flow
 
     using MakeComponentInstanceDataFunc = std::function<std::shared_ptr<Component::InstanceData>()>;
 
+    // =================================================================================================================
+
     template <typename T> std::unique_ptr<Component> MakeSystemComponent(TypeManager const &type_manager,
                                                                          std::string instance_name,
                                                                          ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
                                                                          Component::InstanceData *instance_data_ptr);
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    MakeSystemComponentInstanceFunc GetMakeSystemInstanceFunc(SystemDefinition definition);
+
+    // =================================================================================================================
 
     struct TypeManagerComponentTypeEntry
     {
@@ -74,6 +81,8 @@ namespace Flow
         bool IsConnectionValid(std::string const &source_type,
                                std::string const &target_type) const;
 
+        void AddSystemDefinition(SystemDefinition definition);
+        void AddComponentDefinition(TypeManagerComponentTypeEntry component_type_entry);
         ComponentDefinition const* FindComponentDefinition(char const *definition_name) const;
         ComponentDefinition const* FindComponentDefinition(std::string const &definition_name) const;
 

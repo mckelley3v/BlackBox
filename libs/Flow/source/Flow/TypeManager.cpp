@@ -56,6 +56,25 @@ static void SetConnectionTypeConversionMatrixEntries(std::vector<bool> &connecti
 
 // =====================================================================================================================
 
+Flow::MakeSystemComponentInstanceFunc Flow::GetMakeSystemInstanceFunc(SystemDefinition definition)
+{
+    return
+        [definition](TypeManager const &type_manager,
+                     std::string instance_name,
+                     ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
+                     Component::InstanceData *instance_data_ptr)
+        {
+            SystemInstance instance = {std::move(instance_name),
+                                       std::move(input_connection_ptrs_dict)};
+
+            return std::make_unique<System>(type_manager,
+                                            std::move(definition),
+                                            std::move(instance));
+        };
+}
+
+// =====================================================================================================================
+
 /*explicit*/ Flow::TypeManager::TypeManager(TypeManagerDefinition definition)
     : m_ComponentTypeEntryDict(MakeComponentTypeEntryDict(definition.ComponentTypes))
     , m_ConnectionTypeConversionIndexDict(MakeConnectionTypeConversionIndexDict(definition.ConnectionTypes))
@@ -86,6 +105,22 @@ bool Flow::TypeManager::IsConnectionValid(std::string const &source_type,
     std::size_t const conversion_index = CalculateConnectionTypeConversionMatrixIndex(source_type_index,
                                                                                       target_type_index);
     return m_ConnectionTypeConversionMatrix[conversion_index];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void Flow::TypeManager::AddSystemDefinition(SystemDefinition definition)
+{
+    TypeManagerComponentTypeEntry component_entry = {definition.Interface,
+                                                     GetMakeSystemInstanceFunc(std::move(definition))};
+    AddComponentDefinition(std::move(component_entry));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+void Flow::TypeManager::AddComponentDefinition(TypeManagerComponentTypeEntry component_type_entry)
+{
+    m_ComponentTypeEntryDict.emplace(component_type_entry.Definition.Name, std::move(component_type_entry));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

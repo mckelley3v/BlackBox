@@ -71,6 +71,7 @@
                 "test/Flow/Systems/AddNetwork.hpp",
                 "test/Flow/Systems/AddNetwork.cpp",
                 "test/Flow/Systems/TestAddNetwork.cpp",
+                "test/Flow/Systems/TestSerialization01.cpp",
                 "test/Flow/TypeName.hpp",
             ],
             'dependencies':

@@ -147,7 +147,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in, Inpu
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -189,7 +189,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in, Outp
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -235,7 +235,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in, Comp
                 return true;
 
             default:
-                M1_ERROR(in.logger(), "Invalid Flow::ComponentProcessAnnotation");
+                M1_ERROR(in.logger(), "Invalid Flow::ComponentProcessAnnotation\n");
                 in.set_error_state();
                 return false;
         }
@@ -273,7 +273,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in, Comp
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -323,7 +323,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in, Comp
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -379,7 +379,7 @@ bool Flow::read_value(m1::iarchive_json &in,
                       TypeManager const &type_manager,
                       SystemComponentInstance &value)
 {
-    return read_value(in, type_manager, value);
+    return read_value<m1::iarchive_json>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -389,7 +389,7 @@ bool Flow::read_value(m1::iarchive_ubjson &in,
                       SystemComponentInstance &value)
 {
     return false;
-    //return read_value(in, type_manager, value);
+    //return read_value<m1::iarchive_ubjson>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -417,7 +417,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in,
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -432,7 +432,7 @@ bool Flow::read_value(m1::iarchive_json &in,
                       TypeManager const &type_manager,
                       SystemConnectionPort &value)
 {
-    return read_value(in, type_manager, value);
+    return read_value<m1::iarchive_json>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -442,7 +442,7 @@ bool Flow::read_value(m1::iarchive_ubjson &in,
                       SystemConnectionPort &value)
 {
     return false;
-    //return read_value(in, type_manager, value);
+    //return read_value<m1::iarchive_ubjson>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -465,7 +465,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in,
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -480,7 +480,7 @@ bool Flow::read_value(m1::iarchive_json &in,
                       TypeManager const &type_manager,
                       SystemConnection &value)
 {
-    return read_value(in, type_manager, value);
+    return read_value<m1::iarchive_json>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -490,7 +490,7 @@ bool Flow::read_value(m1::iarchive_ubjson &in,
                       SystemConnection &value)
 {
     return false;
-    //return read_value(in, type_manager, value);
+    //return read_value<m1::iarchive_ubjson>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -513,7 +513,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in,
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }
@@ -528,7 +528,7 @@ bool Flow::read_value(m1::iarchive_json &in,
                       TypeManager const &type_manager,
                       SystemDefinition &value)
 {
-    return read_value(in, type_manager, value);
+    return read_value<m1::iarchive_json>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -538,7 +538,7 @@ bool Flow::read_value(m1::iarchive_ubjson &in,
                       SystemDefinition &value)
 {
     return false;
-    //return read_value(in, type_manager, value);
+    //return read_value<m1::iarchive_ubjson>(in, type_manager, value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -565,7 +565,7 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in,
                 break;
 
             default:
-                M1_WARN(in.logger(), "Unknown property");
+                M1_WARN(in.logger(), "Unknown property\n");
                 result &= skip_value(in);
                 break;
         }

@@ -2,7 +2,7 @@
 #include "Flow/TypeManager.hpp"
 #include "catch.hpp"
 
-TEST_CASE("Test m1::Components::Constant", "[Flow]")
+TEST_CASE("Test Flow::Components::Constant", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;

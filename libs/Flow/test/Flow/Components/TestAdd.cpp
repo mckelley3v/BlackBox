@@ -2,7 +2,7 @@
 #include "Flow/TypeManager.hpp"
 #include "catch.hpp"
 
-TEST_CASE("Test m1::Components::Add", "[Flow]")
+TEST_CASE("Test Flow::Components::Add", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;
