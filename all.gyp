@@ -28,6 +28,7 @@
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization_test",
                 "external_libs/catch.gyp:catch",
                 "external_libs/utf8-cpp.gyp:utf8-cpp",
+                "external_libs/glfw.gyp:glfw",
             ],
         },
     ],
