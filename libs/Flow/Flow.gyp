@@ -15,7 +15,6 @@
             ],
             'sources':
             [
-                "include/Flow.hpp",
                 "include/Flow/Component.hpp",
                 "include/Flow/Connection.hpp",
                 "include/Flow/Input.hpp",

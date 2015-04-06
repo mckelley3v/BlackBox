@@ -100,6 +100,27 @@
                             "glfw/src/win32_window.c",
                             "glfw/src/winmm_joystick.c",
                         ],
+                        'msvs_settings':
+                        {
+                            'VCCLCompilerTool':
+                            {
+                                'DisableSpecificWarnings':
+                                [
+                                    "4152", # nonstandard extension, function/data pointer conversion in expression
+                                    "4204", # nonstandard extension used : non-constant aggregate initializer
+                                    "4244", # 'conversion' conversion from 'type1' to 'type2', possible loss of data
+                                ],
+                            },
+                        },
+                        'link_settings':
+                        {
+                            'libraries':
+                            [
+                                "-lkernel32",
+                                "-luser32",
+                                "-lopengl32",
+                            ],
+                        },
                     },
                 ],
                 [

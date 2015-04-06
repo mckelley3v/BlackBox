@@ -1,6 +1,11 @@
 {
     'target_defaults':
     {
+        'msvs_configuration_attributes':
+        {
+            'OutputDirectory': "$(SolutionDir)..\\bin\\$(ConfigurationName)",
+            'IntermediateDirectory': "$(SolutionDir)..\\temp\\$(ConfigurationName)\\$(ProjectName)",
+        },
         'msvs_settings':
         {
             'VCCLCompilerTool':
@@ -15,6 +20,19 @@
                 ],
             },
         },
+        'conditions':
+        [
+            [
+                '"<(GENERATOR)" == "msvs"',
+                {
+                    'defines':
+                    [
+                       "_CRT_SECURE_NO_WARNINGS",
+                       "_SCL_SECURE_NO_WARNINGS",
+                    ],
+                },
+            ],
+        ],
         'configurations':
         {
             'debug_x86':
