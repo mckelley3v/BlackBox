@@ -105,7 +105,7 @@ namespace Flow
                    ComponentInputConnectionPtrsDict const &input_connection_ptrs_dict);
         SystemBase(SystemBase &&rhs) = default;
         SystemBase& operator = (SystemBase &&rhs) = default;
-        ~SystemBase() = default;
+        ~SystemBase();
 
     protected:
         typedef std::vector<std::unique_ptr<Component>> ComponentPtrs;

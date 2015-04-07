@@ -91,6 +91,7 @@ namespace Flow
         bool IsMultiplex() const;
 
         // instance:
+        std::vector<m1::const_any_ptr>& ConnectionPtrs();
         std::vector<m1::const_any_ptr> const& GetConnectionPtrs() const;
 
     private:

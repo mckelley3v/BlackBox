@@ -201,6 +201,8 @@ def GenerateProject(project_target, target_list, target_dicts, params, options, 
     project_filename = project_name + options.suffix + '.project'
     project_dir = GetOutputDirForBuildFile(build_file, options)
     project_path = os.path.join(project_dir, project_filename)
+    project_lib_dirs = project_dict.get('library_dirs', [])
+    project_libs = project_dict.get('libraries', [])
 
     generator_output_dir = os.path.join(options.toplevel_dir, options.generator_output)
     project_reldir = gyp.common.RelativePath(project_dir, generator_output_dir)
@@ -392,6 +394,8 @@ def GenerateProject(project_target, target_list, target_dicts, params, options, 
 
                 # this assumes that all the libraries are being placed side-by-side in the product dir\
                 writeln(out, 4, '<LibraryPath Value="%s"/>' % project_product_reldir)
+                for project_lib_dir in project_lib_dirs:
+                    writeln(out, 4, '<LibraryPath Value="%s"/>' % project_lib_dir)
 
                 for dependent in project_dependencies:
                     dependent_name = gyp.common.ParseQualifiedTarget(dependent)[1]
@@ -399,6 +403,12 @@ def GenerateProject(project_target, target_list, target_dicts, params, options, 
                     dependent_type = dependent_dict.get('type', 'none')
                     if IsProjectTypeLib(dependent_type):
                         writeln(out, 4, '<Library Value="%s"/>' % dependent_name)
+
+                for project_lib in project_libs:
+                    project_lib_name = project_lib
+                    if project_lib_name.startswith('-l'):
+                        project_lib_name = project_lib_name[2:]
+                    writeln(out, 4, '<Library Value="%s"/>' % project_lib_name)
 
                 writeln(out, 3, '</Linker>')
             else:

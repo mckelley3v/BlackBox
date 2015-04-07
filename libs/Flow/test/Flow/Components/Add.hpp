@@ -18,21 +18,22 @@ namespace Components
     public:
         static ComponentDefinition GetDefinition();
 
-        Add() = delete;
         Add(TypeManager const &type_manager,
             std::string instance_name,
             ComponentInputConnectionPtrsDict input_connection_ptrs_dict);
         Add(Add &&rhs) = default;
-        Add(Add const &rhs) = delete;
         Add& operator = (Add &&rhs) = default;
-        Add& operator = (Add const &rhs) = delete;
-        ~Add() = default;
+        virtual ~Add() = default;
 
         virtual void Process() override;
 
         T const& GetResult() const;
 
     private:
+        Add() = delete;
+        Add(Add const &rhs) = delete;
+        Add& operator = (Add const &rhs) = delete;
+
         // members:
         T const &m_Lhs;
         T const &m_Rhs;

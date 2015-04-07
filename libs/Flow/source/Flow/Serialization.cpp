@@ -413,6 +413,12 @@ template <typename IArchive> /*static*/ bool Flow::read_value(IArchive &in,
 
             case m1::property_id("InstanceData"):
                 value.InstanceDataPtr = type_manager.MakeComponentInstanceData(value.DefinitionName);
+                if(value.InstanceDataPtr == nullptr)
+                {
+                    M1_ERROR(in.logger(), "Error creating instance data for type: \"" << value.DefinitionName << "\"");
+                    return false;
+                }
+
                 result &= read_value(in, *value.InstanceDataPtr);
                 break;
 

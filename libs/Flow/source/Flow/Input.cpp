@@ -56,6 +56,13 @@ bool Flow::InputPort::IsMultiplex() const
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+std::vector<m1::const_any_ptr>& Flow::InputPort::ConnectionPtrs()
+{
+    return m_ConnectionPtrs;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 std::vector<m1::const_any_ptr> const& Flow::InputPort::GetConnectionPtrs() const
 {
     return m_ConnectionPtrs;

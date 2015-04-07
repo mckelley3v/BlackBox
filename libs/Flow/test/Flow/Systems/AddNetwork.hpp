@@ -15,19 +15,20 @@ namespace Systems
     public:
         static SystemDefinition GetDefinition();
 
-        AddNetwork() = delete;
         AddNetwork(TypeManager const &type_manager,
                    std::string instance_name,
                    ComponentInputConnectionPtrsDict input_connection_ptrs_dict);
         AddNetwork(AddNetwork &&rhs) = default;
-        AddNetwork(AddNetwork const &rhs) = delete;
         AddNetwork& operator = (AddNetwork &&rhs) = default;
-        AddNetwork& operator = (AddNetwork const &rhs) = delete;
         ~AddNetwork() = default;
 
         int const& GetResult() const;
 
     private:
+        AddNetwork() = delete;
+        AddNetwork(AddNetwork const &rhs) = delete;
+        AddNetwork& operator = (AddNetwork const &rhs) = delete;
+
         // members:
         int const &m_Result;
     };

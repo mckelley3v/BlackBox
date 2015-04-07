@@ -14,8 +14,13 @@
             ],
             'dependencies':
             [
+                "external_libs/catch.gyp:catch",
+                "external_libs/utf8-cpp.gyp:utf8-cpp",
+                "external_libs/glfw.gyp:glfw",
                 "libs/Flow/Flow.gyp:Flow",
                 "libs/Flow/Flow.gyp:FlowTest",
+                "libs/FlowLibs/GLFWComponentLib/GLFWComponentLib.gyp:GLFWComponentLib",
+                "libs/FlowLibs/GLFWComponentLib/GLFWComponentLib.gyp:GLFWComponentLibTest",
                 "libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
                 "libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr_test",
                 "libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary",
@@ -26,9 +31,6 @@
                 "libs/m1/numeric/m1_numeric.gyp:m1_numeric_test",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization_test",
-                "external_libs/catch.gyp:catch",
-                "external_libs/utf8-cpp.gyp:utf8-cpp",
-                "external_libs/glfw.gyp:glfw",
             ],
         },
     ],

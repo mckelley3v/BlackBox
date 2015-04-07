@@ -86,7 +86,9 @@ R"json(
 
     // create system
     System system(type_manager, std::move(definition), {"TestSerialization"});
-    int const &result = GetOutputConnectionRef<int>(system.GetOutputPortDict(), "Result");
+    int const * const result_ptr = GetOutputConnectionPtr<int>(system.GetOutputPortDict(), "Result");
+    REQUIRE(result_ptr != nullptr);
+    int const &result = *result_ptr;
 
     // run system once
     system.Process();

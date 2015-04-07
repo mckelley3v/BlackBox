@@ -11,6 +11,11 @@ TEST_CASE("Test m1::any_ptr", "[m1][m1::any_ptr]")
     CHECK(m1::static_pointer_cast<int>(p) == &i);
     CHECK(m1::reinterpret_pointer_cast<int>(p) == &i);
     CHECK(m1::dynamic_pointer_cast<int>(p) == &i);
+
+    // verify incomplete types work
+    struct T;
+    T *t = nullptr;
+    p = t;
 }
 
 TEST_CASE("Test m1::const_any_ptr", "[m1][m1::any_ptr]")
@@ -31,4 +36,9 @@ TEST_CASE("Test m1::const_any_ptr", "[m1][m1::any_ptr]")
 
     CHECK(m1::static_pointer_cast<int>(cq1) == &j);
     CHECK(m1::static_pointer_cast<int>(cq2) == &j);
+
+    // verify incomplete types work
+    struct T;
+    T *t = nullptr;
+    p = t;
 }

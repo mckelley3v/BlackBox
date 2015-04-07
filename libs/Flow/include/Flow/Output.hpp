@@ -60,6 +60,7 @@ namespace Flow
         std::string const& GetTypeName() const;
 
         // instance:
+        m1::any_ptr& ConnectionPtr();
         m1::any_ptr const& GetConnectionPtr() const;
 
     private:

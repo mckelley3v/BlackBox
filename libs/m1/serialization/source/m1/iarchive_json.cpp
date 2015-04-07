@@ -183,10 +183,45 @@ bool m1::iarchive_json::skip_value()
 {
     if(sentry const s{*this})
     {
+        char const * const prev = m_Current;
         json_token const token = parse_json_token(m_Current, m_End);
-        if(is_json_value(logger(), token))
+        switch(token.id)
         {
-            return true;
+            case json_token_id::object_begin:
+            {
+                // backup for property iterator
+                m_Current = prev;
+
+                bool result = true;
+                for(m1::property_id const &id : get_property_ids())
+                {
+                    result &= skip_value();
+                }
+                return result;
+            }
+
+            case json_token_id::array_begin:
+            {
+                // backup for array iterator
+                m_Current = prev;
+
+                bool result = true;
+                for(int const array_index : get_array_indices())
+                {
+                    result &= skip_value();
+                }
+                return result;
+            }
+
+            default:
+            {
+                if(is_json_value(logger(), token))
+                {
+                    return true;
+                }
+
+                return false;
+            }
         }
     }
 

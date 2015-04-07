@@ -26,6 +26,7 @@
                 "glfw/src/input.c",
                 "glfw/src/monitor.c",
                 "glfw/src/window.c",
+                "glfw.gyp",
             ],
             'conditions':
             [
@@ -60,6 +61,21 @@
                             "glfw/src/posix_time.c",
                             "glfw/src/posix_tls.c",
                         ],
+                        'link_settings':
+                        {
+                            'libraries':
+                            [
+                                "-lGL",
+                                "-lXext",
+                                "-lXcursor",
+                                "-lXinerama",
+                                "-lX11",
+                                "-lXrandr",
+                                "-lXxf86vm",
+                                "-lXi",
+                                "-lpthread",
+                            ],
+                        },
                     },
                 ],
                 [

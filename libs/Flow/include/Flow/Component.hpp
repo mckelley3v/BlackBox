@@ -91,12 +91,15 @@ namespace Flow
 
     // =================================================================================================================
 
+    typedef m1::dictionary<InputPort> ComponentInputPortDict;
+    typedef m1::dictionary<OutputPort> ComponentOutputPortDict;
+
+    // =================================================================================================================
+
     class Component
     {
     public:
         class InstanceData;
-        typedef m1::dictionary<InputPort> InputPortDict;
-        typedef m1::dictionary<OutputPort> OutputPortDict;
 
         Component(TypeManager const &type_manager,
                   ComponentDefinition definition,
@@ -111,8 +114,12 @@ namespace Flow
 
         // instance:
         std::string const& GetInstanceName() const;
-        InputPortDict const& GetInputPortDict() const;
-        OutputPortDict const& GetOutputPortDict() const;
+
+        ComponentInputPortDict& InputPortDict();
+        ComponentInputPortDict const& GetInputPortDict() const;
+
+        ComponentOutputPortDict& OutputPortDict();
+        ComponentOutputPortDict const& GetOutputPortDict() const;
 
         virtual void Process();
 
@@ -125,45 +132,45 @@ namespace Flow
         std::string m_DefinitionName;
         ComponentAnnotations m_Annotations;
         std::string m_InstanceName;
-        InputPortDict m_InputPortDict;
-        OutputPortDict m_OutputPortDict;
+        ComponentInputPortDict m_InputPortDict;
+        ComponentOutputPortDict m_OutputPortDict;
     };
 
     // =================================================================================================================
 
-    template <typename T> T const* GetInputConnectionPtr(Component::InputPortDict const &input_port_dict,
-                                                         char const * const port_name,
-                                                         int const index = 0);
+    template <typename T> T const* GetInputConnectionPtr(ComponentInputPortDict const &input_port_dict,
+                                                         char const *port_name,
+                                                         int index = 0);
 
     template <typename T> T const* GetInputConnectionPtr(Component const &component,
-                                                         char const * const port_name,
-                                                         int const index = 0);
+                                                         char const *port_name,
+                                                         int index = 0);
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    template <typename T> T const& GetInputConnectionRef(Component::InputPortDict const &input_port_dict,
-                                                         char const * const port_name,
-                                                         int const index = 0);
+    template <typename T> T const& GetInputConnectionRef(ComponentInputPortDict const &input_port_dict,
+                                                         char const *port_name,
+                                                         int index = 0);
 
     template <typename T> T const& GetInputConnectionRef(Component const &component,
-                                                         char const * const port_name,
-                                                         int const index = 0);
+                                                         char const *port_name,
+                                                         int index = 0);
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    template <typename T> T const* GetOutputConnectionPtr(Component::OutputPortDict const &output_port_dict,
-                                                          char const * const port_name);
+    template <typename T> T const* GetOutputConnectionPtr(ComponentOutputPortDict const &output_port_dict,
+                                                          char const *port_name);
 
     template <typename T> T const* GetOutputConnectionPtr(Component const &component,
-                                                          char const * const port_name);
+                                                          char const *port_name);
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    template <typename T> T const& GetOutputConnectionRef(Component::OutputPortDict const &output_port_dict,
-                                                          char const * const port_name);
+    template <typename T> T const& GetOutputConnectionRef(ComponentOutputPortDict const &output_port_dict,
+                                                          char const *port_name);
 
     template <typename T> T const& GetOutputConnectionRef(Component const &component,
-                                                          char const * const port_name);
+                                                          char const *port_name);
 
     // =================================================================================================================
 
@@ -194,7 +201,7 @@ namespace Flow
 
 // =====================================================================================================================
 
-template <typename T> T const* Flow::GetInputConnectionPtr(Component::InputPortDict const &input_port_dict,
+template <typename T> T const* Flow::GetInputConnectionPtr(ComponentInputPortDict const &input_port_dict,
                                                            char const * const port_name,
                                                            int const index /*= 0*/)
 {
@@ -214,7 +221,7 @@ template <typename T> T const* Flow::GetInputConnectionPtr(Component const &comp
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> T const& Flow::GetInputConnectionRef(Component::InputPortDict const &input_port_dict,
+template <typename T> T const& Flow::GetInputConnectionRef(ComponentInputPortDict const &input_port_dict,
                                                            char const * const port_name,
                                                            int const index /*= 0*/)
 {
@@ -235,7 +242,7 @@ template <typename T> T const& Flow::GetInputConnectionRef(Component const &comp
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> T const* Flow::GetOutputConnectionPtr(Component::OutputPortDict const &output_port_dict,
+template <typename T> T const* Flow::GetOutputConnectionPtr(ComponentOutputPortDict const &output_port_dict,
                                                             char const * const port_name)
 {
     OutputPort const &port = output_port_dict.at(port_name);
@@ -252,7 +259,7 @@ template <typename T> T const* Flow::GetOutputConnectionPtr(Component const &com
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> T const& Flow::GetOutputConnectionRef(Component::OutputPortDict const &output_port_dict,
+template <typename T> T const& Flow::GetOutputConnectionRef(ComponentOutputPortDict const &output_port_dict,
                                                             char const * const port_name)
 {
     T const * const connection_ptr = GetOutputConnectionPtr<T>(output_port_dict, port_name);

@@ -438,10 +438,10 @@ bool read_value(m1::iarchive_json &in, transformf &value)
 
 bool read_value(m1::iarchive_json &in, light_type &value)
 {
-    m1::crc32 type;
-    if(read_value(in, type))
+    m1::crc32 crc;
+    if(read_value(in, crc))
     {
-        switch(type)
+        switch(crc)
         {
             case m1::crc32("spot"):
                 value = light_type::spot;

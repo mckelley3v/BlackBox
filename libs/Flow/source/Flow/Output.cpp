@@ -32,6 +32,13 @@ std::string const& Flow::OutputPort::GetTypeName() const
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+m1::any_ptr& Flow::OutputPort::ConnectionPtr()
+{
+    return m_ConnectionPtr;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 m1::any_ptr const& Flow::OutputPort::GetConnectionPtr() const
 {
     return m_ConnectionPtr;

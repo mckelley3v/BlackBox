@@ -5,24 +5,24 @@
 // =====================================================================================================================
 
 static bool IsInputTypesValid(Flow::TypeManager const &type_manager,
-                              Flow::Component::InputPortDict const &input_port_dict);
+                              Flow::ComponentInputPortDict const &input_port_dict);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 static bool IsOutputTypesValid(Flow::TypeManager const &type_manager,
-                               Flow::Component::OutputPortDict const &output_port_dict);
+                               Flow::ComponentOutputPortDict const &output_port_dict);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename InputPortDefinitionIterator>
-static Flow::Component::InputPortDict MakeInputPortDict(InputPortDefinitionIterator const input_port_definitions_begin,
+static Flow::ComponentInputPortDict MakeInputPortDict(InputPortDefinitionIterator const input_port_definitions_begin,
                                                         InputPortDefinitionIterator const input_port_definitions_end,
                                                         Flow::ComponentInputConnectionPtrsDict &&input_ptrs_dict);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename OutputPortDefinitionIterator>
-static Flow::Component::OutputPortDict MakeOutputPortDict(OutputPortDefinitionIterator const output_port_definitions_begin,
+static Flow::ComponentOutputPortDict MakeOutputPortDict(OutputPortDefinitionIterator const output_port_definitions_begin,
                                                           OutputPortDefinitionIterator const output_port_definitions_end,
                                                           Flow::ComponentOutputConnectionPtrDict &&output_ptr_dict);
 
@@ -74,14 +74,29 @@ std::string const& Flow::Component::GetInstanceName() const
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-Flow::Component::InputPortDict const& Flow::Component::GetInputPortDict() const
+Flow::ComponentInputPortDict& Flow::Component::InputPortDict()
 {
     return m_InputPortDict;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-Flow::Component::OutputPortDict const& Flow::Component::GetOutputPortDict() const
+Flow::ComponentInputPortDict const& Flow::Component::GetInputPortDict() const
+{
+    return m_InputPortDict;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+Flow::ComponentOutputPortDict& Flow::Component::OutputPortDict()
+{
+
+    return m_OutputPortDict;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+Flow::ComponentOutputPortDict const& Flow::Component::GetOutputPortDict() const
 {
     return m_OutputPortDict;
 }
@@ -95,11 +110,11 @@ Flow::Component::OutputPortDict const& Flow::Component::GetOutputPortDict() cons
 // =====================================================================================================================
 
 /*static*/ bool IsInputTypesValid(Flow::TypeManager const &type_manager,
-                                  Flow::Component::InputPortDict const &input_port_dict)
+                                  Flow::ComponentInputPortDict const &input_port_dict)
 {
     using namespace Flow;
 
-    for(Component::InputPortDict::value_type const &input_port_nvp : input_port_dict)
+    for(ComponentInputPortDict::value_type const &input_port_nvp : input_port_dict)
     {
         InputPort const &input_port = input_port_nvp.second;
         if(!type_manager.IsConnectionValid(input_port.GetTypeName(), input_port.GetTypeName()))
@@ -114,11 +129,11 @@ Flow::Component::OutputPortDict const& Flow::Component::GetOutputPortDict() cons
 // ---------------------------------------------------------------------------------------------------------------------
 
 /*static*/ bool IsOutputTypesValid(Flow::TypeManager const &type_manager,
-                                   Flow::Component::OutputPortDict const &output_port_dict)
+                                   Flow::ComponentOutputPortDict const &output_port_dict)
 {
     using namespace Flow;
 
-    for(Component::OutputPortDict::value_type const &output_port_nvp : output_port_dict)
+    for(ComponentOutputPortDict::value_type const &output_port_nvp : output_port_dict)
     {
         OutputPort const &output_port = output_port_nvp.second;
         if(!type_manager.IsConnectionValid(output_port.GetTypeName(), output_port.GetTypeName()))
@@ -133,13 +148,13 @@ Flow::Component::OutputPortDict const& Flow::Component::GetOutputPortDict() cons
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename InputPortDefinitionIterator>
-/*static*/ Flow::Component::InputPortDict MakeInputPortDict(InputPortDefinitionIterator const input_port_definitions_begin,
-                                                            InputPortDefinitionIterator const input_port_definitions_end,
-                                                            Flow::ComponentInputConnectionPtrsDict &&input_ptrs_dict)
+/*static*/ Flow::ComponentInputPortDict MakeInputPortDict(InputPortDefinitionIterator const input_port_definitions_begin,
+                                                          InputPortDefinitionIterator const input_port_definitions_end,
+                                                          Flow::ComponentInputConnectionPtrsDict &&input_ptrs_dict)
 {
     using namespace Flow;
 
-    Component::InputPortDict result;
+    ComponentInputPortDict result;
 
     for(InputPortDefinitionIterator input_port_definition_itr = input_port_definitions_begin;
                                     input_port_definition_itr != input_port_definitions_end;
@@ -165,13 +180,13 @@ template <typename InputPortDefinitionIterator>
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename OutputPortDefinitionIterator>
-/*static*/ Flow::Component::OutputPortDict MakeOutputPortDict(OutputPortDefinitionIterator const output_port_definitions_begin,
-                                                              OutputPortDefinitionIterator const output_port_definitions_end,
-                                                              Flow::ComponentOutputConnectionPtrDict &&output_ptr_dict)
+/*static*/ Flow::ComponentOutputPortDict MakeOutputPortDict(OutputPortDefinitionIterator const output_port_definitions_begin,
+                                                            OutputPortDefinitionIterator const output_port_definitions_end,
+                                                            Flow::ComponentOutputConnectionPtrDict &&output_ptr_dict)
 {
     using namespace Flow;
 
-    Component::OutputPortDict result;
+    ComponentOutputPortDict result;
 
     for(OutputPortDefinitionIterator output_port_definition_itr = output_port_definitions_begin;
                                      output_port_definition_itr != output_port_definitions_end;

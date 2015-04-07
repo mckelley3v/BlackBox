@@ -52,7 +52,7 @@ static char const* FindOutputPortTypeName(Flow::ComponentDefinition const * cons
 // ---------------------------------------------------------------------------------------------------------------------
 
 // construct corresponding inputs for each output so component's outputs can be easily found and connected
-static Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::Component::OutputPortDict const &output_port_dict);
+static Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::ComponentOutputPortDict const &output_port_dict);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -68,6 +68,17 @@ Flow::SystemBase::SystemBase(TypeManager const &type_manager,
     : m_ComponentPtrs(MakeSystemComponents(type_manager, definition, input_connection_ptrs_dict))
     , m_OutputConnectionPtrDict(MakeSystemOutputDict(definition, m_ComponentPtrs))
 {
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+Flow::SystemBase::~SystemBase()
+{
+    // destroy in reverse dependency order
+    while(!m_ComponentPtrs.empty())
+    {
+        m_ComponentPtrs.pop_back();
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -281,14 +292,14 @@ char const* FindOutputPortTypeName(Flow::ComponentDefinition const * const node_
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::Component::OutputPortDict const &output_port_dict)
+Flow::ComponentInputConnectionPtrsDict MirrorComponentOutputs(Flow::ComponentOutputPortDict const &output_port_dict)
 {
     using namespace Flow;
 
     // for each output, copy connection as input
     ComponentInputConnectionPtrsDict result;
     //result.reserve(output_port_dict.size());
-    for(Component::OutputPortDict::value_type const &output_port_nvp : output_port_dict)
+    for(ComponentOutputPortDict::value_type const &output_port_nvp : output_port_dict)
     {
         OutputPort const &node_component_output_port = output_port_nvp.second;
 

@@ -21,20 +21,21 @@ namespace Components
         class InstanceData;
         static ComponentDefinition GetDefinition();
 
-        Constant() = delete;
         Constant(TypeManager const &type_manager,
                  std::string instance_name,
                  ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                 T &&value);
+                 InstanceData instance_data);
         Constant(Constant &&rhs) = default;
-        Constant(Constant const &rhs) = delete;
         Constant& operator = (Constant &&rhs) = default;
-        Constant& operator = (Constant const &rhs) = delete;
-        ~Constant() = default;
+        virtual ~Constant() = default;
 
         T const& GetValue() const;
 
     private:
+        Constant() = delete;
+        Constant(Constant const &rhs) = delete;
+        Constant& operator = (Constant const &rhs) = delete;
+
         // members:
         T m_Value;
     };
@@ -60,7 +61,7 @@ namespace Components
         InstanceData& operator = (InstanceData &&rhs) = default;
         virtual ~InstanceData() = default;
 
-        T&& Value() &&;
+        T& Value();
         T const& GetValue() const;
 
     private:
@@ -140,13 +141,13 @@ template <typename T>
 Flow::Components::Constant<T>::Constant(TypeManager const &type_manager,
                                         std::string instance_name,
                                         ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                        T &&value)
+                                        InstanceData instance_data)
     : Component(type_manager,
                 GetDefinition(),
                 ComponentInstance{std::move(instance_name),
                                   std::move(input_connection_ptrs_dict),
                                   {{"Value", &m_Value}}})
-    , m_Value(std::move(value))
+    , m_Value(std::move(instance_data.Value()))
 {
 }
 
@@ -171,7 +172,7 @@ template <typename T> std::unique_ptr<Flow::Component> Flow::Components::MakeCon
     return std::make_unique<Constant<T>>(type_manager,
                                          std::move(instance_name),
                                          std::move(input_connection_ptrs_dict),
-                                         std::move(static_cast<InstanceData&>(*instance_data_ptr)).Value());
+                                         std::move(static_cast<InstanceData&>(*instance_data_ptr)));
 }
 
 // =====================================================================================================================
@@ -190,9 +191,9 @@ template <typename T> Flow::Components::Constant<T>::InstanceData::InstanceData(
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T> T&& Flow::Components::Constant<T>::InstanceData::Value() &&
+template <typename T> T& Flow::Components::Constant<T>::InstanceData::Value()
 {
-    return std::move(m_Value);
+    return m_Value;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
