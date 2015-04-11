@@ -26,6 +26,7 @@
             'dependencies':
             [
                 "../../../external_libs/glfw.gyp:glfw",
+                "../../../external_libs/glbinding.gyp:glbinding",
                 "../../Flow/Flow.gyp:Flow",
                 "../../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],

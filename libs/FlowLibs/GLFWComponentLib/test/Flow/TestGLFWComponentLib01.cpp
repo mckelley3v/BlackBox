@@ -57,7 +57,8 @@ R"json(
             {
                 "Width": 640,
                 "Height": 480,
-                "Title": "Test GLFW"
+                "Title": "Test GLFW",
+                "Api": "GL-2.1"
             }
         },
         {

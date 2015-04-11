@@ -20,12 +20,12 @@ enum class GLFWwindowMode
 
 enum class GLFWgraphicsApi
 {
-    OpenGL_2_1,
-    OpenGL_3_3_Legacy,
-    OpenGL_3_3_Core,
-    OpenGLES_2_0,
-    OpenGLES_3_0,
-    OpenGLES_3_1,
+    GL_2_1,
+    GL_3_3,
+    GL_3_3_Core,
+    GLES_2_0,
+    GLES_3_0,
+    GLES_3_1,
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ namespace Flow
         virtual bool ReadArchive(m1::iarchive_ubjson &in);
 
         // members:
-        GLFWwindowDescription m_WindowDescription;
+        GLFWwindowDescription m_WindowDescription = {};
     };
 
     // =================================================================================================================

@@ -1,6 +1,7 @@
 #include "Flow/GLFWwindowComponent.hpp"
 #include "m1/iarchive_json.hpp"
 #include "m1/iarchive_ubjson.hpp"
+#include "glbinding/Binding.h"
 #include "GLFW/glfw3.h"
 
 // =====================================================================================================================
@@ -110,6 +111,8 @@ Flow::GLFWwindowComponent::GLFWwindowComponent(TypeManager const &type_manager,
     , m_WindowPtr(m_WindowUPtr.get())
     , m_ShouldClose(false)
 {
+    glfwMakeContextCurrent(WindowPtr());
+    glbinding::Binding::initialize();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -176,20 +179,20 @@ GLFWwindowDescription const& Flow::GLFWwindowComponent::InstanceData::GetWindowD
 {
     switch(api)
     {
-        case GLFWgraphicsApi::OpenGL_2_1:
+        case GLFWgraphicsApi::GL_2_1:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
             break;
 
-        case GLFWgraphicsApi::OpenGL_3_3_Legacy:
+        case GLFWgraphicsApi::GL_3_3:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
             break;
 
-        case GLFWgraphicsApi::OpenGL_3_3_Core:
+        case GLFWgraphicsApi::GL_3_3_Core:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -197,19 +200,19 @@ GLFWwindowDescription const& Flow::GLFWwindowComponent::InstanceData::GetWindowD
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
             break;
 
-        case GLFWgraphicsApi::OpenGLES_2_0:
+        case GLFWgraphicsApi::GLES_2_0:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
             break;
 
-        case GLFWgraphicsApi::OpenGLES_3_0:
+        case GLFWgraphicsApi::GLES_3_0:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
             break;
 
-        case GLFWgraphicsApi::OpenGLES_3_1:
+        case GLFWgraphicsApi::GLES_3_1:
             glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -346,28 +349,28 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, GLFWgraphi
     {
         switch(crc)
         {
-            case m1::crc32("OpenGL_2_1"):
-                value = GLFWgraphicsApi::OpenGL_2_1;
+            case m1::crc32("GL-2.1"):
+                value = GLFWgraphicsApi::GL_2_1;
                 return true;
 
-            case m1::crc32("OpenGL_3_3_Legacy"):
-                value = GLFWgraphicsApi::OpenGL_3_3_Legacy;
+            case m1::crc32("GL-3.3"):
+                value = GLFWgraphicsApi::GL_3_3;
                 return true;
 
-            case m1::crc32("OpenGL_3_3_Core"):
-                value = GLFWgraphicsApi::OpenGL_3_3_Core;
+            case m1::crc32("GL-3.3-Core"):
+                value = GLFWgraphicsApi::GL_3_3_Core;
                 return true;
 
-            case m1::crc32("OpenGLES_2_0"):
-                value = GLFWgraphicsApi::OpenGLES_2_0;
+            case m1::crc32("GLES-2.0"):
+                value = GLFWgraphicsApi::GLES_2_0;
                 return true;
 
-            case m1::crc32("OpenGLES_3_0"):
-                value = GLFWgraphicsApi::OpenGLES_3_0;
+            case m1::crc32("GLES-3.0"):
+                value = GLFWgraphicsApi::GLES_3_0;
                 return true;
 
-            case m1::crc32("OpenGLES_3_1"):
-                value = GLFWgraphicsApi::OpenGLES_3_1;
+            case m1::crc32("GLES-3.1"):
+                value = GLFWgraphicsApi::GLES_3_1;
                 return true;
 
             default:
@@ -393,7 +396,7 @@ template <typename IArchive> /*static*/ bool read_value(IArchive &in, GLFWgraphi
                 value = GLFWgraphicsColorFormat::R8G8B8A8;
                 return true;
 
-            case m1::crc32("RGBA8"):
+            case m1::crc32("R8G8B8A8"):
                 value = GLFWgraphicsColorFormat::R8G8B8A8;
                 return true;
 

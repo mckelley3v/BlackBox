@@ -17,6 +17,7 @@
                 "external_libs/catch.gyp:catch",
                 "external_libs/utf8-cpp.gyp:utf8-cpp",
                 "external_libs/glfw.gyp:glfw",
+                "external_libs/glbinding.gyp:glbinding",
                 "libs/Flow/Flow.gyp:Flow",
                 "libs/Flow/Flow.gyp:FlowTest",
                 "libs/FlowLibs/GLFWComponentLib/GLFWComponentLib.gyp:GLFWComponentLib",
