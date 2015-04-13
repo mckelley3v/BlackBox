@@ -3,6 +3,7 @@
 #include "Flow/glfwSwapBuffersComponent.hpp"
 #include "Flow/GLFWlibComponent.hpp"
 #include "Flow/GLFWwindowComponent.hpp"
+#include "Flow/DrawTestTriangleComponent.hpp"
 #include "m1/log.hpp"
 #include "m1/iarchive_json.hpp"
 #include "catch.hpp"
@@ -16,6 +17,7 @@ TEST_CASE("Test GLFWComponentLib", "[Flow]")
     {{
         // ComponentTypes
         {
+            DrawTestTriangleComponent::GetComponentTypeEntry(),
             glfwSwapBuffersComponent::GetComponentTypeEntry(),
             GLFWlibComponent::GetComponentTypeEntry(),
             GLFWwindowComponent::GetComponentTypeEntry(),
@@ -62,18 +64,24 @@ R"json(
             }
         },
         {
+            "DefinitionName": "DrawTestTriangleComponent",
+            "InstanceName": "DrawTestTriangle"
+        },
+        {
             "DefinitionName": "glfwSwapBuffersComponent",
             "InstanceName": "glfwSwapBuffers"
         }
     ],
     "Connections":
     [
-        {"SourcePort": {"ComponentInstanceName": "GLFW",           "PortName": "IsValid"},
-         "TargetPort": {"ComponentInstanceName": "GLFWwindow",     "PortName": "IsValid"}},
-        {"SourcePort": {"ComponentInstanceName": "GLFWwindow",     "PortName": "WindowPtr"},
-         "TargetPort": {"ComponentInstanceName": "glfwSwapBuffers","PortName": "WindowPtr"}},
-        {"SourcePort": {"ComponentInstanceName": "GLFWwindow",     "PortName": "ShouldClose"},
-         "TargetPort": {"ComponentInstanceName": "out:",           "PortName": "IsDone"}}
+        {"SourcePort": {"ComponentInstanceName": "GLFW",             "PortName": "IsValid"},
+         "TargetPort": {"ComponentInstanceName": "GLFWwindow",       "PortName": "IsValid"}},
+        {"SourcePort": {"ComponentInstanceName": "GLFWwindow",       "PortName": "WindowPtr"},
+         "TargetPort": {"ComponentInstanceName": "DrawTestTriangle", "PortName": "WindowPtr"}},
+        {"SourcePort": {"ComponentInstanceName": "DrawTestTriangle", "PortName": "WindowPtr"},
+         "TargetPort": {"ComponentInstanceName": "glfwSwapBuffers",  "PortName": "WindowPtr"}},
+        {"SourcePort": {"ComponentInstanceName": "GLFWwindow",       "PortName": "ShouldClose"},
+         "TargetPort": {"ComponentInstanceName": "out:",             "PortName": "IsDone"}}
     ]
 }
 )json";

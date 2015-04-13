@@ -15,6 +15,7 @@
             ],
             'sources':
             [
+                "include/GL/gl.h",
                 "include/Flow/glfwSwapBuffersComponent.hpp",
                 "include/Flow/GLFWlibComponent.hpp",
                 "include/Flow/GLFWwindowComponent.hpp",
@@ -32,6 +33,7 @@
             ],
             'export_dependent_settings':
             [
+                "../../../external_libs/glbinding.gyp:glbinding",
             ],
             'direct_dependent_settings':
             {
@@ -51,6 +53,8 @@
             'sources':
             [
                 "test/test_main.cpp",
+                "test/Flow/DrawTestTriangleComponent.hpp",
+                "test/Flow/DrawTestTriangleComponent.cpp",
                 "test/Flow/TestGLFWComponentLib01.cpp",
             ],
             'dependencies':
