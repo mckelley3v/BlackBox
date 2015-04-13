@@ -11,8 +11,7 @@ TEST_CASE("Test Flow::Components::Add", "[Flow]")
     {{
         // ComponentTypes
         {
-            //                  Definition                 MakeInstanceFunc
-            {  Add<float>::GetDefinition(), MakeSystemComponent<Add<float>>},
+            Add<float>::GetComponentTypeEntry(),
         },
         // ConnectionTypes
         {

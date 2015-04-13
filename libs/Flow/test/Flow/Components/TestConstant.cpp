@@ -11,8 +11,7 @@ TEST_CASE("Test Flow::Components::Constant", "[Flow]")
     {{
         // ComponentTypes
         {
-            //                     Definition             MakeInstanceFunc                             MakeInstanceDataFunc
-            {Constant<float>::GetDefinition(), MakeConstantInstance<float>, std::make_shared<Constant<float>::InstanceData>},
+            Constant<float>::GetComponentTypeEntry(),
         },
         // ConnectionTypes
         {

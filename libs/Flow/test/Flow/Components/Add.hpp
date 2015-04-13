@@ -17,6 +17,7 @@ namespace Components
     {
     public:
         static ComponentDefinition GetDefinition();
+        static TypeManagerComponentTypeEntry GetComponentTypeEntry();
 
         Add(TypeManager const &type_manager,
             std::string instance_name,
@@ -112,6 +113,14 @@ template <typename T>
             ComponentProcessAnnotation::Always, // Process
         },
     };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+/*static*/ Flow::TypeManagerComponentTypeEntry Flow::Components::Add<T>::GetComponentTypeEntry()
+{
+    return {GetDefinition(), MakeSystemComponent<Add<T>>};
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

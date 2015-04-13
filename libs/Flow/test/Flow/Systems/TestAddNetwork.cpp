@@ -14,10 +14,9 @@ TEST_CASE("Test m1::Systems::AddNetwork", "[Flow]")
     {{
         // ComponentTypes
         {
-            //                             Definition                 MakeInstanceFunc                           MakeInstanceDataFunc
-            {          Constant<int>::GetDefinition(),       MakeConstantInstance<int>, std::make_shared<Constant<int>::InstanceData>},
-            {               Add<int>::GetDefinition(),   MakeSystemComponent<Add<int>>},
-            {   AddNetwork::GetDefinition().Interface, MakeSystemComponent<AddNetwork>},
+            Constant<int>::GetComponentTypeEntry(),
+            Add<int>::GetComponentTypeEntry(),
+            AddNetwork::GetComponentTypeEntry(),
         },
         // ConnectionTypes
         {

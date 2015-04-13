@@ -2,6 +2,7 @@
 #define FLOW_SYSTEMS_ADDNETWORK_HPP
 
 #include "Flow/System.hpp"
+#include "Flow/TypeManager.hpp"
 
 namespace Flow
 {
@@ -14,6 +15,7 @@ namespace Systems
     {
     public:
         static SystemDefinition GetDefinition();
+        static TypeManagerComponentTypeEntry GetComponentTypeEntry();
 
         AddNetwork(TypeManager const &type_manager,
                    std::string instance_name,

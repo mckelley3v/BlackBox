@@ -20,6 +20,11 @@ namespace Components
     public:
         class InstanceData;
         static ComponentDefinition GetDefinition();
+        static TypeManagerComponentTypeEntry GetComponentTypeEntry();
+        static std::unique_ptr<Component> MakeInstance(TypeManager const &type_manager,
+                                                       std::string instance_name,
+                                                       ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
+                                                       Component::InstanceData *instance_data_ptr);
 
         Constant(TypeManager const &type_manager,
                  std::string instance_name,
@@ -39,13 +44,6 @@ namespace Components
         // members:
         T m_Value;
     };
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    template <typename T> std::unique_ptr<Component> MakeConstantInstance(TypeManager const &type_manager,
-                                                                          std::string instance_name,
-                                                                          ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                                                          Component::InstanceData *instance_data_ptr);
 
     // =================================================================================================================
 
@@ -138,6 +136,31 @@ template <typename T>
 // ---------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
+/*static*/ Flow::TypeManagerComponentTypeEntry Flow::Components::Constant<T>::GetComponentTypeEntry()
+{
+    return {GetDefinition(), MakeInstance, std::make_shared<InstanceData>};
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+std::unique_ptr<Flow::Component> Flow::Components::Constant<T>::MakeInstance(TypeManager const &type_manager,
+                                                                             std::string instance_name,
+                                                                             ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
+                                                                             Component::InstanceData * const instance_data_ptr)
+{
+    typedef typename Constant<T>::InstanceData InstanceData;
+    assert(dynamic_cast<InstanceData*>(instance_data_ptr) != nullptr);
+
+    return std::make_unique<Constant<T>>(type_manager,
+                                         std::move(instance_name),
+                                         std::move(input_connection_ptrs_dict),
+                                         std::move(static_cast<InstanceData&>(*instance_data_ptr)));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
 Flow::Components::Constant<T>::Constant(TypeManager const &type_manager,
                                         std::string instance_name,
                                         ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
@@ -157,22 +180,6 @@ template <typename T>
 T const& Flow::Components::Constant<T>::GetValue() const
 {
     return m_Value;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-template <typename T> std::unique_ptr<Flow::Component> Flow::Components::MakeConstantInstance(TypeManager const &type_manager,
-                                                                                              std::string instance_name,
-                                                                                              ComponentInputConnectionPtrsDict input_connection_ptrs_dict,
-                                                                                              Component::InstanceData * const instance_data_ptr)
-{
-    typedef typename Constant<T>::InstanceData InstanceData;
-    assert(dynamic_cast<InstanceData*>(instance_data_ptr) != nullptr);
-
-    return std::make_unique<Constant<T>>(type_manager,
-                                         std::move(instance_name),
-                                         std::move(input_connection_ptrs_dict),
-                                         std::move(static_cast<InstanceData&>(*instance_data_ptr)));
 }
 
 // =====================================================================================================================

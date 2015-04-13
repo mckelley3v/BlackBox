@@ -56,6 +56,13 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+/*static*/ Flow::TypeManagerComponentTypeEntry Flow::Systems::AddNetwork::GetComponentTypeEntry()
+{
+    return {GetDefinition().Interface, MakeSystemComponent<AddNetwork>};
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 Flow::Systems::AddNetwork::AddNetwork(TypeManager const &type_manager,
                                       std::string instance_name,
                                       ComponentInputConnectionPtrsDict input_connection_ptrs_dict)
