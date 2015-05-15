@@ -26,6 +26,8 @@
                 "libs/m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr_test",
                 "libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary",
                 "libs/m1/dictionary/m1_dictionary.gyp:m1_dictionary_test",
+                "libs/m1/graphics/m1_graphics.gyp:m1_graphics",
+                "libs/m1/graphics/m1_graphics.gyp:m1_graphics_test",
                 "libs/m1/log/m1_log.gyp:m1_log",
                 "libs/m1/log/m1_log.gyp:m1_log_test",
                 "libs/m1/numeric/m1_numeric.gyp:m1_numeric",
