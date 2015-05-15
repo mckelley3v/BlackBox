@@ -271,10 +271,10 @@ namespace m1
         rect_list,
         quad_list,
         quad_strip,
-        line_list_adjaceny,
-        line_strip_adjaceny,
-        triangle_list_adjaceny,
-        triangle_strip_adjaceny,
+        line_list_adjacency,
+        line_strip_adjacency,
+        triangle_list_adjacency,
+        triangle_strip_adjacency,
         tessellator_patch,
     };
 
