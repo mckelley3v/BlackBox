@@ -35,7 +35,7 @@
         ],
         'configurations':
         {
-            'debug_x86':
+            'debug':
             {
                 'msvs_configuration_platform': "Win32",
                 'msvs_settings':
@@ -66,7 +66,7 @@
             {
                 'inherit_from':
                 [
-                    "debug_x86"
+                    "debug"
                 ],
                 'msvs_configuration_platform': "x64",
                 'codelite_settings':
@@ -82,7 +82,7 @@
                     },
                 },
             },
-            'release_x86':
+            'release':
             {
                 'defines':
                 [
@@ -113,7 +113,7 @@
             {
                 'inherit_from':
                 [
-                    "release_x86"
+                    "release"
                 ],
                 'msvs_configuration_platform': "x64",
                 'codelite_settings':
@@ -130,6 +130,6 @@
                 },
             },
         },
-        'default_configuration': "debug_x86",
+        'default_configuration': "debug",
     },
 }
