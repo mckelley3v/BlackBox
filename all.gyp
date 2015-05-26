@@ -11,6 +11,7 @@
             'sources':
             [
                 'all.gyp',
+                'configurations.gypi',
             ],
             'dependencies':
             [

@@ -22,7 +22,7 @@ echo Build LLVM and Clang...
 cd llvm
 mkdir build
 cd build
-../configure --enable-optimized --disable-assertions
+cmake -G "Unix Makefiles" ../llvm
 make
 sudo make install
 cd ../..

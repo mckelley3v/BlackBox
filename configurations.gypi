@@ -58,7 +58,7 @@
                     },
                     'Linker':
                     {
-                        'Options': '-stdlib=libc++ -lc++abi'
+                        'Options': '-m32 -stdlib=libc++ -lc++abi'
                     },
                 },
             },
@@ -78,7 +78,7 @@
                     },
                     'Linker':
                     {
-                        'Options': '-stdlib=libc++ -lc++abi'
+                        'Options': '-m64 -stdlib=libc++ -lc++abi'
                     },
                 },
             },

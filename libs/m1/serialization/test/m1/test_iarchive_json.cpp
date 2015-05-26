@@ -737,11 +737,11 @@ bool read_value(m1::iarchive_json &in, std::unique_ptr<component> &value)
                     switch(type)
                     {
                         case m1::crc32("transform"):
-                            value.reset(transform = new transform_component);
+                            value.reset(transform = new transform_component{});
                             break;
 
                         case m1::crc32("light"):
-                            value.reset(light = new light_component);
+                            value.reset(light = new light_component{});
                             break;
 
                         default:
