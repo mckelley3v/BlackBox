@@ -1,6 +1,8 @@
 #include "m1/graphics_device.hpp"
 #include "m1/graphics_device_impl.hpp"
 #include "m1/graphics_device_none.hpp"
+#include "m1/graphics_command_queue.hpp"
+#include "m1/graphics_command_queue_impl.hpp"
 //#include "m1/d3d_11/graphics_device_d3d_11.hpp"
 //#include "m1/d3d_12/graphics_device_d3d_12.hpp"
 //#include "m1/gl_2_1/graphics_device_gl_2_1.hpp"
@@ -99,6 +101,13 @@ namespace m1
 m1::graphics_api m1::graphics_device::get_api() const
 {
     return m_ImplPtr->get_api();
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_command_queue m1::graphics_device::make_command_queue() const
+{
+    return graphics_command_queue(m_ImplPtr->make_command_queue_impl());
 }
 
 // ------------------------------------------------------------------------------------------------------

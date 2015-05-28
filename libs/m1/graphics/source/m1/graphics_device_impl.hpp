@@ -9,13 +9,23 @@ namespace m1
 {
     // ==================================================================================================
 
+    class graphics_command_queue_impl;
+
+    // ==================================================================================================
+
     class graphics_device_impl
     {
     public:
         graphics_device_impl() = default;
         virtual ~graphics_device_impl() = default;
 
+        // properties:
         virtual graphics_api get_api() const = 0;
+
+        // factory:
+        virtual std::unique_ptr<graphics_command_queue_impl> make_command_queue_impl() const = 0;
+
+        // device:
         virtual void execute(graphics_command_queue const &queue);
 
     private:

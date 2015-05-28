@@ -33,17 +33,18 @@ namespace m1
     {
     public:
         explicit graphics_device(graphics_api api);
+        graphics_device(graphics_device &&rhs) = default;
+        graphics_device& operator = (graphics_device &&rhs) = default;
         ~graphics_device() = default;
 
         graphics_api get_api() const;
+        graphics_command_queue make_command_queue() const;
 
         void execute(graphics_command_queue const &queue);
 
     private:
         graphics_device() = delete;
-        graphics_device(graphics_device &&rhs) = delete;
         graphics_device(graphics_device const &rhs) = delete;
-        graphics_device& operator = (graphics_device &&rhs) = delete;
         graphics_device& operator = (graphics_device const &rhs) = delete;
 
         // members:

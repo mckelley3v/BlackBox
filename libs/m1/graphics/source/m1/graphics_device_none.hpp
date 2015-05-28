@@ -16,7 +16,13 @@ namespace m1
         graphics_device_none() = default;
         virtual ~graphics_device_none() = default;
 
+        // properties:
         virtual graphics_api get_api() const override;
+
+        // factory:
+        virtual std::unique_ptr<graphics_command_queue_impl> make_command_queue_impl() const override;
+
+        // device:
         virtual void execute(graphics_command_queue const &queue) override;
 
     private:
