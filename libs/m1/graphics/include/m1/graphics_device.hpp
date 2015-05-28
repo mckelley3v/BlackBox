@@ -3,29 +3,39 @@
 
 #include <memory>
 
+// ======================================================================================================
+
 namespace m1
 {
+    // ==================================================================================================
+
     enum class graphics_api
     {
+        none,
+        d3d_11,
+        d3d_12,
         gl_2_1,
-        gl_3_3,
         gl_3_3_core,
+        gl_4_4_core,
         gles_2_0,
-        gles_3_0,
         gles_3_1,
-        dx_10,
-        dx_11,
-        dx_12,
         vk_1_0,
     };
 
+    // --------------------------------------------------------------------------------------------------
+
     class graphics_command_queue;
+    class graphics_device_impl;
+
+    // --------------------------------------------------------------------------------------------------
 
     class graphics_device
     {
     public:
         explicit graphics_device(graphics_api api);
         ~graphics_device() = default;
+
+        graphics_api get_api() const;
 
         void execute(graphics_command_queue const &queue);
 
@@ -36,11 +46,13 @@ namespace m1
         graphics_device& operator = (graphics_device &&rhs) = delete;
         graphics_device& operator = (graphics_device const &rhs) = delete;
 
-        class impl;
-
         // members:
-        std::unique_ptr<impl> m_ImplPtr;
+        std::unique_ptr<graphics_device_impl> m_ImplPtr;
     };
+
+    // ==================================================================================================
 } // namespace m1
+
+// ======================================================================================================
 
 #endif // M1_GRAPHICS_DEVICE_HPP
