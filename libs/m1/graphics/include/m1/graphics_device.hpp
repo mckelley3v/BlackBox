@@ -25,6 +25,30 @@ namespace m1
     // --------------------------------------------------------------------------------------------------
 
     class graphics_command_queue;
+    class graphics_texture_source;
+    class graphics_texture_color_target;
+    class graphics_texture_depth_target;
+    class graphics_draw_target;
+    class graphics_memory_buffer;
+    class graphics_geometry_index_buffer;
+    class graphics_geometry_vertex_buffer;
+    class graphics_shader_const_buffer;
+    class graphics_shader_mutable_buffer;
+    class graphics_shader_instance_buffer;
+
+    struct graphics_texture_source_definition;
+    struct graphics_texture_color_target_definition;
+    struct graphics_texture_depth_target_definition;
+    struct graphics_draw_target_definition;
+    struct graphics_memory_buffer_definition;
+    struct graphics_geometry_index_buffer_definition;
+    struct graphics_geometry_vertex_buffer_definition;
+    struct graphics_shader_const_buffer_definition;
+    struct graphics_shader_mutable_buffer_definition;
+    struct graphics_shader_instance_buffer_definition;
+
+    // --------------------------------------------------------------------------------------------------
+
     class graphics_device_impl;
 
     // --------------------------------------------------------------------------------------------------
@@ -37,8 +61,23 @@ namespace m1
         graphics_device& operator = (graphics_device &&rhs) = default;
         ~graphics_device() = default;
 
+        // properties:
         graphics_api get_api() const;
-        graphics_command_queue make_command_queue() const;
+        graphics_draw_target& main_draw_target();
+        graphics_draw_target const& get_main_draw_target() const;
+
+        // factory:
+        graphics_command_queue make_command_queue();
+        graphics_texture_source make_texture_source(graphics_texture_source_definition const &definition);
+        graphics_texture_color_target make_texture_color_target(graphics_texture_color_target_definition const &definition);
+        graphics_texture_depth_target make_texture_depth_target(graphics_texture_depth_target_definition const &definition);
+        graphics_draw_target make_draw_target(graphics_draw_target_definition const &definition);
+        graphics_memory_buffer make_memory_buffer(graphics_memory_buffer_definition const &definition);
+        graphics_geometry_index_buffer make_geometry_index_buffer(graphics_geometry_index_buffer_definition const &definition);
+        graphics_geometry_vertex_buffer make_geometry_vertex_buffer(graphics_geometry_vertex_buffer_definition const &definition);
+        graphics_shader_const_buffer make_shader_const_buffer(graphics_shader_const_buffer_definition const &definition);
+        graphics_shader_mutable_buffer make_shader_mutable_buffer(graphics_shader_mutable_buffer_definition const &definition);
+        graphics_shader_instance_buffer make_shader_instance_buffer(graphics_shader_instance_buffer_definition const &definition);
 
         void execute(graphics_command_queue const &queue);
 
@@ -48,7 +87,7 @@ namespace m1
         graphics_device& operator = (graphics_device const &rhs) = delete;
 
         // members:
-        std::unique_ptr<graphics_device_impl> m_ImplPtr;
+        std::shared_ptr<graphics_device_impl> m_ImplPtr;
     };
 
     // ==================================================================================================

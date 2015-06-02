@@ -7,23 +7,23 @@ namespace m1
 {
     // =================================================================================================================
 
-    class graphics_framebuffer_state
+    class graphics_draw_target_state
     {
     public:
-        graphics_framebuffer_state() = default;
-        explicit graphics_framebuffer_state(int width,
+        graphics_draw_target_state() = default;
+        explicit graphics_draw_target_state(int width,
                                             int height,
                                             graphics_multisampling_count multisampling_count);
-        explicit graphics_framebuffer_state(graphics_viewport_state const &state);
-        explicit graphics_framebuffer_state(graphics_scissor_state const &state);
-        explicit graphics_framebuffer_state(graphics_multisampling_state const &state);
-        template <typename T, typename ...Ts> explicit graphics_framebuffer_state(T const &state,
+        explicit graphics_draw_target_state(graphics_viewport_state const &state);
+        explicit graphics_draw_target_state(graphics_scissor_state const &state);
+        explicit graphics_draw_target_state(graphics_multisampling_state const &state);
+        template <typename T, typename ...Ts> explicit graphics_draw_target_state(T const &state,
                                                                                   Ts const &...states);
-        graphics_framebuffer_state(graphics_framebuffer_state &&rhs) = default;
-        graphics_framebuffer_state(graphics_framebuffer_state const &rhs) = default;
-        graphics_framebuffer_state& operator = (graphics_framebuffer_state &&rhs) = default;
-        graphics_framebuffer_state& operator = (graphics_framebuffer_state const &rhs) = default;
-        ~graphics_framebuffer_state() = default;
+        graphics_draw_target_state(graphics_draw_target_state &&rhs) = default;
+        graphics_draw_target_state(graphics_draw_target_state const &rhs) = default;
+        graphics_draw_target_state& operator = (graphics_draw_target_state &&rhs) = default;
+        graphics_draw_target_state& operator = (graphics_draw_target_state const &rhs) = default;
+        ~graphics_draw_target_state() = default;
 
         bool is_viewport_state_default() const;
         graphics_viewport_state& viewport_state();
@@ -83,17 +83,17 @@ namespace m1
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    graphics_framebuffer_state merge_graphics_state(graphics_framebuffer_state const &original,
-                                                    graphics_framebuffer_state const &override);
+    graphics_draw_target_state merge_graphics_state(graphics_draw_target_state const &original,
+                                                    graphics_draw_target_state const &override);
 
     // =================================================================================================================
 } // namespace m1
 
 // =====================================================================================================================
 
-template <typename T, typename... Ts> /*explicit*/ m1::graphics_framebuffer_state::graphics_framebuffer_state(T const &state,
+template <typename T, typename... Ts> /*explicit*/ m1::graphics_draw_target_state::graphics_draw_target_state(T const &state,
                                                                                                               Ts const &...states)
-    : graphics_framebuffer_state()
+    : graphics_draw_target_state()
 {
     set_state(state);
     set_state(states...);
@@ -101,7 +101,7 @@ template <typename T, typename... Ts> /*explicit*/ m1::graphics_framebuffer_stat
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename T, typename ...Ts> void m1::graphics_framebuffer_state::set_state(T const &state,
+template <typename T, typename ...Ts> void m1::graphics_draw_target_state::set_state(T const &state,
                                                                                      Ts const &...states)
 {
     set_state(state);

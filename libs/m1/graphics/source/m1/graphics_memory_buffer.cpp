@@ -1,11 +1,12 @@
-#include "m1/graphics_command_queue.hpp"
-#include "m1/impl/graphics_command_queue_impl.hpp"
+#include "m1/graphics_memory_buffer.hpp"
+#include <cassert>
 
 // ======================================================================================================
 
-/*explicit*/ m1::graphics_command_queue::graphics_command_queue(std::shared_ptr<graphics_command_queue_impl> const &impl_ptr)
+/*explicit*/ m1::graphics_memory_buffer::graphics_memory_buffer(std::shared_ptr<graphics_memory_buffer_impl> const &impl_ptr)
     : m_ImplPtr(impl_ptr)
 {
+    assert(m_ImplPtr && "Invalid graphics_memory_buffer");
 }
 
 // ======================================================================================================

@@ -4,7 +4,7 @@
 #include "Flow/TypeManager.hpp"
 #include "catch.hpp"
 
-TEST_CASE("Test m1::Systems::AddNetwork", "[Flow]")
+TEST_CASE("Test Flow::Systems::AddNetwork", "[Flow]")
 {
     using namespace Flow;
     using namespace Flow::Components;

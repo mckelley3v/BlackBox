@@ -1,8 +1,6 @@
 #ifndef M1_GRAPHICS_COMMAND_QUEUE_IMPL_HPP
 #define M1_GRAPHICS_COMMAND_QUEUE_IMPL_HPP
 
-#include "m1/graphics_command_queue.hpp"
-
 // ======================================================================================================
 
 namespace m1

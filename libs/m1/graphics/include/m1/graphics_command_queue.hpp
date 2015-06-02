@@ -30,13 +30,13 @@ namespace m1
         //          graphics_instance_data const &instance_data);
 
     private:
-        graphics_command_queue(std::unique_ptr<graphics_command_queue_impl> impl_ptr);
         graphics_command_queue() = delete;
-        graphics_command_queue(graphics_command_queue const &rhs) = default;
-        graphics_command_queue& operator = (graphics_command_queue const &rhs) = default;
+        graphics_command_queue(graphics_command_queue const &rhs) = delete;
+        graphics_command_queue& operator = (graphics_command_queue const &rhs) = delete;
+        explicit graphics_command_queue(std::shared_ptr<graphics_command_queue_impl> const &impl_ptr);
 
         // members:
-        std::unique_ptr<graphics_command_queue_impl> m_ImplPtr;
+        std::shared_ptr<graphics_command_queue_impl> m_ImplPtr;
     };
 } // namespace m1
 
