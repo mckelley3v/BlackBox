@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "m1_serialization",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "m1_serialization",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/m1/crc32.hpp",
                 "include/m1/eval_json.hpp",
@@ -30,36 +26,36 @@
                 "source/m1/parse_json.cpp",
                 "m1_serialization.gyp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/utf8-cpp.gyp:utf8-cpp",
+                "<(utf8-cpp_gyp_file):utf8-cpp",
                 "../log/m1_log.gyp:m1_log",
             ],
-            'export_dependent_settings':
+            "export_dependent_settings":
             [
                 "../log/m1_log.gyp:m1_log",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "m1_serialization_test",
-            'type': "executable",
-            'sources':
+            "target_name": "m1_serialization_test",
+            "type": "executable",
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/m1/test_crc32.cpp",
                 "test/m1/test_iarchive_json.cpp",
                 "test/m1/test_iarchive_ubjson.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "m1_serialization",
             ],
         },

@@ -1,18 +1,18 @@
 {
-    'target_defaults':
+    "target_defaults":
     {
-        'msvs_configuration_attributes':
+        "msvs_configuration_attributes":
         {
-            'OutputDirectory': "$(SolutionDir)..\\bin\\$(ConfigurationName)",
-            'IntermediateDirectory': "$(SolutionDir)..\\temp\\$(ConfigurationName)\\$(ProjectName)",
+            "OutputDirectory": "$(SolutionDir)..\\bin\\$(ConfigurationName)",
+            "IntermediateDirectory": "$(SolutionDir)..\\temp\\$(ConfigurationName)\\$(ProjectName)",
         },
-        'msvs_settings':
+        "msvs_settings":
         {
-            'VCCLCompilerTool':
+            "VCCLCompilerTool":
             {
-                'WarningLevel': 4, # "Level4"
-                'WarnAsError': "true",
-                'DisableSpecificWarnings':
+                "WarningLevel": 4, # Level4
+                "WarnAsError": "true",
+                "DisableSpecificWarnings":
                 [
                     "4351", # new behavior: elements of array will be default initialized
                     "4512", # assignment operator was implicitly defined as deleted
@@ -20,12 +20,12 @@
                 ],
             },
         },
-        'conditions':
+        "conditions":
         [
             [
-                '"<(GENERATOR)" == "msvs"',
+                "'<(GENERATOR)' == 'msvs'",
                 {
-                    'defines':
+                    "defines":
                     [
                        "_CRT_SECURE_NO_WARNINGS",
                        "_SCL_SECURE_NO_WARNINGS",
@@ -33,103 +33,103 @@
                 },
             ],
         ],
-        'configurations':
+        "configurations":
         {
-            'debug':
+            "debug":
             {
-                'msvs_configuration_platform': "Win32",
-                'msvs_settings':
+                "msvs_configuration_platform": "Win32",
+                "msvs_settings":
                 {
-                    'VCCLCompilerTool':
+                    "VCCLCompilerTool":
                     {
-                        'Optimization': 0, # "Disabled"
+                        "Optimization": 0, # "Disabled"
                     },
-                    'VCLinkerTool':
+                    "VCLinkerTool":
                     {
-                        'GenerateDebugInformation': "true",
+                        "GenerateDebugInformation": "true",
                     },
                 },
-                'codelite_settings':
+                "codelite_settings":
                 {
-                    'CompilerType': 'clang++',
-                    'Compiler':
+                    "CompilerType": "clang++",
+                    "Compiler":
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -g',
+                        "Options": "-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -g",
                     },
-                    'Linker':
+                    "Linker":
                     {
-                        'Options': '-m32 -stdlib=libc++ -lc++abi'
+                        "Options": "-m32 -stdlib=libc++ -lc++abi"
                     },
                 },
             },
-            'debug_x64':
+            "debug_x64":
             {
-                'inherit_from':
+                "inherit_from":
                 [
                     "debug"
                 ],
-                'msvs_configuration_platform': "x64",
-                'codelite_settings':
+                "msvs_configuration_platform": "x64",
+                "codelite_settings":
                 {
-                    'CompilerType': 'clang++',
-                    'Compiler':
+                    "CompilerType": "clang++",
+                    "Compiler":
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -g',
+                        "Options": "-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -g",
                     },
-                    'Linker':
+                    "Linker":
                     {
-                        'Options': '-m64 -stdlib=libc++ -lc++abi'
+                        "Options": "-m64 -stdlib=libc++ -lc++abi"
                     },
                 },
             },
-            'release':
+            "release":
             {
-                'defines':
+                "defines":
                 [
                     "NDEBUG",
                 ],
-                'msvs_configuration_platform': "Win32",
-                'msvs_settings':
+                "msvs_configuration_platform": "Win32",
+                "msvs_settings":
                 {
-                    'VCCLCompilerTool':
+                    "VCCLCompilerTool":
                     {
-                        'Optimization': 3, # "Full"
+                        "Optimization": 3, # "Full"
                     },
                 },
-                'codelite_settings':
+                "codelite_settings":
                 {
-                    'CompilerType': 'clang++',
-                    'Compiler':
+                    "CompilerType": "clang++",
+                    "Compiler":
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -O2',
+                        "Options": "-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m32 -O2",
                     },
-                    'Linker':
+                    "Linker":
                     {
-                        'Options': '-stdlib=libc++ -lc++abi'
+                        "Options": "-stdlib=libc++ -lc++abi"
                     },
                 },
             },
-            'release_x64':
+            "release_x64":
             {
-                'inherit_from':
+                "inherit_from":
                 [
                     "release"
                 ],
-                'msvs_configuration_platform': "x64",
-                'codelite_settings':
+                "msvs_configuration_platform": "x64",
+                "codelite_settings":
                 {
-                    'CompilerType': 'clang++',
-                    'Compiler':
+                    "CompilerType": "clang++",
+                    "Compiler":
                     {
-                        'Options': '-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -O2',
+                        "Options": "-std=c++1y -nostdinc++ -isystem /usr/include/c++/v1/ -m64 -O2",
                     },
-                    'Linker':
+                    "Linker":
                     {
-                        'Options': '-stdlib=libc++ -lc++abi'
+                        "Options": "-stdlib=libc++ -lc++abi"
                     },
                 },
             },
         },
-        'default_configuration': "debug",
+        "default_configuration": "debug",
     },
 }

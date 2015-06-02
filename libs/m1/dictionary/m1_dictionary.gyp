@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "m1_dictionary",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "m1_dictionary",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/m1/c_str_equal_to.hpp",
                 "include/m1/c_str_hash.hpp",
@@ -33,18 +29,18 @@
                 "source/m1/dictionary.cpp",
                 "m1_dictionary.gyp",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "m1_dictionary_test",
-            'type': "executable",
-            'sources':
+            "target_name": "m1_dictionary_test",
+            "type": "executable",
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/m1/test_c_str_equal_to.cpp",
@@ -55,9 +51,9 @@
                 "test/m1/test_string_less.cpp",
                 "test/m1/test_dictionary.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "m1_dictionary",
             ],
         },

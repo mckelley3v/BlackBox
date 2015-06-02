@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "m1_numeric",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "m1_numeric",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/m1/numeric.hpp",
                 "include/m1/numeric/abs.hpp",
@@ -119,18 +115,18 @@
                 "source/m1/numeric/trunc.cpp",
                 "m1_numeric.gyp",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "m1_numeric_test",
-            'type': "executable",
-            'sources':
+            "target_name": "m1_numeric_test",
+            "type": "executable",
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/m1/numeric/test_clamp.cpp",
@@ -150,9 +146,9 @@
                 "test/m1/numeric/test_step.cpp",
                 "test/m1/numeric/test_trunc.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "m1_numeric",
             ],
         },

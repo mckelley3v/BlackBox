@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "GLFWComponentLib",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "GLFWComponentLib",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/GL/gl.h",
                 "include/Flow/glfwSwapBuffersComponent.hpp",
@@ -24,42 +20,42 @@
                 "source/Flow/GLFWwindowComponent.cpp",
                 "GLFWComponentLib.gyp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/glfw.gyp:glfw",
-                "../../../external_libs/glbinding.gyp:glbinding",
+                "<(glfw_gyp_file):glfw",
+                "<(glbinding_gyp_file):glbinding",
                 "../../Flow/Flow.gyp:Flow",
                 "../../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],
-            'export_dependent_settings':
+            "export_dependent_settings":
             [
-                "../../../external_libs/glbinding.gyp:glbinding",
+                "<(glbinding_gyp_file):glbinding",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "GLFWComponentLibTest",
-            'type': "executable",
-            'include_dirs':
+            "target_name": "GLFWComponentLibTest",
+            "type": "executable",
+            "include_dirs":
             [
                 "test",
             ],
-            'sources':
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/Flow/DrawTestTriangleComponent.hpp",
                 "test/Flow/DrawTestTriangleComponent.cpp",
                 "test/Flow/TestGLFWComponentLib01.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "../../m1/serialization/m1_serialization.gyp:m1_serialization",
                 "../../Flow/Flow.gyp:Flow",
                 "GLFWComponentLib",

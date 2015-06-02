@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "glbinding",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "glbinding",
+            "type": "static_library",
+            "include_dirs":
             [
                 "glbinding/source/glbinding/include/",
                 "glbinding/source/glbinding/source/",
             ],
-            'sources':
+            "sources":
             [
                 "glbinding/source/glbinding/include/glbinding/AbstractFunction.h",
                 "glbinding/source/glbinding/include/glbinding/AbstractValue.h",
@@ -383,9 +379,9 @@
                 "glbinding/source/glbinding/source/gl/types.cpp",
                 "glbinding.gyp",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "glbinding/source/glbinding/include/",
                 ],

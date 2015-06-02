@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "Flow",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "Flow",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/Flow/Component.hpp",
                 "include/Flow/Connection.hpp",
@@ -34,33 +30,33 @@
                 "source/Flow/Verify.hpp",
                 "Flow.gyp",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "../m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
                 "../m1/dictionary/m1_dictionary.gyp:m1_dictionary",
                 "../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],
-            'export_dependent_settings':
+            "export_dependent_settings":
             [
                 "../m1/any_ptr/m1_any_ptr.gyp:m1_any_ptr",
                 "../m1/dictionary/m1_dictionary.gyp:m1_dictionary",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "FlowTest",
-            'type': "executable",
-            'include_dirs':
+            "target_name": "FlowTest",
+            "type": "executable",
+            "include_dirs":
             [
                 "test",
             ],
-            'sources':
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/Flow/Components/Add.hpp",
@@ -73,9 +69,9 @@
                 "test/Flow/Systems/TestSerialization01.cpp",
                 "test/Flow/TypeName.hpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "Flow",
                 "../m1/serialization/m1_serialization.gyp:m1_serialization",
             ],

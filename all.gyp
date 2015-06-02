@@ -1,24 +1,22 @@
 {
-    'includes':
-    [
-        "configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "all",
-            'type': "none",
-            'sources':
+            "target_name": "all",
+            "type": "none",
+            "sources":
             [
-                'all.gyp',
-                'configurations.gypi',
+                "all.gyp",
+                "includes.gypi",
+                "configurations.gypi",
+                "external_libs.gypi",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "external_libs/catch.gyp:catch",
-                "external_libs/utf8-cpp.gyp:utf8-cpp",
-                "external_libs/glfw.gyp:glfw",
-                "external_libs/glbinding.gyp:glbinding",
+                "<(catch_gyp_file):catch",
+                "<(utf8-cpp_gyp_file):utf8-cpp",
+                "<(glfw_gyp_file):glfw",
+                "<(glbinding_gyp_file):glbinding",
                 "libs/Flow/Flow.gyp:Flow",
                 "libs/Flow/Flow.gyp:FlowTest",
                 "libs/FlowLibs/GLFWComponentLib/GLFWComponentLib.gyp:GLFWComponentLib",

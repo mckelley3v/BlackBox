@@ -1,19 +1,15 @@
 {
-    'includes':
-    [
-        "../../../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "m1_graphics",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "m1_graphics",
+            "type": "static_library",
+            "include_dirs":
             [
                 "include",
                 "source",
             ],
-            'sources':
+            "sources":
             [
                 "include/m1/graphics_device.hpp",
                 "include/m1/graphics_draw_state.hpp",
@@ -71,25 +67,25 @@
                 "source/m1/graphics_state.cpp",
                 "m1_graphics.gyp",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "include",
                 ],
             },
         },
         {
-            'target_name': "m1_graphics_test",
-            'type': "executable",
-            'sources':
+            "target_name": "m1_graphics_test",
+            "type": "executable",
+            "sources":
             [
                 "test/test_main.cpp",
                 "test/m1/test_graphics_device.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
-                "../../../external_libs/catch.gyp:catch",
+                "<(catch_gyp_file):catch",
                 "m1_graphics",
             ],
         },

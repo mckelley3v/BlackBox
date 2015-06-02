@@ -1,23 +1,19 @@
 {
-    'includes':
-    [
-        "../configurations.gypi",
-    ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "glfw",
-            'type': "static_library",
-            'include_dirs':
+            "target_name": "glfw",
+            "type": "static_library",
+            "include_dirs":
             [
                 "glfw/include",
                 "glfw/src",
             ],
-            'defines':
+            "defines":
             [
                 "_GLFW_USE_OPENGL",
             ],
-            'sources':
+            "sources":
             [
                 "glfw/include/GLFW/glfw3.h",
                 "glfw/include/GLFW/glfw3native.h",
@@ -28,23 +24,23 @@
                 "glfw/src/window.c",
                 "glfw.gyp",
             ],
-            'conditions':
+            "conditions":
             [
                 [
-                    'OS == "linux"',
+                    "OS == 'linux'",
                     {
-                        'include_dirs':
+                        "include_dirs":
                         [
                             "/usr/include",
                         ],
-                        'defines':
+                        "defines":
                         [
                             "_GLFW_X11",
                             "_GLFW_GLX",
                             "_GLFW_HAS_GLXGETPROCADDRESS",
                             "_GLFW_HAS_XINPUT",
                         ],
-                        'sources':
+                        "sources":
                         [
                             "glfw/src/glx_context.h",
                             "glfw/src/x11_platform.h",
@@ -61,9 +57,9 @@
                             "glfw/src/posix_time.c",
                             "glfw/src/posix_tls.c",
                         ],
-                        'link_settings':
+                        "link_settings":
                         {
-                            'libraries':
+                            "libraries":
                             [
                                 "-lGL",
                                 "-lXext",
@@ -79,14 +75,14 @@
                     },
                 ],
                 [
-                    'OS == "win"',
+                    "OS == 'win'",
                     {
-                        'defines':
+                        "defines":
                         [
                             "_GLFW_WIN32",
                             "_GLFW_WGL",
                         ],
-                        'sources':
+                        "sources":
                         [
                             "glfw/src/wgl_context.h",
                             "glfw/src/win32_platform.h",
@@ -100,21 +96,21 @@
                             "glfw/src/win32_window.c",
                             "glfw/src/winmm_joystick.c",
                         ],
-                        'msvs_settings':
+                        "msvs_settings":
                         {
-                            'VCCLCompilerTool':
+                            "VCCLCompilerTool":
                             {
-                                'DisableSpecificWarnings':
+                                "DisableSpecificWarnings":
                                 [
                                     "4152", # nonstandard extension, function/data pointer conversion in expression
                                     "4204", # nonstandard extension used : non-constant aggregate initializer
-                                    "4244", # 'conversion' conversion from 'type1' to 'type2', possible loss of data
+                                    "4244", # "conversion" conversion from "type1" to "type2", possible loss of data
                                 ],
                             },
                         },
-                        'link_settings':
+                        "link_settings":
                         {
-                            'libraries':
+                            "libraries":
                             [
                                 "-lkernel32",
                                 "-luser32",
@@ -124,9 +120,9 @@
                     },
                 ],
                 [
-                    'OS == "mac"',
+                    "OS == 'mac'",
                     {
-                        'defines':
+                        "defines":
                         [
                             "_GLFW_COCOA",
                             "_GLFW_NSGL",
@@ -134,7 +130,7 @@
                             "_GLFW_USE_MENUBAR",
                             "_GLFW_USE_RETINA",
                         ],
-                        'sources':
+                        "sources":
                         [
                             "glfw/src/cocoa_platform.h",
                             "glfw/src/iokit_joystick.h",
@@ -151,13 +147,13 @@
                     },
                 ],
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'defines':
+                "defines":
                 [
                     "GLFW_INCLUDE_NONE",
                 ],
-                'include_dirs':
+                "include_dirs":
                 [
                     "glfw/include",
                 ],
