@@ -3,14 +3,14 @@
     {
         "msvs_configuration_attributes":
         {
-            "OutputDirectory": "$(SolutionDir)..\\bin\\$(ConfigurationName)",
-            "IntermediateDirectory": "$(SolutionDir)..\\temp\\$(ConfigurationName)\\$(ProjectName)",
+            "OutputDirectory": "$(SolutionDir)..\\bin\\$(Platform)\\$(ConfigurationName)",
+            "IntermediateDirectory": "$(SolutionDir)..\\temp\\$(Platform)\\$(ConfigurationName)\\$(ProjectName)",
         },
         "msvs_settings":
         {
             "VCCLCompilerTool":
             {
-                "WarningLevel": 4, # Level4
+                "WarningLevel": 4, # "Level4"
                 "WarnAsError": "true",
                 "DisableSpecificWarnings":
                 [
