@@ -12,6 +12,11 @@
             {
                 "WarningLevel": 4, # "Level4"
                 "WarnAsError": "true",
+                "PreprocessorDefinitions":
+                [
+                    "_CRT_SECURE_NO_WARNINGS",
+                    "_SCL_SECURE_NO_WARNINGS",
+                ],
                 "DisableSpecificWarnings":
                 [
                     "4351", # new behavior: elements of array will be default initialized
@@ -20,19 +25,6 @@
                 ],
             },
         },
-        "conditions":
-        [
-            [
-                "'<(GENERATOR)' == 'msvs'",
-                {
-                    "defines":
-                    [
-                       "_CRT_SECURE_NO_WARNINGS",
-                       "_SCL_SECURE_NO_WARNINGS",
-                    ],
-                },
-            ],
-        ],
         "configurations":
         {
             "debug":
@@ -43,6 +35,10 @@
                     "VCCLCompilerTool":
                     {
                         "Optimization": 0, # "Disabled"
+                        "PreprocessorDefinitions":
+                        [
+                            "_DEBUG",
+                        ],
                     },
                     "VCLinkerTool":
                     {
