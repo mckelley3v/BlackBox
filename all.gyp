@@ -7,7 +7,7 @@
             "sources":
             [
                 "all.gyp",
-                "includes.gypi",
+                "include.gypi",
                 "configurations.gypi",
                 "external_libs.gypi",
             ],

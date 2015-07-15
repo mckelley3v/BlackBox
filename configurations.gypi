@@ -3,15 +3,20 @@
     {
         "msvs_configuration_attributes":
         {
-            "OutputDirectory": "$(SolutionDir)..\\bin\\$(ConfigurationName)",
-            "IntermediateDirectory": "$(SolutionDir)..\\temp\\$(ConfigurationName)\\$(ProjectName)",
+            "OutputDirectory": "$(SolutionDir)..\\bin\\$(Platform)\\$(ConfigurationName)",
+            "IntermediateDirectory": "$(SolutionDir)..\\temp\\$(Platform)\\$(ConfigurationName)\\$(ProjectName)",
         },
         "msvs_settings":
         {
             "VCCLCompilerTool":
             {
-                "WarningLevel": 4, # Level4
+                "WarningLevel": 4, # "Level4"
                 "WarnAsError": "true",
+                "PreprocessorDefinitions":
+                [
+                    "_CRT_SECURE_NO_WARNINGS",
+                    "_SCL_SECURE_NO_WARNINGS",
+                ],
                 "DisableSpecificWarnings":
                 [
                     "4351", # new behavior: elements of array will be default initialized
@@ -20,19 +25,6 @@
                 ],
             },
         },
-        "conditions":
-        [
-            [
-                "'<(GENERATOR)' == 'msvs'",
-                {
-                    "defines":
-                    [
-                       "_CRT_SECURE_NO_WARNINGS",
-                       "_SCL_SECURE_NO_WARNINGS",
-                    ],
-                },
-            ],
-        ],
         "configurations":
         {
             "debug":
@@ -43,6 +35,10 @@
                     "VCCLCompilerTool":
                     {
                         "Optimization": 0, # "Disabled"
+                        "PreprocessorDefinitions":
+                        [
+                            "_DEBUG",
+                        ],
                     },
                     "VCLinkerTool":
                     {

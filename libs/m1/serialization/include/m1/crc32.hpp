@@ -14,7 +14,7 @@ namespace m1
         crc32() = default;
         constexpr crc32(char const *str);
         constexpr crc32(char const *str,
-                          char const *end);
+                        char const *end);
         constexpr crc32(std::uint32_t value);
         crc32(crc32 &&rhs) = default;
         crc32(crc32 const &rhs) = default;
@@ -187,7 +187,7 @@ constexpr std::uint32_t m1::calc_crc32(char const * const str,
 // ---------------------------------------------------------------------------------------------------------------------
 
 constexpr std::uint32_t m1::calc_crc32(std::uint32_t const crc,
-                                      std::uint8_t const byte)
+                                       std::uint8_t const byte)
 {
     std::uint32_t const c = static_cast<std::uint32_t>(byte);
     std::uint8_t const i = static_cast<std::uint8_t>(crc ^ c);
