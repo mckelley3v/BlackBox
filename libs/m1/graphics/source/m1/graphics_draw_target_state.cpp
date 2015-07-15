@@ -13,7 +13,7 @@
                                               height};
     viewport_state() = viewport;
 
-    if(multisampling_count != get_multisampling_state().count)
+    if(multisampling_count != get_multisampling_state().samples)
     {
         graphics_multisampling_state const multisampling = {multisampling_count,
                                                             graphics_multisampling_bits::all};

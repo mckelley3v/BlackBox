@@ -24,9 +24,9 @@ namespace m1
 
         // possible methods:
 
-        //void draw(graphics_framebuffer &framebuffer,
-        //          graphics_mesh const &mesh,
+        //void draw(graphics_draw_target &draw_target,
         //          graphics_draw_state const &draw_state,
+        //          graphics_mesh const &mesh,
         //          graphics_instance_data const &instance_data);
 
     private:

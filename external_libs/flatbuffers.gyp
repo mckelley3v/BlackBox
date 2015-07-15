@@ -1,30 +1,30 @@
 {
-    'includes':
+    "includes":
     [
         "../configurations.gypi",
     ],
-    'targets':
+    "targets":
     [
         {
-            'target_name': "flatbuffers",
-            'type': "none",
-            'sources':
+            "target_name": "flatbuffers",
+            "type": "none",
+            "sources":
             [
                 "flatbuffers/include/flatbuffers/flatbuffers.h",
                 "flatbuffers/flatbuffers.gyp",
             ],
-            'direct_dependent_settings':
+            "direct_dependent_settings":
             {
-                'include_dirs':
+                "include_dirs":
                 [
                     "flatbuffers/include",
                 ],
             },
         },
         {
-            'target_name': "flatbuffers_idl",
-            'type': "static_library",
-            'sources':
+            "target_name": "flatbuffers_idl",
+            "type": "static_library",
+            "sources":
             [
                 "flatbuffers/include/flatbuffers/idl.h",
                 "flatbuffers/include/flatbuffers/util.h",
@@ -35,83 +35,83 @@
                 "flatbuffers/src/idl_gen_text.cpp",
                 "flatbuffers/src/idl_parser.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "flatbuffers",
             ],
-            'export_dependent_settings':
+            "export_dependent_settings":
             [
-                'flatbuffers',
+                "flatbuffers",
             ],
         },
         {
-            'target_name': "flatbuffers_compiler",
-            'type': "executable",
-            'sources':
+            "target_name": "flatbuffers_compiler",
+            "type": "executable",
+            "sources":
             [
                 "flatbuffers/src/flatc.cpp",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "flatbuffers_idl",
             ],
         },
         {
-            'target_name': "flatbuffers_test",
-            'type': "executable",
-            'configurations':
+            "target_name": "flatbuffers_test",
+            "type": "executable",
+            "configurations":
             {
-                'codelite_settings':
+                "codelite_settings":
                 {
-                    'WorkingDirectory': "./flatbuffers",
+                    "WorkingDirectory": "./flatbuffers",
                 },
             },
-            'sources':
+            "sources":
             [
                 "flatbuffers/tests/test.cpp",
                 "flatbuffers/tests/monster_test_generated.h",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "flatbuffers_idl",
             ],
         },
         {
-            'target_name': "flatbuffers_sample_binary",
-            'type': "executable",
-            'configurations':
+            "target_name": "flatbuffers_sample_binary",
+            "type": "executable",
+            "configurations":
             {
-                'codelite_settings':
+                "codelite_settings":
                 {
-                    'WorkingDirectory': "./flatbuffers",
+                    "WorkingDirectory": "./flatbuffers",
                 },
             },
-            'sources':
+            "sources":
             [
                 "flatbuffers/samples/sample_binary.cpp",
                 "flatbuffers/samples/monster_generated.h",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "flatbuffers_idl",
             ],
         },
         {
-            'target_name': "flatbuffers_sample_text",
-            'type': "executable",
-            'configurations':
+            "target_name": "flatbuffers_sample_text",
+            "type": "executable",
+            "configurations":
             {
-                'codelite_settings':
+                "codelite_settings":
                 {
-                    'WorkingDirectory': "./flatbuffers",
+                    "WorkingDirectory": "./flatbuffers",
                 },
             },
-            'sources':
+            "sources":
             [
                 "flatbuffers/samples/sample_text.cpp",
                 "flatbuffers/samples/monster_generated.h",
             ],
-            'dependencies':
+            "dependencies":
             [
                 "flatbuffers_idl",
             ],

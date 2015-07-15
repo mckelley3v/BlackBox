@@ -2,16 +2,13 @@
 #include "m1/impl/graphics_device_impl.hpp"
 //#include "m1/d3d_11/graphics_device_d3d_11.hpp"
 //#include "m1/d3d_12/graphics_device_d3d_12.hpp"
-//#include "m1/gl_2_1/graphics_device_gl_2_1.hpp"
-//#include "m1/gl_3_3_core/graphics_device_gl_3_3_core.hpp"
-//#include "m1/gl_4_4_core/graphics_device_gl_4_4_core.hpp"
-//#include "m1/gles_2_0/graphics_device_gles_2_0.hpp"
-//#include "m1/gles_3_1/graphics_device_gles_3_1.hpp"
-//#include "m1/vk_1_0/graphics_device_vk_1_0.hpp"
+//#include "m1/gl_2/graphics_device_gl_2.hpp"
+//#include "m1/gl_3/graphics_device_gl_3.hpp"
+//#include "m1/gl_4/graphics_device_gl_4.hpp"
+//#include "m1/gles_2/graphics_device_gles_2.hpp"
+//#include "m1/gles_3/graphics_device_gles_3.hpp"
+//#include "m1/vk_1/graphics_device_vk_1.hpp"
 #include "m1/impl/graphics_command_queue_impl.hpp"
-#include "m1/impl/graphics_texture_source_impl.hpp"
-#include "m1/impl/graphics_texture_color_target_impl.hpp"
-#include "m1/impl/graphics_texture_depth_target_impl.hpp"
 #include "m1/impl/graphics_draw_target_impl.hpp"
 #include "m1/impl/graphics_memory_buffer_impl.hpp"
 #include "m1/impl/graphics_geometry_index_buffer_impl.hpp"
@@ -19,10 +16,9 @@
 #include "m1/impl/graphics_shader_const_buffer_impl.hpp"
 #include "m1/impl/graphics_shader_mutable_buffer_impl.hpp"
 #include "m1/impl/graphics_shader_instance_buffer_impl.hpp"
+#include "m1/impl/graphics_texture_impl.hpp"
 #include "m1/graphics_command_queue.hpp"
-#include "m1/graphics_texture_source.hpp"
-#include "m1/graphics_texture_color_target.hpp"
-#include "m1/graphics_texture_depth_target.hpp"
+#include "m1/graphics_texture.hpp"
 #include "m1/graphics_draw_target.hpp"
 #include "m1/graphics_memory_buffer.hpp"
 #include "m1/graphics_geometry_index_buffer.hpp"
@@ -54,39 +50,39 @@
         #endif
             break;
 
-        case graphics_api::gl_2_1:
-        #ifdef M1_GRAPHICS_DEVICE_GL_2_1_HPP
-            m_ImplPtr = std::make_shared<graphics_device_gl_2_1>();
+        case graphics_api::gl_2:
+        #ifdef M1_GRAPHICS_DEVICE_GL_2_HPP
+            m_ImplPtr = std::make_shared<graphics_device_gl_2>();
         #endif
             break;
 
-        case graphics_api::gl_3_3_core:
-        #ifdef M1_GRAPHICS_DEVICE_GL_3_3_CORE_HPP
-            m_ImplPtr = std::make_shared<graphics_device_gl_3_3_core>();
+        case graphics_api::gl_3:
+        #ifdef M1_GRAPHICS_DEVICE_GL_3_HPP
+            m_ImplPtr = std::make_shared<graphics_device_gl_3>();
         #endif
             break;
 
-        case graphics_api::gl_4_4_core:
-        #ifdef M1_GRAPHICS_DEVICE_GL_4_4_CORE_HPP
-            m_ImplPtr = std::make_shared<graphics_device_gl_4_4_core>();
+        case graphics_api::gl_4:
+        #ifdef M1_GRAPHICS_DEVICE_GL_4_HPP
+            m_ImplPtr = std::make_shared<graphics_device_gl_4>();
         #endif
             break;
 
-        case graphics_api::gles_2_0:
-        #ifdef M1_GRAPHICS_DEVICE_GLES_2_0_HPP
-            m_ImplPtr = std::make_shared<graphics_device_gles_2_0>();
+        case graphics_api::gles_2:
+        #ifdef M1_GRAPHICS_DEVICE_GLES_2_HPP
+            m_ImplPtr = std::make_shared<graphics_device_gles_2>();
         #endif
             break;
 
-        case graphics_api::gles_3_1:
-        #ifdef M1_GRAPHICS_DEVICE_GLES_3_1_HPP
-            m_ImplPtr = std::make_shared<graphics_device_gles_3_1>();
+        case graphics_api::gles_3:
+        #ifdef M1_GRAPHICS_DEVICE_GLES_3_HPP
+            m_ImplPtr = std::make_shared<graphics_device_gles_3>();
         #endif
             break;
 
-        case graphics_api::vk_1_0:
-        #ifdef M1_GRAPHICS_DEVICE_VK_1_0_HPP
-            m_ImplPtr = std::make_shared<graphics_device_vk_1_0>();
+        case graphics_api::vk_1:
+        #ifdef M1_GRAPHICS_DEVICE_VK_1_HPP
+            m_ImplPtr = std::make_shared<graphics_device_vk_1>();
         #endif
             break;
     }
@@ -109,42 +105,10 @@ m1::graphics_command_queue m1::graphics_device::make_command_queue()
 
 // ------------------------------------------------------------------------------------------------------
 
-m1::graphics_texture_source m1::graphics_device::make_texture_source(graphics_texture_source_definition const &definition)
-{
-    assert(m_ImplPtr && "Invalid graphics_device");
-    return graphics_texture_source(m_ImplPtr->make_texture_source(definition));
-}
-
-// ------------------------------------------------------------------------------------------------------
-
-m1::graphics_texture_color_target m1::graphics_device::make_texture_color_target(graphics_texture_color_target_definition const &definition)
-{
-    assert(m_ImplPtr && "Invalid graphics_device");
-    return graphics_texture_color_target(m_ImplPtr->make_texture_color_target(definition));
-}
-
-// ------------------------------------------------------------------------------------------------------
-
-m1::graphics_texture_depth_target m1::graphics_device::make_texture_depth_target(graphics_texture_depth_target_definition const &definition)
-{
-    assert(m_ImplPtr && "Invalid graphics_device");
-    return graphics_texture_depth_target(m_ImplPtr->make_texture_depth_target(definition));
-}
-
-// ------------------------------------------------------------------------------------------------------
-
 m1::graphics_draw_target m1::graphics_device::make_draw_target(graphics_draw_target_definition const &definition)
 {
     assert(m_ImplPtr && "Invalid graphics_device");
     return graphics_draw_target(m_ImplPtr->make_draw_target(definition));
-}
-
-// ------------------------------------------------------------------------------------------------------
-
-m1::graphics_memory_buffer m1::graphics_device::make_memory_buffer(graphics_memory_buffer_definition const &definition)
-{
-    assert(m_ImplPtr && "Invalid graphics_device");
-    return graphics_memory_buffer(m_ImplPtr->make_memory_buffer(definition));
 }
 
 // ------------------------------------------------------------------------------------------------------
@@ -161,6 +125,14 @@ m1::graphics_geometry_vertex_buffer m1::graphics_device::make_geometry_vertex_bu
 {
     assert(m_ImplPtr && "Invalid graphics_device");
     return graphics_geometry_vertex_buffer(m_ImplPtr->make_geometry_vertex_buffer(definition));
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_memory_buffer m1::graphics_device::make_memory_buffer(graphics_memory_buffer_definition const &definition)
+{
+    assert(m_ImplPtr && "Invalid graphics_device");
+    return graphics_memory_buffer(m_ImplPtr->make_memory_buffer(definition));
 }
 
 // ------------------------------------------------------------------------------------------------------
@@ -185,6 +157,38 @@ m1::graphics_shader_instance_buffer m1::graphics_device::make_shader_instance_bu
 {
     assert(m_ImplPtr && "Invalid graphics_device");
     return graphics_shader_instance_buffer(m_ImplPtr->make_shader_instance_buffer(definition));
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_texture_1D m1::graphics_device::make_texture(graphics_texture_1D_definition const &definition)
+{
+    assert(m_ImplPtr && "Invalid graphics_device");
+    return graphics_texture_1D(m_ImplPtr->make_texture(definition));
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_texture_2D m1::graphics_device::make_texture(graphics_texture_2D_definition const &definition)
+{
+    assert(m_ImplPtr && "Invalid graphics_device");
+    return graphics_texture_2D(m_ImplPtr->make_texture(definition));
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_texture_3D m1::graphics_device::make_texture(graphics_texture_3D_definition const &definition)
+{
+    assert(m_ImplPtr && "Invalid graphics_device");
+    return graphics_texture_3D(m_ImplPtr->make_texture(definition));
+}
+
+// ------------------------------------------------------------------------------------------------------
+
+m1::graphics_texture_cube m1::graphics_device::make_texture(graphics_texture_cube_definition const &definition)
+{
+    assert(m_ImplPtr && "Invalid graphics_device");
+    return graphics_texture_cube(m_ImplPtr->make_texture(definition));
 }
 
 // ------------------------------------------------------------------------------------------------------

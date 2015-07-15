@@ -7,11 +7,18 @@ namespace m1
 {
     // ==================================================================================================
 
+    class graphics_draw_target_state;
+
+    // ==================================================================================================
+
     class graphics_draw_target_impl
     {
     public:
         graphics_draw_target_impl() = default;
         virtual ~graphics_draw_target_impl() = default;
+
+        virtual graphics_draw_target_state& state() = 0;
+        virtual graphics_draw_target_state const& get_state() const = 0;
 
     private:
         graphics_draw_target_impl(graphics_draw_target_impl &&rhs) = delete;

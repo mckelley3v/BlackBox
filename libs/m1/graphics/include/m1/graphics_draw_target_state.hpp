@@ -1,5 +1,5 @@
-#ifndef M1_GRAPHICS_FRAMEBUFFER_STATE_HPP
-#define M1_GRAPHICS_FRAMEBUFFER_STATE_HPP
+#ifndef M1_GRAPHICS_DRAW_TARGET_STATE_HPP
+#define M1_GRAPHICS_DRAW_TARGET_STATE_HPP
 
 #include "m1/graphics_state.hpp"
 
@@ -76,7 +76,7 @@ namespace m1
 
         graphics_multisampling_state m_Multisampling =
             {
-                graphics_multisampling_count::x1,    // count
+                graphics_multisampling_count::x1, // samples
                 graphics_multisampling_bits::all, // mask
             };
     };
@@ -110,4 +110,4 @@ template <typename T, typename ...Ts> void m1::graphics_draw_target_state::set_s
 
 // =====================================================================================================================
 
-#endif // M1_GRAPHICS_FRAMEBUFFER_STATE_HPP
+#endif // M1_GRAPHICS_DRAW_TARGET_STATE_HPP

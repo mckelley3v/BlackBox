@@ -14,38 +14,40 @@ namespace m1
         none,
         d3d_11,
         d3d_12,
-        gl_2_1,
-        gl_3_3_core,
-        gl_4_4_core,
-        gles_2_0,
-        gles_3_1,
-        vk_1_0,
+        gl_2,
+        gl_3,
+        gl_4,
+        gles_2,
+        gles_3,
+        vk_1,
     };
 
     // --------------------------------------------------------------------------------------------------
 
     class graphics_command_queue;
-    class graphics_texture_source;
-    class graphics_texture_color_target;
-    class graphics_texture_depth_target;
     class graphics_draw_target;
-    class graphics_memory_buffer;
     class graphics_geometry_index_buffer;
     class graphics_geometry_vertex_buffer;
+    class graphics_memory_buffer;
     class graphics_shader_const_buffer;
     class graphics_shader_mutable_buffer;
     class graphics_shader_instance_buffer;
+    class graphics_texture_1D;
+    class graphics_texture_2D;
+    class graphics_texture_3D;
+    class graphics_texture_cube;
 
-    struct graphics_texture_source_definition;
-    struct graphics_texture_color_target_definition;
-    struct graphics_texture_depth_target_definition;
     struct graphics_draw_target_definition;
-    struct graphics_memory_buffer_definition;
     struct graphics_geometry_index_buffer_definition;
     struct graphics_geometry_vertex_buffer_definition;
+    struct graphics_memory_buffer_definition;
     struct graphics_shader_const_buffer_definition;
     struct graphics_shader_mutable_buffer_definition;
     struct graphics_shader_instance_buffer_definition;
+    struct graphics_texture_1D_definition;
+    struct graphics_texture_2D_definition;
+    struct graphics_texture_3D_definition;
+    struct graphics_texture_cube_definition;
 
     // --------------------------------------------------------------------------------------------------
 
@@ -68,16 +70,17 @@ namespace m1
 
         // factory:
         graphics_command_queue make_command_queue();
-        graphics_texture_source make_texture_source(graphics_texture_source_definition const &definition);
-        graphics_texture_color_target make_texture_color_target(graphics_texture_color_target_definition const &definition);
-        graphics_texture_depth_target make_texture_depth_target(graphics_texture_depth_target_definition const &definition);
         graphics_draw_target make_draw_target(graphics_draw_target_definition const &definition);
-        graphics_memory_buffer make_memory_buffer(graphics_memory_buffer_definition const &definition);
         graphics_geometry_index_buffer make_geometry_index_buffer(graphics_geometry_index_buffer_definition const &definition);
         graphics_geometry_vertex_buffer make_geometry_vertex_buffer(graphics_geometry_vertex_buffer_definition const &definition);
+        graphics_memory_buffer make_memory_buffer(graphics_memory_buffer_definition const &definition);
         graphics_shader_const_buffer make_shader_const_buffer(graphics_shader_const_buffer_definition const &definition);
         graphics_shader_mutable_buffer make_shader_mutable_buffer(graphics_shader_mutable_buffer_definition const &definition);
         graphics_shader_instance_buffer make_shader_instance_buffer(graphics_shader_instance_buffer_definition const &definition);
+        graphics_texture_1D make_texture(graphics_texture_1D_definition const &definition);
+        graphics_texture_2D make_texture(graphics_texture_2D_definition const &definition);
+        graphics_texture_3D make_texture(graphics_texture_3D_definition const &definition);
+        graphics_texture_cube make_texture(graphics_texture_cube_definition const &definition);
 
         void execute(graphics_command_queue const &queue);
 
