@@ -1,14 +1,13 @@
-{
+﻿{
     "targets":
     [
         {
-            "target_name": "all",
+            "target_name": "BlackBox",
             "type": "none",
             "sources":
             [
-                "all.gyp",
+                "BlackBox.gyp",
                 "include.gypi",
-                "configurations.gypi",
                 "external_libs.gypi",
             ],
             "dependencies":

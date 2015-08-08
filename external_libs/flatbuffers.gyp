@@ -1,8 +1,4 @@
-{
-    "includes":
-    [
-        "../configurations.gypi",
-    ],
+﻿{
     "targets":
     [
         {
