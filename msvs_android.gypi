@@ -14,7 +14,7 @@
             "ClCompile":
             {
                 "TreatWarningAsError": "true",
-                # "ExceptionHandling": "Enabled",
+                "ExceptionHandling": "Enabled",
                 "AdditionalIncludeDirectories":
                 [
                     "$(VS_NdkRoot)\\sources\\android\\support\\include",

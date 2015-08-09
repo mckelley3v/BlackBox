@@ -23,6 +23,25 @@ import gyp.MSVSVersion as MSVSVersion
 from gyp.common import GypError
 from gyp.common import OrderedSet
 
+# Replace ExceptionHandling options to allow Android appropriate values
+MSVSSettings._Same(MSVSSettings._compile, 'ExceptionHandling',
+                   MSVSSettings._Enumeration(['false',
+                                              'Sync',  # /EHsc
+                                              'Async'],  # /EHa
+                                             new=['SyncCThrow', # /EHs
+                                                  'Disabled',
+                                                  'Enabled',
+                                                  'UnwindTables']))
+
+# Add CppLanguageStandard option
+MSVSSettings._Same(MSVSSettings._compile, 'CppLanguageStandard',
+                   MSVSSettings._Enumeration(['c++98',
+                                              'c++11',
+                                              'c++1y',
+                                              'gnu++98',
+                                              'gnu++11',
+                                              'gnu++1y']))
+                                                  
 # TODO: Remove once bots are on 2.7, http://crbug.com/241769
 def _import_OrderedDict():
   import collections
@@ -54,7 +73,7 @@ generator_default_variables = {
     'SHARED_LIB_SUFFIX': '.dll',
     'INTERMEDIATE_DIR': '$(IntDir)',
     'SHARED_INTERMEDIATE_DIR': '$(OutDir)obj/global_intermediate',
-    'OS': 'win',
+    'OS': 'android',
     'PRODUCT_DIR': '$(OutDir)',
     'LIB_DIR': '$(OutDir)lib',
     'RULE_INPUT_ROOT': '$(InputName)',
