@@ -1,0 +1,12 @@
+{
+    "Name": "ConstInt",
+    "InputPorts": null,
+    "OutputPorts":
+    [
+        {"PortName": "Value", "TypeName": "int"}
+    ],
+    "Annotations":
+    {
+        "Process": "Never"
+    }
+},

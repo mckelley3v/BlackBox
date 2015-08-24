@@ -1,0 +1,16 @@
+{
+    "Name": "AddInt",
+    "InputPorts":
+    [
+        {"PortName": "Lhs", "TypeName": "int"},
+        {"PortName": "Rhs", "TypeName": "int"}
+    ],
+    "OutputPorts":
+    [
+        {"PortName": "Result", "TypeName": "int"}
+    ],
+    "Annotations":
+    {
+        "Process": "Always"
+    }
+}
