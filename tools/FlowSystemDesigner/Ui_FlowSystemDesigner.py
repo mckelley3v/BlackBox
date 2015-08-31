@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\Code\BlackBox\tools\FlowEditor\Ui_FlowSystemDesigner.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike\Code\BlackBox\tools\FlowSystemDesigner\Ui_FlowSystemDesigner.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -35,7 +35,7 @@ class Ui_FlowSystemDesigner(object):
         self.systemDesignerArea.setWidgetResizable(True)
         self.systemDesignerArea.setObjectName(_fromUtf8("systemDesignerArea"))
         self.systemDesignerAreaContents = QtGui.QWidget()
-        self.systemDesignerAreaContents.setGeometry(QtCore.QRect(0, 0, 760, 723))
+        self.systemDesignerAreaContents.setGeometry(QtCore.QRect(0, 0, 758, 723))
         self.systemDesignerAreaContents.setObjectName(_fromUtf8("systemDesignerAreaContents"))
         self.systemDesignerArea.setWidget(self.systemDesignerAreaContents)
         self.gridLayout.addWidget(self.systemDesignerArea, 0, 0, 1, 1)
@@ -62,9 +62,9 @@ class Ui_FlowSystemDesigner(object):
         self.gridLayout_3 = QtGui.QGridLayout(self.componentDefinitionListDockContents)
         self.gridLayout_3.setMargin(0)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        self.componentDefinitionList = QtGui.QListView(self.componentDefinitionListDockContents)
+        self.componentDefinitionList = QtGui.QListWidget(self.componentDefinitionListDockContents)
         self.componentDefinitionList.setObjectName(_fromUtf8("componentDefinitionList"))
-        self.gridLayout_3.addWidget(self.componentDefinitionList, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.componentDefinitionList, 0, 1, 1, 1)
         self.componentDefinitionListDock.setWidget(self.componentDefinitionListDockContents)
         FlowSystemDesigner.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.componentDefinitionListDock)
         self.componentActiveDefinitionDock = QtGui.QDockWidget(FlowSystemDesigner)
@@ -74,9 +74,9 @@ class Ui_FlowSystemDesigner(object):
         self.gridLayout_4 = QtGui.QGridLayout(self.componentActiveDefinitionDockContents)
         self.gridLayout_4.setMargin(0)
         self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
-        self.flowComponentDefinitionView = FlowComponentDefinitionEditor(self.componentActiveDefinitionDockContents)
-        self.flowComponentDefinitionView.setObjectName(_fromUtf8("flowComponentDefinitionView"))
-        self.gridLayout_4.addWidget(self.flowComponentDefinitionView, 0, 0, 1, 1)
+        self.flowComponentDefinitionEditor = FlowComponentDefinitionEditor(self.componentActiveDefinitionDockContents)
+        self.flowComponentDefinitionEditor.setObjectName(_fromUtf8("flowComponentDefinitionEditor"))
+        self.gridLayout_4.addWidget(self.flowComponentDefinitionEditor, 0, 0, 1, 1)
         self.componentActiveDefinitionDock.setWidget(self.componentActiveDefinitionDockContents)
         FlowSystemDesigner.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.componentActiveDefinitionDock)
         self.actionFileOpen = QtGui.QAction(FlowSystemDesigner)
@@ -127,6 +127,7 @@ class Ui_FlowSystemDesigner(object):
         QtCore.QObject.connect(self.componentDefinitionListDock, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionViewComponentDefinitionList.setChecked)
         QtCore.QObject.connect(self.componentActiveDefinitionDock, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionViewComponentActiveDefinition.setChecked)
         QtCore.QObject.connect(self.actionProjectAddComponentDefinition, QtCore.SIGNAL(_fromUtf8("triggered()")), FlowSystemDesigner.addComponentDefinition)
+        QtCore.QObject.connect(self.componentDefinitionList, QtCore.SIGNAL(_fromUtf8("currentTextChanged(QString)")), self.flowComponentDefinitionEditor.setFlowComponentDefinitionFile)
         QtCore.QMetaObject.connectSlotsByName(FlowSystemDesigner)
 
     def retranslateUi(self, FlowSystemDesigner):

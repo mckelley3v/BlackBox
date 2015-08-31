@@ -2,13 +2,9 @@
 SET INPUT_FILE=%1
 SET INPUT_FILE_EXT=%~x1
 SET OUTPUT_FILE=%~dpn1.py
-IF "%INPUT_FILE_EXT%" NEQ ".ui" GOTO :ERROR
-CALL pyuic4.bat %INPUT_FILE% > %OUTPUT_FILE%
-PAUSE
-GOTO :END
-
-:ERROR
-ECHO Invalid extension: "%INPUT_FILE_EXT%" Expected: ".ui"
-PAUSE
-
-:END
+IF "%INPUT_FILE_EXT%" NEQ ".ui" (
+	ECHO Invalid extension: "%INPUT_FILE_EXT%" Expected: ".ui"
+	PAUSE
+) ELSE (
+	CALL pyuic4.bat %INPUT_FILE% > %OUTPUT_FILE%
+)

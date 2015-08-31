@@ -1,4 +1,4 @@
-from PyQt4 import QtCore, QtGui
+﻿from PyQt4 import QtCore, QtGui
 from Ui_FlowSystemDesigner import Ui_FlowSystemDesigner
 
 class FlowSystemDesigner(QtGui.QMainWindow):
@@ -23,4 +23,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
         print "helpAbout"
 
     def addComponentDefinition(self):
-        print "addComponentDefinition"
+        fileName = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
+
+        if not fileName is None:
+            self.ui.componentDefinitionList.addItem(fileName)

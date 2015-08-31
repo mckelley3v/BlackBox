@@ -6,7 +6,7 @@
         {"PortName": "Value", "TypeName": "int"}
     ],
     "Annotations":
-    {
-        "Process": "Never"
-    }
+    [
+        {"Process": "Never"}
+    ]
 },

@@ -28,7 +28,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>760</width>
+         <width>758</width>
          <height>723</height>
         </rect>
        </property>
@@ -95,8 +95,8 @@
      <property name="margin">
       <number>0</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QListView" name="componentDefinitionList"/>
+     <item row="0" column="1">
+      <widget class="QListWidget" name="componentDefinitionList"/>
      </item>
     </layout>
    </widget>
@@ -114,7 +114,7 @@
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="FlowComponentDefinitionEditor" name="flowComponentDefinitionView"/>
+      <widget class="FlowComponentDefinitionEditor" name="flowComponentDefinitionEditor"/>
      </item>
     </layout>
    </widget>
@@ -299,8 +299,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>127</x>
-     <y>167</y>
+     <x>128</x>
+     <y>165</y>
     </hint>
    </hints>
   </connection>
@@ -365,6 +365,22 @@
     <hint type="destinationlabel">
      <x>511</x>
      <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>componentDefinitionList</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>flowComponentDefinitionEditor</receiver>
+   <slot>setFlowComponentDefinitionFile(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>128</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>542</y>
     </hint>
    </hints>
   </connection>

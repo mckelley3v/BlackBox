@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\Code\BlackBox\tools\FlowEditor\Ui_FlowComponentInstance.ui'
+# Form implementation generated from reading ui file 'C:\Users\Mike\Code\BlackBox\tools\FlowSystemDesigner\Ui_FlowComponentInstance.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
