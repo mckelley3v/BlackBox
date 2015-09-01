@@ -1,4 +1,5 @@
-﻿from PyQt4 import QtCore, QtGui
+﻿import Flow
+from PyQt4 import QtCore, QtGui
 from Ui_FlowSystemDesigner import Ui_FlowSystemDesigner
 
 class FlowSystemDesigner(QtGui.QMainWindow):
@@ -6,6 +7,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
         super(FlowSystemDesigner, self).__init__(parent)
         self.ui = Ui_FlowSystemDesigner()
         self.ui.setupUi(self)
+        self.activeProject = Flow.SystemDefinitionDesigner.fromNew("Untitled")
 
     def newProject(self):
         print "newProject"
@@ -26,4 +28,6 @@ class FlowSystemDesigner(QtGui.QMainWindow):
         fileName = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
 
         if not fileName is None:
-            self.ui.componentDefinitionList.addItem(fileName)
+            componentDefinition = self.activeProject.loadComponentDefinition(fileName)
+            if not componentDefinition is None:
+                self.ui.componentDefinitionList.addItem(fileName)
