@@ -10,7 +10,7 @@
         {"PortName": "Result", "TypeName": "int"}
     ],
     "Annotations":
-    [
-        {"Process": "Always"}
-    ]
+    {
+        "Process": "Always"
+    }
 }

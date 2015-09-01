@@ -21,6 +21,7 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Flow.py" />
     <Compile Include="FlowComponentDefinitionEditor.py" />
     <Compile Include="FlowComponentDefinitionEditor_plugin.py" />
     <Compile Include="FlowComponentInstance.py" />
