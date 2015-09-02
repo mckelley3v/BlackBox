@@ -22,39 +22,29 @@ class FlowComponentDefinitionEditor(QtGui.QWidget):
         super(FlowComponentDefinitionEditor, self).__init__(parent)
         self.ui = Ui_FlowComponentDefinitionEditor()
         self.ui.setupUi(self)
-        self._clearTableWidgets()
-        self.FlowComponentDefinitionFile = ""
+        self.componentDefinition = None
+        self.clear()
 
-    def _get_flowComponentDefinitionFile(self):
-        return self.FlowComponentDefinitionFile
-
-    def _set_flowComponentDefinitionFile(self, value):
-        self.FlowComponentDefinitionFile = value
-
-    flowComponentDefinitionFile = QtCore.pyqtProperty(str, _get_flowComponentDefinitionFile, _set_flowComponentDefinitionFile)
-
-    def setFlowComponentDefinitionFile(self, value):
-        self._clearTableWidgets()
-
-        if not value:
-            return
-
+    def setFlowComponentDefinition(self, componentDefinition):
         try:
-            componentDefinition = None
-            with open(value, "r") as flowDefinitionFile:
-                componentDefinition = Flow.ComponentDefinition.fromFile(flowDefinitionFile)
+            self.clear()
 
-            if not componentDefinition is None:
-                self.ui.flowComponentDefinitionGroup.setTitle(QtCore.QString(componentDefinition.Name))
-                assign_dict_list_to_table([portEntry.__dict__ for portEntry in componentDefinition.InputPorts], self.ui.inputPortsTable)
-                assign_dict_list_to_table([portEntry.__dict__ for portEntry in componentDefinition.OutputPorts], self.ui.outputPortsTable)
-                assign_dict_list_to_table([componentDefinition.Annotations], self.ui.annotationsTable)
+            if not componentDefinition:
+                return
 
-                self.FlowComponentDefinitionFile = value
+            if componentDefinition is not None:
+                self.ui.flowComponentDefinitionGroup.setTitle(QtCore.QString(componentDefinition.name))
+                assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.input_ports], self.ui.inputPortsTable)
+                assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.output_ports], self.ui.outputPortsTable)
+                assign_dict_list_to_table([componentDefinition.annotations], self.ui.annotationsTable)
+                self.componentDefinition = componentDefinition
+
         except:
+            self.clear()
             traceback.print_exc()
 
-    def _clearTableWidgets(self):
+    def clear(self):
+        self.componentDefinition = None
         clear_table_widget(self.ui.inputPortsTable)
         clear_table_widget(self.ui.outputPortsTable)
         clear_table_widget(self.ui.annotationsTable)

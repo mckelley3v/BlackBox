@@ -371,16 +371,16 @@
   <connection>
    <sender>componentDefinitionList</sender>
    <signal>currentTextChanged(QString)</signal>
-   <receiver>flowComponentDefinitionEditor</receiver>
-   <slot>setFlowComponentDefinitionFile(QString)</slot>
+   <receiver>FlowSystemDesigner</receiver>
+   <slot>showComponentDefinition(QString)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>128</x>
      <y>176</y>
     </hint>
     <hint type="destinationlabel">
-     <x>128</x>
-     <y>542</y>
+     <x>511</x>
+     <y>383</y>
     </hint>
    </hints>
   </connection>
@@ -392,5 +392,6 @@
   <slot>saveProjectAs()</slot>
   <slot>helpAbout()</slot>
   <slot>addComponentDefinition()</slot>
+  <slot>showComponentDefinition(QString)</slot>
  </slots>
 </ui>

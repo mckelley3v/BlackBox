@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Flow Component Definition Editor</string>
   </property>
-  <property name="flowComponentDefinitionFile" stdset="0">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>
@@ -111,8 +108,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>98</width>
-           <height>71</height>
+           <width>480</width>
+           <height>252</height>
           </rect>
          </property>
          <attribute name="label">
@@ -204,7 +201,4 @@
  </widget>
  <resources/>
  <connections/>
- <slots>
-  <slot>setFlowComponentDefinitionFile(QString)</slot>
- </slots>
 </ui>

@@ -1,6 +1,6 @@
 {
     "Name": "ConstInt",
-    "InputPorts": null,
+    "InputPorts": [],
     "OutputPorts":
     [
         {"PortName": "Value", "TypeName": "int"}
@@ -8,5 +8,5 @@
     "Annotations":
     {
         "Process": "Never"
-    |
-},
+    }
+}

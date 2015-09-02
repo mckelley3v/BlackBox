@@ -26,7 +26,6 @@ class Ui_FlowComponentDefinitionEditor(object):
     def setupUi(self, FlowComponentDefinitionEditor):
         FlowComponentDefinitionEditor.setObjectName(_fromUtf8("FlowComponentDefinitionEditor"))
         FlowComponentDefinitionEditor.resize(482, 357)
-        FlowComponentDefinitionEditor.setProperty("flowComponentDefinitionFile", _fromUtf8(""))
         self.verticalLayout = QtGui.QVBoxLayout(FlowComponentDefinitionEditor)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setSpacing(0)
@@ -64,7 +63,7 @@ class Ui_FlowComponentDefinitionEditor(object):
         self.gridLayout_8.addWidget(self.inputPortsTable, 0, 0, 1, 1)
         self.interfaceGroups.addItem(self.inputPortsGroup, _fromUtf8(""))
         self.outputGroup = QtGui.QWidget()
-        self.outputGroup.setGeometry(QtCore.QRect(0, 0, 98, 71))
+        self.outputGroup.setGeometry(QtCore.QRect(0, 0, 480, 252))
         self.outputGroup.setObjectName(_fromUtf8("outputGroup"))
         self.gridLayout_9 = QtGui.QGridLayout(self.outputGroup)
         self.gridLayout_9.setMargin(0)
