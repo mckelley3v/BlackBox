@@ -1,5 +1,6 @@
 ﻿import json
 import os.path
+from collections import OrderedDict
 
 class InputPortDefinition(object):
     def __init__(self,
@@ -34,10 +35,12 @@ class InputPortDefinition(object):
         return None
 
     def as_dict(self):
-        return {"PortName": self.port_name,
-                "TypeName": self.type_name,
-                "IsOptional": self.is_optional,
-                "IsMultiplex": self.is_multiplex}
+        d = OrderedDict()
+        d["PortName"] = self.port_name
+        d["TypeName"] = self.type_name
+        d["IsOptional"] = self.is_optional
+        d["IsMultiplex"] = self.is_multiplex
+        return d
 
 class OutputPortDefinition(object):
     def __init__(self,
@@ -62,8 +65,10 @@ class OutputPortDefinition(object):
         return None
 
     def as_dict(self):
-        return {"PortName": self.port_name,
-                "TypeName": self.type_name}
+        d = OrderedDict()
+        d["PortName"] = self.port_name
+        d["TypeName"] = self.type_name
+        return d
 
 class ComponentDefinition(object):
     def __init__(self,
@@ -109,10 +114,12 @@ class ComponentDefinition(object):
         return cls.from_dict(json.load(fin))
 
     def as_dict(self):
-        return {"Name": self.name,
-                "InputPorts": [port.as_dict() for port in self.input_ports],
-                "OutputPorts": [port.as_dict() for port in self.output_ports],
-                "Annotations": self.annotations}
+        d = OrderedDict()
+        d["Name"] = self.name
+        d["InputPorts"] = [port.as_dict() for port in self.input_ports]
+        d["OutputPorts"] = [port.as_dict() for port in self.output_ports]
+        d["Annotations"] = self.annotations
+        return d
 
 class ComponentDefinitionFile(ComponentDefinition):
     def __init__(self,
@@ -171,9 +178,11 @@ class SystemComponentInstance(object):
         return None
 
     def as_dict(self):
-        return {"DefinitionName": self.definition_name,
-                "InstanceName": self.instance_name,
-                "InstanceData": self.instance_data}
+        d = OrderedDict()
+        d["DefinitionName"] = self.definition_name
+        d["InstanceName"] = self.instance_name
+        d["InstanceData"] = self.instance_data
+        return d
 
 class SystemConnectionPort(object):
     def __init__(self,
@@ -198,8 +207,10 @@ class SystemConnectionPort(object):
         return None
 
     def as_dict(self):
-        return {"ComponentInstanceName": self.component_instance_name,
-                "PortName": self.port_name}
+        d = OrderedDict()
+        d["ComponentInstanceName"] = self.component_instance_name
+        d["PortName"] = self.port_name
+        return d
 
 class SystemConnection(object):
     def __init__(self,
@@ -226,8 +237,10 @@ class SystemConnection(object):
         return None
 
     def as_dict(self):
-        return {"SourcePort": self.source_port.as_dict(),
-                "TargetPort": self.target_port.as_dict()}
+        d = OrderedDict()
+        d["SourcePort"] = self.source_port.as_dict()
+        d["TargetPort"] = self.target_port.as_dict()
+        return d
 
 class SystemDefinition(ComponentDefinition):
     def __init__(self,
@@ -293,12 +306,12 @@ class SystemDefinitionBuilder(SystemDefinition):
     @classmethod
     def from_new(cls, name):
         return cls.from_dict({"Name": name,
-                             "InputPorts": [],
-                             "OutputPorts": [],
-                             "Annotations": {},
-                             "ComponentInstances": [],
-                             "SystemConnections": [],
-                             "ComponentDefinitions": {}})
+                              "InputPorts": [],
+                              "OutputPorts": [],
+                              "Annotations": {},
+                              "ComponentInstances": [],
+                              "SystemConnections": [],
+                              "ComponentDefinitions": {}})
 
     @classmethod
     def from_file(cls, fin):
@@ -307,10 +320,11 @@ class SystemDefinitionBuilder(SystemDefinition):
         self = super(SystemDefinitionBuilder, cls).from_dict(proj_dict)
         if self is not None:
             self.path = fin.name
-            component_definitions = proj_dict.get("ComponentDefinitions", {})
+            component_definitions = proj_dict.get("ComponentDefinitions", []) # list of paths
 
-            if isinstance(component_definitions, dict):
+            if isinstance(component_definitions, list):
 
+                # convert to dict of name: componentDefinition
                 self.component_definitions = {comp.name : comp for comp in map(self.load_component_definition, component_definitions)}
                 return self
 
@@ -318,20 +332,19 @@ class SystemDefinitionBuilder(SystemDefinition):
 
     def as_dict(self):
         d = super(SystemDefinitionBuilder, self).as_dict()
-        d["ComponentDefinitions"] = [os.path.relpath(comp.path, self.path) for comp in self.component_definitions.itervalues()]
+        d["ComponentDefinitions"] = [os.path.relpath(comp.path, os.path.dirname(self.path)) for comp in self.component_definitions.itervalues()]
         return d
 
     def save(self, fout):
         self.path = fout.name
         json.dump(self.as_dict(),
                   fout,
-                  sort_keys = True,
                   indent = 4,
                   separators = (',', ': '))
 
     def load_component_definition(self, component_definition_path):
         if not os.path.isabs(component_definition_path):
-            component_definition_path = os.path.join(self.path, component_definition_path)
+            component_definition_path = os.path.join(os.path.dirname(self.path), component_definition_path)
 
         component_definition = None
         with open(component_definition_path, "r") as fin:

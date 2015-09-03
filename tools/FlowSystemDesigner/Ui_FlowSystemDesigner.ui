@@ -384,8 +384,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>FlowSystemDesigner</sender>
+   <signal>activeProjectChanged()</signal>
+   <receiver>FlowSystemDesigner</receiver>
+   <slot>refreshProject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>511</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
+  <signal>activeProjectChanged()</signal>
   <slot>newProject()</slot>
   <slot>openProject()</slot>
   <slot>saveProject()</slot>
@@ -393,5 +410,6 @@
   <slot>helpAbout()</slot>
   <slot>addComponentDefinition()</slot>
   <slot>showComponentDefinition(QString)</slot>
+  <slot>refreshProject()</slot>
  </slots>
 </ui>

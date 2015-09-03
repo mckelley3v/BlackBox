@@ -1,9 +1,12 @@
 {
-    "Annotations": {},
-    "ComponentDefinitions": [],
-    "ComponentInstances": [],
-    "InputPorts": [],
     "Name": "TestAddNetwork",
+    "InputPorts": [],
     "OutputPorts": [],
-    "SystemConnections": []
+    "Annotations": {},
+    "ComponentInstances": [],
+    "SystemConnections": [],
+    "ComponentDefinitions": [
+        "AddInt.json",
+        "ConstInt.json"
+    ]
 }

@@ -128,6 +128,7 @@ class Ui_FlowSystemDesigner(object):
         QtCore.QObject.connect(self.componentActiveDefinitionDock, QtCore.SIGNAL(_fromUtf8("visibilityChanged(bool)")), self.actionViewComponentActiveDefinition.setChecked)
         QtCore.QObject.connect(self.actionProjectAddComponentDefinition, QtCore.SIGNAL(_fromUtf8("triggered()")), FlowSystemDesigner.addComponentDefinition)
         QtCore.QObject.connect(self.componentDefinitionList, QtCore.SIGNAL(_fromUtf8("currentTextChanged(QString)")), FlowSystemDesigner.showComponentDefinition)
+        QtCore.QObject.connect(FlowSystemDesigner, QtCore.SIGNAL(_fromUtf8("activeProjectChanged()")), FlowSystemDesigner.refreshProject)
         QtCore.QMetaObject.connectSlotsByName(FlowSystemDesigner)
 
     def retranslateUi(self, FlowSystemDesigner):
