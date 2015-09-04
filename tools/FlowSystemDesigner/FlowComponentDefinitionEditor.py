@@ -25,7 +25,7 @@ class FlowComponentDefinitionEditor(QtGui.QWidget):
         self.componentDefinition = None
         self.clear()
 
-    def setFlowComponentDefinition(self, componentDefinition):
+    def setComponentDefinition(self, componentDefinition):
         try:
             self.clear()
 
@@ -33,7 +33,7 @@ class FlowComponentDefinitionEditor(QtGui.QWidget):
                 return
 
             if componentDefinition is not None:
-                self.ui.flowComponentDefinitionGroup.setTitle(QtCore.QString(componentDefinition.name))
+                self.ui.componentDefinitionGroup.setTitle(QtCore.QString(componentDefinition.name))
                 assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.input_ports], self.ui.inputPortsTable)
                 assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.output_ports], self.ui.outputPortsTable)
                 assign_dict_list_to_table([componentDefinition.annotations], self.ui.annotationsTable)

@@ -1,10 +1,15 @@
 @ECHO OFF
-SET INPUT_FILE=%1
-SET INPUT_FILE_EXT=%~x1
-SET OUTPUT_FILE=%~dpn1.py
-IF "%INPUT_FILE_EXT%" NEQ ".ui" (
-	ECHO Invalid extension: "%INPUT_FILE_EXT%" Expected: ".ui"
-	PAUSE
-) ELSE (
-	CALL pyuic4.bat %INPUT_FILE% > %OUTPUT_FILE%
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+FOR %%f IN (%*) DO (
+	SET INPUT_FILE=%%f
+	SET INPUT_FILE_EXT=%%~xf
+	SET OUTPUT_FILE=%%~dpnf.py
+	IF "!INPUT_FILE_EXT!" NEQ ".ui" (
+		ECHO Invalid extension: "!INPUT_FILE_EXT!" Expected: ".ui"
+		PAUSE
+	) ELSE (
+		ECHO !OUTPUT_FILE! ...
+		CALL pyuic4.bat !INPUT_FILE! > !OUTPUT_FILE!
+	)
 )

@@ -1,0 +1,11 @@
+Name: BadFormat
+InputPorts:
+    -   PortName: Lhs
+        TypeName: int
+    -   PortName: Rhs
+        TypeName: int
+OutputPorts:
+    -   PortName: Value
+        TypeName: int
+Annotations:
+    Process: Always

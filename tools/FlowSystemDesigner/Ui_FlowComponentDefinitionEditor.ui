@@ -21,7 +21,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="flowComponentDefinitionGroup">
+    <widget class="QGroupBox" name="componentDefinitionGroup">
      <property name="title">
       <string>&lt;FlowComponentDefinitionName&gt;</string>
      </property>
@@ -108,8 +108,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>480</width>
-           <height>252</height>
+           <width>98</width>
+           <height>71</height>
           </rect>
          </property>
          <attribute name="label">
@@ -158,8 +158,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>480</width>
-           <height>252</height>
+           <width>98</width>
+           <height>71</height>
           </rect>
          </property>
          <attribute name="label">

@@ -12,6 +12,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
         self.ui = Ui_FlowSystemDesigner()
         self.ui.setupUi(self)
         self.activeProject = None
+        self.refreshProject()
 
     def newProject(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, caption = "Flow System", filter = "*.json")
@@ -23,7 +24,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
                 with open(filePathStr, "w") as fout:
                     self.activeProject.save(fout)
             except:
-                traceback.print_exc()
+                self.showException()
 
             self.activeProjectChanged.emit()
 
@@ -35,7 +36,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
                 with open(filePathStr, "r") as fin:
                     self.activeProject = Flow.SystemDefinitionBuilder.from_file(fin)
             except:
-                traceback.print_exc()
+                self.showException()
 
             self.activeProjectChanged.emit()
 
@@ -47,7 +48,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
             with open(self.activeProject.path, "w") as fout:
                 self.activeProject.save(fout)
         except:
-            traceback.print_exc()
+            self.showException()
 
     def saveProjectAs(self):
         if self.activeProject is None:
@@ -62,10 +63,10 @@ class FlowSystemDesigner(QtGui.QMainWindow):
                 with open(filePathStr, "w") as fout:
                     self.activeProject.save(fout)
             except:
-                traceback.print_exc()
+                self.showException()
 
     def helpAbout(self):
-        print "helpAbout"
+        QtGui.QMessageBox.information(self, self.windowTitle(), self.ui.actionHelpAbout.text())
 
     def addComponentDefinition(self):
         if self.activeProject is None:
@@ -77,27 +78,38 @@ class FlowSystemDesigner(QtGui.QMainWindow):
             try:
                 componentDefinition = self.activeProject.load_component_definition(str(filePath))
                 if componentDefinition is not None:
-                    self.ui.componentDefinitionList.addItem(QtCore.QString(componentDefinition.name))
-
-                self.activeProjectChanged.emit()
+                    self.activeProjectChanged.emit()
             except:
-                traceback.print_exc()
+                self.showException()
 
     def showComponentDefinition(self, componentDefinitionName):
-        if self.activeProject is None:
-            return
+        try:
+            if self.activeProject is None:
+                return
 
-        componentDefinition = self.activeProject.component_definitions.get(str(componentDefinitionName))
-        if componentDefinition is not None:
-            self.ui.flowComponentDefinitionEditor.setFlowComponentDefinition(componentDefinition)
+            componentDefinition = self.activeProject.component_definitions.get(str(componentDefinitionName))
+            if componentDefinition is not None:
+                self.ui.componentDefinitionEditor.setComponentDefinition(componentDefinition)
+        except:
+            self.showException()
 
     def refreshProject(self):
-        self.ui.componentDefinitionList.clear()
+        try:
+            hasProject = self.activeProject is not None
 
-        if self.activeProject is not None:
-            try:
+            # consider how to not erase any active selections on these widgets
+            self.ui.componentDefinitionList.clear()
+            self.ui.componentDefinitionEditor.clear()
+            self.ui.actionFileSave.setEnabled(hasProject)
+            self.ui.actionFileSaveAs.setEnabled(hasProject)
+            self.ui.menuProject.setEnabled(hasProject)
+
+            if hasProject:
                 for componentDefinitionName in self.activeProject.component_definitions.iterkeys():
                     self.ui.componentDefinitionList.addItem(QtCore.QString(componentDefinitionName))
+        except:
+            self.showException()
 
-            except:
-                traceback.print_exc()
+    def showException(self):
+        QtGui.QMessageBox.critical(self, self.windowTitle(), QtCore.QString(traceback.format_exc()))
+

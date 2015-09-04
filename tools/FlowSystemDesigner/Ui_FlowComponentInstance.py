@@ -25,13 +25,14 @@ except AttributeError:
 class Ui_FlowComponentInstance(object):
     def setupUi(self, FlowComponentInstance):
         FlowComponentInstance.setObjectName(_fromUtf8("FlowComponentInstance"))
-        FlowComponentInstance.resize(350, 300)
+        FlowComponentInstance.resize(266, 209)
         FlowComponentInstance.setProperty("flowComponentDefinitionName", _fromUtf8(""))
-        self.gridLayout = QtGui.QGridLayout(FlowComponentInstance)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.verticalLayout = QtGui.QVBoxLayout(FlowComponentInstance)
+        self.verticalLayout.setMargin(0)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.name = QtGui.QGroupBox(FlowComponentInstance)
         self.name.setObjectName(_fromUtf8("name"))
-        self.gridLayout.addWidget(self.name, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.name)
 
         self.retranslateUi(FlowComponentInstance)
         QtCore.QMetaObject.connectSlotsByName(FlowComponentInstance)
