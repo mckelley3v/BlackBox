@@ -16,7 +16,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
     def newProject(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, caption = "Flow System", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             try:
                 filePathStr = str(filePath)
                 projectName = os.path.splitext(os.path.basename(filePathStr))[0]
@@ -30,7 +30,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
     def openProject(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             filePathStr = str(filePath)
             try:
                 with open(filePathStr, "r") as fin:
@@ -55,7 +55,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
             return
 
         filePath = QtGui.QFileDialog.getSaveFileName(self, caption = "Flow System", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             filePathStr = str(filePath)
             projectName = os.path.splitext(os.path.basename(filePathStr))[0]
             self.activeProject.name = projectName
@@ -74,7 +74,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
         filePath = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
 
-        if filePath is not None:
+        if filePath:
             try:
                 componentDefinition = self.activeProject.load_component_definition(str(filePath))
                 if componentDefinition is not None:
