@@ -1,9 +1,9 @@
-from PyQt4 import QtGui, QtDesigner
-from FlowComponentInstance import FlowComponentInstance
+﻿from PyQt4 import QtGui, QtDesigner
+from QFlowComponentInstance import QFlowComponentInstance
 
-class FlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class QFlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-        super(FlowComponentInstancePlugin, self).__init__(parent)
+        super(QFlowComponentInstancePlugin, self).__init__(parent)
         self.initialized = False
 
     def initialize(self, core):
@@ -15,10 +15,10 @@ class FlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return self.initialized
 
     def createWidget(self, parent):
-        return FlowComponentInstance(parent)
+        return QFlowComponentInstance(parent)
 
     def name(self):
-        return 'FlowComponentInstance'
+        return 'QFlowComponentInstance'
 
     def group(self):
         return 'Flow'
@@ -36,7 +36,7 @@ class FlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return False
 
     def domXml(self):
-        return '<widget class="FlowComponentInstance" name="flowComponentInstance"/>\n'
+        return '<widget class="QFlowComponentInstance" name="flowComponentInstance"/>\n'
  
     def includeFile(self):
-        return 'FlowComponentInstance'
+        return 'QFlowComponentInstance'

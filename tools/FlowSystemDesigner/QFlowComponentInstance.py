@@ -1,10 +1,10 @@
-from PyQt4 import QtCore, QtGui
-from Ui_FlowComponentInstance import Ui_FlowComponentInstance
+﻿from PyQt4 import QtCore, QtGui
+from Ui_QFlowComponentInstance import Ui_QFlowComponentInstance
 
-class FlowComponentInstance(QtGui.QWidget):
+class QFlowComponentInstance(QtGui.QWidget):
     def __init__(self, parent = None):
-        super(FlowComponentInstance, self).__init__(parent)
-        self.ui = Ui_FlowComponentInstance()
+        super(QFlowComponentInstance, self).__init__(parent)
+        self.ui = Ui_QFlowComponentInstance()
         self.ui.setupUi(self)
         self.m_flowComponentDefinitionName = ""
 

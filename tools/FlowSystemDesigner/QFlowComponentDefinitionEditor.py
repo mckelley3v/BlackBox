@@ -1,7 +1,7 @@
 ﻿import Flow
 import traceback
 from PyQt4 import QtCore, QtGui
-from Ui_FlowComponentDefinitionEditor import Ui_FlowComponentDefinitionEditor
+from Ui_QFlowComponentDefinitionEditor import Ui_QFlowComponentDefinitionEditor
 
 def clear_table_widget(tableWidget):
     tableWidget.setRowCount(0)
@@ -17,10 +17,10 @@ def assign_dict_list_to_table(dictList, tableWidget):
             tableWidget.setItem(rowIndex, colIndex, colItem)
     tableWidget.resizeColumnsToContents()
 
-class FlowComponentDefinitionEditor(QtGui.QWidget):
+class QFlowComponentDefinitionEditor(QtGui.QWidget):
     def __init__(self, parent = None):
-        super(FlowComponentDefinitionEditor, self).__init__(parent)
-        self.ui = Ui_FlowComponentDefinitionEditor()
+        super(QFlowComponentDefinitionEditor, self).__init__(parent)
+        self.ui = Ui_QFlowComponentDefinitionEditor()
         self.ui.setupUi(self)
         self.componentDefinition = None
         self.clear()

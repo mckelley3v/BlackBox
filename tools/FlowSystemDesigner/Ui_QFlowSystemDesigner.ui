@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FlowSystemDesigner</class>
- <widget class="QMainWindow" name="FlowSystemDesigner">
+ <class>QFlowSystemDesigner</class>
+ <widget class="QMainWindow" name="QFlowSystemDesigner">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -129,7 +129,7 @@
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="FlowComponentDefinitionEditor" name="componentDefinitionEditor"/>
+      <widget class="QFlowComponentDefinitionEditor" name="componentDefinitionEditor"/>
      </item>
     </layout>
    </widget>
@@ -237,9 +237,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FlowComponentDefinitionEditor</class>
+   <class>QFlowComponentDefinitionEditor</class>
    <extends>QWidget</extends>
-   <header>FlowComponentDefinitionEditor</header>
+   <header>QFlowComponentDefinitionEditor</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -250,7 +250,7 @@
   <connection>
    <sender>actionFileExit</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -266,7 +266,7 @@
   <connection>
    <sender>actionHelpAbout</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>helpAbout()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -282,7 +282,7 @@
   <connection>
    <sender>actionFileNew</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>newProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -298,7 +298,7 @@
   <connection>
    <sender>actionFileOpen</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>openProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -314,7 +314,7 @@
   <connection>
    <sender>actionFileSave</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>saveProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -330,7 +330,7 @@
   <connection>
    <sender>actionFileSaveAs</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>saveProjectAs()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -410,7 +410,7 @@
   <connection>
    <sender>actionProjectAddComponentDefinition</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>addComponentDefinition()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -426,7 +426,7 @@
   <connection>
    <sender>componentDefinitionList</sender>
    <signal>currentTextChanged(QString)</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>showComponentDefinition(QString)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -440,9 +440,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>FlowSystemDesigner</sender>
+   <sender>QFlowSystemDesigner</sender>
    <signal>activeProjectChanged()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>refreshProject()</slot>
    <hints>
     <hint type="sourcelabel">

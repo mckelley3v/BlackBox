@@ -2,14 +2,14 @@
 import os.path
 import traceback
 from PyQt4 import QtCore, QtGui
-from Ui_FlowSystemDesigner import Ui_FlowSystemDesigner
+from Ui_QFlowSystemDesigner import Ui_QFlowSystemDesigner
 
-class FlowSystemDesigner(QtGui.QMainWindow):
+class QFlowSystemDesigner(QtGui.QMainWindow):
     activeProjectChanged = QtCore.pyqtSignal(name = "activeProjectChanged")
 
     def __init__(self, parent = None):
-        super(FlowSystemDesigner, self).__init__(parent)
-        self.ui = Ui_FlowSystemDesigner()
+        super(QFlowSystemDesigner, self).__init__(parent)
+        self.ui = Ui_QFlowSystemDesigner()
         self.ui.setupUi(self)
         self.activeProject = None
         self.refreshProject()

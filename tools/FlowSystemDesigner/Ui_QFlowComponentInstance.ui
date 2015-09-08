@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FlowComponentInstance</class>
- <widget class="QWidget" name="FlowComponentInstance">
+ <class>QFlowComponentInstance</class>
+ <widget class="QWidget" name="QFlowComponentInstance">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>FlowComponentInstance</string>
+   <string>QFlowComponentInstance</string>
   </property>
   <property name="flowComponentDefinitionName" stdset="0">
    <string/>
