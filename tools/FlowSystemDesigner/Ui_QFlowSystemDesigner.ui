@@ -13,27 +13,13 @@
   <property name="windowTitle">
    <string>Flow System Designer</string>
   </property>
-  <widget class="QWidget" name="flowSystemDesignerContents">
+  <widget class="QWidget" name="systemDesignerContents">
    <layout class="QGridLayout" name="gridLayout">
     <property name="margin">
      <number>1</number>
     </property>
     <item row="0" column="0">
-     <widget class="QScrollArea" name="systemDesignerArea">
-      <property name="widgetResizable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="systemDesignerAreaContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>758</width>
-         <height>723</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
+     <widget class="QGraphicsView" name="systemGraphicsView"/>
     </item>
    </layout>
   </widget>
@@ -116,20 +102,29 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="componentActiveDefinitionDock">
+  <widget class="QDockWidget" name="propertiesViewerDock">
    <property name="windowTitle">
-    <string>Component Definition</string>
+    <string>Properties</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="componentActiveDefinitionDockContents">
+   <widget class="QWidget" name="propertiesViewerDockContents">
     <layout class="QGridLayout" name="gridLayout_4">
      <property name="margin">
       <number>0</number>
      </property>
-     <item row="0" column="0">
-      <widget class="QFlowComponentDefinitionEditor" name="componentDefinitionEditor"/>
+     <item row="0" column="1">
+      <widget class="QDictWidget" name="propertiesDictViewer">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -237,14 +232,11 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QFlowComponentDefinitionEditor</class>
-   <extends>QWidget</extends>
-   <header>QFlowComponentDefinitionEditor</header>
+   <class>QDictWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>QDictWidget.h</header>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>systemDesignerArea</tabstop>
- </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -362,7 +354,7 @@
   <connection>
    <sender>actionViewComponentActiveDefinition</sender>
    <signal>toggled(bool)</signal>
-   <receiver>componentActiveDefinitionDock</receiver>
+   <receiver>propertiesViewerDock</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -392,7 +384,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>componentActiveDefinitionDock</sender>
+   <sender>propertiesViewerDock</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>actionViewComponentActiveDefinition</receiver>
    <slot>setChecked(bool)</slot>

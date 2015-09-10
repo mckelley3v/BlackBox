@@ -89,7 +89,7 @@ class QFlowSystemDesigner(QtGui.QMainWindow):
 
             componentDefinition = self.activeProject.component_definitions.get(str(componentDefinitionName))
             if componentDefinition is not None:
-                self.ui.componentDefinitionEditor.setComponentDefinition(componentDefinition)
+                self.ui.propertiesDictViewer.setDict(componentDefinition.as_dict())
         except:
             self.showException()
 
@@ -99,17 +99,17 @@ class QFlowSystemDesigner(QtGui.QMainWindow):
 
             # consider how to not erase any active selections on these widgets
             self.ui.componentDefinitionList.clear()
-            self.ui.componentDefinitionEditor.clear()
+            self.ui.propertiesDictViewer.clear()
             self.ui.actionFileSave.setEnabled(hasProject)
             self.ui.actionFileSaveAs.setEnabled(hasProject)
             self.ui.menuProject.setEnabled(hasProject)
 
             if hasProject:
                 for componentDefinitionName in self.activeProject.component_definitions.iterkeys():
-                    self.ui.componentDefinitionList.addItem(QtCore.QString(componentDefinitionName))
+                    self.ui.componentDefinitionList.addItem(unicode(componentDefinitionName))
         except:
             self.showException()
 
     def showException(self):
-        QtGui.QMessageBox.critical(self, self.windowTitle(), QtCore.QString(traceback.format_exc()))
+        QtGui.QMessageBox.critical(self, self.windowTitle(), unicode(traceback.format_exc()))
 

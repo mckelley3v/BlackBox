@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{cfdfe107-f1a0-4db2-9c4c-e9eb63aa6a06}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>main.pyw</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,12 +22,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Flow.py" />
+    <Compile Include="main.pyw" />
+    <Compile Include="QDictWidget.py" />
     <Compile Include="QFlowComponentDefinitionEditor.py" />
     <Compile Include="QFlowComponentDefinitionEditor_plugin.py" />
     <Compile Include="QFlowComponentInstance.py" />
     <Compile Include="QFlowComponentInstance_plugin.py" />
     <Compile Include="QFlowSystemDesigner.py" />
-    <Compile Include="main.py" />
     <Compile Include="Ui_QFlowComponentDefinitionEditor.py" />
     <Compile Include="Ui_QFlowComponentInstance.py" />
     <Compile Include="Ui_QFlowSystemDesigner.py" />

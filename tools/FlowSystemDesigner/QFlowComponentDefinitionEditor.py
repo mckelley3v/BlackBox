@@ -13,7 +13,7 @@ def assign_dict_list_to_table(dictList, tableWidget):
     for rowIndex, dictEntry in enumerate(dictList):
         for colIndex in xrange(tableWidget.columnCount()):
             colName = str(tableWidget.horizontalHeaderItem(colIndex).text())
-            colItem = QtGui.QTableWidgetItem(QtCore.QString(dictEntry.get(colName, "")))
+            colItem = QtGui.QTableWidgetItem(unicode(dictEntry.get(colName, "")))
             tableWidget.setItem(rowIndex, colIndex, colItem)
     tableWidget.resizeColumnsToContents()
 
@@ -33,7 +33,7 @@ class QFlowComponentDefinitionEditor(QtGui.QWidget):
                 return
 
             if componentDefinition is not None:
-                self.ui.componentDefinitionGroup.setTitle(QtCore.QString(componentDefinition.name))
+                self.ui.componentDefinitionGroup.setTitle(unicode(componentDefinition.name))
                 assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.input_ports], self.ui.inputPortsTable)
                 assign_dict_list_to_table([portEntry.as_dict() for portEntry in componentDefinition.output_ports], self.ui.outputPortsTable)
                 assign_dict_list_to_table([componentDefinition.annotations], self.ui.annotationsTable)
