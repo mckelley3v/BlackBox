@@ -18,10 +18,10 @@ class QFlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return QFlowComponentInstance(parent)
 
     def name(self):
-        return 'QFlowComponentInstance'
+        return "QFlowComponentInstance"
 
     def group(self):
-        return 'Flow'
+        return "Flow"
 
     def icon(self):
         return QtGui.QIcon()
@@ -36,7 +36,7 @@ class QFlowComponentInstancePlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return False
 
     def domXml(self):
-        return '<widget class="QFlowComponentInstance" name="flowComponentInstance"/>\n'
+        return """<ui><widget class="QFlowComponentInstance" name="componentInstance"/></ui>"""
  
     def includeFile(self):
-        return 'QFlowComponentInstance'
+        return "QFlowComponentInstance"

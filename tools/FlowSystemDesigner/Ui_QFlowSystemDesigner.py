@@ -31,9 +31,10 @@ class Ui_QFlowSystemDesigner(object):
         self.gridLayout = QtGui.QGridLayout(self.systemDesignerContents)
         self.gridLayout.setMargin(1)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.systemGraphicsView = QtGui.QGraphicsView(self.systemDesignerContents)
-        self.systemGraphicsView.setObjectName(_fromUtf8("systemGraphicsView"))
-        self.gridLayout.addWidget(self.systemGraphicsView, 0, 0, 1, 1)
+        self.systemView = QFlowSystemEditorView(self.systemDesignerContents)
+        self.systemView.setAcceptDrops(True)
+        self.systemView.setObjectName(_fromUtf8("systemView"))
+        self.gridLayout.addWidget(self.systemView, 0, 0, 1, 1)
         QFlowSystemDesigner.setCentralWidget(self.systemDesignerContents)
         self.menubar = QtGui.QMenuBar(QFlowSystemDesigner)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1024, 21))
@@ -61,6 +62,8 @@ class Ui_QFlowSystemDesigner(object):
         self.gridLayout_3.setMargin(0)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.componentDefinitionList = QtGui.QListWidget(self.componentDefinitionListDockContents)
+        self.componentDefinitionList.setDragEnabled(True)
+        self.componentDefinitionList.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
         self.componentDefinitionList.setObjectName(_fromUtf8("componentDefinitionList"))
         self.gridLayout_3.addWidget(self.componentDefinitionList, 0, 1, 1, 1)
         self.componentDefinitionListDock.setWidget(self.componentDefinitionListDockContents)
@@ -181,3 +184,4 @@ class Ui_QFlowSystemDesigner(object):
         self.actionPaste.setShortcut(_translate("QFlowSystemDesigner", "Ctrl+V", None))
 
 from QDictWidget import QDictWidget
+from QFlowSystemEditorView import QFlowSystemEditorView

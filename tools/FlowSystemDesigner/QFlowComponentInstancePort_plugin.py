@@ -1,9 +1,9 @@
 ﻿from PyQt4 import QtGui, QtDesigner
-from QDictWidget import QDictWidget
+from QFlowComponentInstancePort import QFlowComponentInstancePort
 
-class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class QFlowComponentInstancePortPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-        super(QDictWidgetPlugin, self).__init__(parent)
+        super(QFlowComponentInstancePortPlugin, self).__init__(parent)
         self.initialized = False
 
     def initialize(self, core):
@@ -15,13 +15,13 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return self.initialized
 
     def createWidget(self, parent):
-        return QDictWidget(parent)
+        return QFlowComponentInstancePort(parent)
 
     def name(self):
-        return "Dictionary Widget"
+        return "QFlowComponentInstancePort"
 
     def group(self):
-        return "Item Widgets (Item-Based)"
+        return "Flow"
 
     def icon(self):
         return QtGui.QIcon()
@@ -36,18 +36,7 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return False
 
     def domXml(self):
-        return """
-<ui>
-    <widget class="QDictWidget" name="dictWidget"/>
-    <customwidgets>
-        <customwidget>
-            <class>QDictWidget</class>
-            <extends>QTreeWidget</extends>
-            <header>QDictWidget.h</header>
-        </customwidget>
-    </customwidgets>
-</ui>
-"""
- 
+        return """<ui><widget class="QFlowComponentInstancePort" name="componentPort"/></ui>"""
+
     def includeFile(self):
-        return "QDictWidget"
+        return "QFlowComponentInstancePort"

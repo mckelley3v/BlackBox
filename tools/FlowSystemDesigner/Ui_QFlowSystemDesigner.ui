@@ -19,7 +19,11 @@
      <number>1</number>
     </property>
     <item row="0" column="0">
-     <widget class="QGraphicsView" name="systemGraphicsView"/>
+     <widget class="QFlowSystemEditorView" name="systemView">
+      <property name="acceptDrops">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -97,7 +101,14 @@
       <number>0</number>
      </property>
      <item row="0" column="1">
-      <widget class="QListWidget" name="componentDefinitionList"/>
+      <widget class="QListWidget" name="componentDefinitionList">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -231,6 +242,11 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QFlowSystemEditorView</class>
+   <extends>QGraphicsView</extends>
+   <header>QFlowSystemEditorView</header>
+  </customwidget>
   <customwidget>
    <class>QDictWidget</class>
    <extends>QTreeWidget</extends>

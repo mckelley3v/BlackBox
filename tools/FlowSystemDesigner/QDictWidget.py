@@ -1,5 +1,4 @@
 ﻿from PyQt4 import QtCore, QtGui
-#from Ui_QDictWidget import Ui_QDictWidget
 from collections import OrderedDict
 
 class QDictWidget(QtGui.QTreeWidget):
@@ -7,8 +6,6 @@ class QDictWidget(QtGui.QTreeWidget):
                  parent = None,
                  initDict = {}):
         super(QDictWidget, self).__init__(parent)
-        #self.ui = Ui_QDictWidget()
-        #self.ui.setupUi(self)
         QDictWidget.fill_item(self.invisibleRootItem(), initDict)
 
     @staticmethod

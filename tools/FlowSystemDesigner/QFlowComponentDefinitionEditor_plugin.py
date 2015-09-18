@@ -18,10 +18,10 @@ class QFlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlu
         return QFlowComponentDefinitionEditor(parent)
 
     def name(self):
-        return 'QFlowComponentDefinitionEditor'
+        return "QFlowComponentDefinitionEditor"
 
     def group(self):
-        return 'Flow'
+        return "Flow"
 
     def icon(self):
         return QtGui.QIcon()
@@ -36,7 +36,7 @@ class QFlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlu
         return False
 
     def domXml(self):
-        return '<widget class="QFlowComponentDefinitionEditor" name="flowComponentDefinitionEditor"/>\n'
+        return """<ui><widget class="QFlowComponentDefinitionEditor" name="componentDefinition"/></ui>"""
  
     def includeFile(self):
-        return 'QFlowComponentDefinitionEditor'
+        return "QFlowComponentDefinitionEditor"

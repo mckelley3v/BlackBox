@@ -24,13 +24,19 @@
     <Compile Include="Flow.py" />
     <Compile Include="main.pyw" />
     <Compile Include="QDictWidget.py" />
+    <Compile Include="QDictWidget_plugin.py" />
     <Compile Include="QFlowComponentDefinitionEditor.py" />
     <Compile Include="QFlowComponentDefinitionEditor_plugin.py" />
     <Compile Include="QFlowComponentInstance.py" />
+    <Compile Include="QFlowComponentInstancePort.py" />
+    <Compile Include="QFlowComponentInstancePort_plugin.py" />
     <Compile Include="QFlowComponentInstance_plugin.py" />
     <Compile Include="QFlowSystemDesigner.py" />
+    <Compile Include="QFlowSystemEditorView.py" />
+    <Compile Include="QFlowSystemEditorView_plugin.py" />
     <Compile Include="Ui_QFlowComponentDefinitionEditor.py" />
     <Compile Include="Ui_QFlowComponentInstance.py" />
+    <Compile Include="Ui_QFlowComponentInstancePort.py" />
     <Compile Include="Ui_QFlowSystemDesigner.py" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />

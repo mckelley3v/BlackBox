@@ -1,9 +1,9 @@
 ﻿from PyQt4 import QtGui, QtDesigner
-from QDictWidget import QDictWidget
+from QFlowSystemEditorView import QFlowSystemEditorView
 
-class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class QFlowSystemEditorViewPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-        super(QDictWidgetPlugin, self).__init__(parent)
+        super(QFlowSystemEditorViewPlugin, self).__init__(parent)
         self.initialized = False
 
     def initialize(self, core):
@@ -15,13 +15,13 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return self.initialized
 
     def createWidget(self, parent):
-        return QDictWidget(parent)
+        return QFlowSystemEditorView(parent)
 
     def name(self):
-        return "Dictionary Widget"
+        return "QFlowSystemEditorView"
 
     def group(self):
-        return "Item Widgets (Item-Based)"
+        return "Flow"
 
     def icon(self):
         return QtGui.QIcon()
@@ -38,16 +38,16 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def domXml(self):
         return """
 <ui>
-    <widget class="QDictWidget" name="dictWidget"/>
+    <widget class="QFlowSystemEditorView" name="systemView"/>
     <customwidgets>
         <customwidget>
-            <class>QDictWidget</class>
-            <extends>QTreeWidget</extends>
-            <header>QDictWidget.h</header>
+            <class>QFlowSystemEditorView</class>
+            <extends>QGraphicsView</extends>
+            <header>QFlowSystemEditorView.h</header>
         </customwidget>
     </customwidgets>
 </ui>
 """
  
     def includeFile(self):
-        return "QDictWidget"
+        return "QFlowSystemEditorView"
