@@ -29,7 +29,7 @@ class Ui_QFlowComponentInstancePort(object):
         self.horizontalLayout = QtGui.QHBoxLayout(QFlowComponentInstancePort)
         self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.port = QtGui.QWidget(QFlowComponentInstancePort)
+        self.port = QEllipseWidget(QFlowComponentInstancePort)
         self.port.setObjectName(_fromUtf8("port"))
         self.horizontalLayout.addWidget(self.port)
         self.label = QtGui.QLabel(QFlowComponentInstancePort)
@@ -42,3 +42,4 @@ class Ui_QFlowComponentInstancePort(object):
     def retranslateUi(self, QFlowComponentInstancePort):
         pass
 
+from QEllipseWidget import QEllipseWidget

@@ -82,6 +82,18 @@ class Ui_QFlowSystemDesigner(object):
         self.gridLayout_4.addWidget(self.propertiesDictViewer, 0, 1, 1, 1)
         self.propertiesViewerDock.setWidget(self.propertiesViewerDockContents)
         QFlowSystemDesigner.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.propertiesViewerDock)
+        self.componentDefinitionViewerDock = QtGui.QDockWidget(QFlowSystemDesigner)
+        self.componentDefinitionViewerDock.setObjectName(_fromUtf8("componentDefinitionViewerDock"))
+        self.componentDefinitionViewerDockContents = QtGui.QWidget()
+        self.componentDefinitionViewerDockContents.setObjectName(_fromUtf8("componentDefinitionViewerDockContents"))
+        self.gridLayout_2 = QtGui.QGridLayout(self.componentDefinitionViewerDockContents)
+        self.gridLayout_2.setMargin(0)
+        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+        self.componentDefinitionViewer = QFlowComponentInstance(self.componentDefinitionViewerDockContents)
+        self.componentDefinitionViewer.setObjectName(_fromUtf8("componentDefinitionViewer"))
+        self.gridLayout_2.addWidget(self.componentDefinitionViewer, 0, 0, 1, 1)
+        self.componentDefinitionViewerDock.setWidget(self.componentDefinitionViewerDockContents)
+        QFlowSystemDesigner.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.componentDefinitionViewerDock)
         self.actionFileOpen = QtGui.QAction(QFlowSystemDesigner)
         self.actionFileOpen.setObjectName(_fromUtf8("actionFileOpen"))
         self.actionFileSave = QtGui.QAction(QFlowSystemDesigner)
@@ -160,6 +172,7 @@ class Ui_QFlowSystemDesigner(object):
         self.menuEdit.setTitle(_translate("QFlowSystemDesigner", "Edit", None))
         self.componentDefinitionListDock.setWindowTitle(_translate("QFlowSystemDesigner", "Component Definition List", None))
         self.propertiesViewerDock.setWindowTitle(_translate("QFlowSystemDesigner", "Properties", None))
+        self.componentDefinitionViewerDock.setWindowTitle(_translate("QFlowSystemDesigner", "Component Definition", None))
         self.actionFileOpen.setText(_translate("QFlowSystemDesigner", "Open...", None))
         self.actionFileOpen.setShortcut(_translate("QFlowSystemDesigner", "Ctrl+O", None))
         self.actionFileSave.setText(_translate("QFlowSystemDesigner", "Save", None))
@@ -184,4 +197,5 @@ class Ui_QFlowSystemDesigner(object):
         self.actionPaste.setShortcut(_translate("QFlowSystemDesigner", "Ctrl+V", None))
 
 from QDictWidget import QDictWidget
+from QFlowComponentInstance import QFlowComponentInstance
 from QFlowSystemEditorView import QFlowSystemEditorView

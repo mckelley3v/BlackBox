@@ -89,7 +89,10 @@ class QFlowSystemDesigner(QtGui.QMainWindow):
 
             componentDefinition = self.activeProject.component_definitions.get(str(componentDefinitionName))
             if componentDefinition is not None:
-                self.ui.propertiesDictViewer.setDict(componentDefinition.as_dict())
+                componentDefinitionDict = componentDefinition.as_dict()
+                self.ui.propertiesDictViewer.setDict(componentDefinitionDict)
+                self.ui.componentDefinitionViewer.setDict(componentDefinitionDict)
+
         except:
             self.showException()
 
@@ -100,6 +103,7 @@ class QFlowSystemDesigner(QtGui.QMainWindow):
             # consider how to not erase any active selections on these widgets
             self.ui.componentDefinitionList.clear()
             self.ui.propertiesDictViewer.clear()
+            self.ui.componentDefinitionViewer.clear()
             self.ui.actionFileSave.setEnabled(hasProject)
             self.ui.actionFileSaveAs.setEnabled(hasProject)
             self.ui.menuProject.setEnabled(hasProject)

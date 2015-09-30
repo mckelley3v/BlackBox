@@ -1,9 +1,9 @@
 ﻿from PyQt4 import QtGui, QtDesigner
-from QDictWidget import QDictWidget
+from QEllipseWidget import QEllipseWidget
 
-class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class QEllipseWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-        super(QDictWidgetPlugin, self).__init__(parent)
+        super(QEllipseWidgetPlugin, self).__init__(parent)
         self.initialized = False
 
     def initialize(self, core):
@@ -15,13 +15,13 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
         return self.initialized
 
     def createWidget(self, parent):
-        return QDictWidget(parent)
+        return QEllipseWidget(parent)
 
     def name(self):
-        return "QDictWidget"
+        return "QEllipseWidget"
 
     def group(self):
-        return "Item Widgets (Item-Based)"
+        return "Containers"
 
     def icon(self):
         return QtGui.QIcon()
@@ -38,16 +38,16 @@ class QDictWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def domXml(self):
         return """
 <ui>
-    <widget class="QDictWidget" name="dict"/>
+    <widget class="QEllipseWidget" name="ellipse"/>
     <customwidgets>
         <customwidget>
-            <class>QDictWidget</class>
-            <extends>QTreeWidget</extends>
-            <header>QDictWidget.h</header>
+            <class>QEllipseWidget</class>
+            <extends>QWidget</extends>
+            <header>QEllipseWidget.h</header>
         </customwidget>
     </customwidgets>
 </ui>
 """
  
     def includeFile(self):
-        return "QDictWidget"
+        return "QEllipseWidget"

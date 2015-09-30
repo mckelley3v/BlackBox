@@ -25,6 +25,8 @@
     <Compile Include="main.pyw" />
     <Compile Include="QDictWidget.py" />
     <Compile Include="QDictWidget_plugin.py" />
+    <Compile Include="QEllipseWidget.py" />
+    <Compile Include="QEllipseWidget_plugin.py" />
     <Compile Include="QFlowComponentDefinitionEditor.py" />
     <Compile Include="QFlowComponentDefinitionEditor_plugin.py" />
     <Compile Include="QFlowComponentInstance.py" />

@@ -15,13 +15,21 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="port"/>
+    <widget class="QEllipseWidget" name="port"/>
    </item>
    <item>
     <widget class="QLabel" name="label"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QEllipseWidget</class>
+   <extends>QWidget</extends>
+   <header>QEllipseWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
