@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Mike\Code\BlackBox\tools\FlowSystemDesigner\Ui_FlowComponentDefinitionEditor.ui'
+# Form implementation generated from reading ui file 'C:\Users\mkelley\Personal\Code\BlackBox\tools\FlowSystemDesigner\Ui_QFlowComponentDefinitionEditor.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -22,15 +22,15 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_FlowComponentDefinitionEditor(object):
-    def setupUi(self, FlowComponentDefinitionEditor):
-        FlowComponentDefinitionEditor.setObjectName(_fromUtf8("FlowComponentDefinitionEditor"))
-        FlowComponentDefinitionEditor.resize(482, 357)
-        self.verticalLayout = QtGui.QVBoxLayout(FlowComponentDefinitionEditor)
+class Ui_QFlowComponentDefinitionEditor(object):
+    def setupUi(self, QFlowComponentDefinitionEditor):
+        QFlowComponentDefinitionEditor.setObjectName(_fromUtf8("QFlowComponentDefinitionEditor"))
+        QFlowComponentDefinitionEditor.resize(482, 357)
+        self.verticalLayout = QtGui.QVBoxLayout(QFlowComponentDefinitionEditor)
         self.verticalLayout.setMargin(0)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
-        self.componentDefinitionGroup = QtGui.QGroupBox(FlowComponentDefinitionEditor)
+        self.componentDefinitionGroup = QtGui.QGroupBox(QFlowComponentDefinitionEditor)
         self.componentDefinitionGroup.setObjectName(_fromUtf8("componentDefinitionGroup"))
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.componentDefinitionGroup)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, -1)
@@ -103,28 +103,28 @@ class Ui_FlowComponentDefinitionEditor(object):
         self.verticalLayout_2.addWidget(self.interfaceGroups)
         self.verticalLayout.addWidget(self.componentDefinitionGroup)
 
-        self.retranslateUi(FlowComponentDefinitionEditor)
+        self.retranslateUi(QFlowComponentDefinitionEditor)
         self.interfaceGroups.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(FlowComponentDefinitionEditor)
+        QtCore.QMetaObject.connectSlotsByName(QFlowComponentDefinitionEditor)
 
-    def retranslateUi(self, FlowComponentDefinitionEditor):
-        FlowComponentDefinitionEditor.setWindowTitle(_translate("FlowComponentDefinitionEditor", "Flow Component Definition Editor", None))
-        self.componentDefinitionGroup.setTitle(_translate("FlowComponentDefinitionEditor", "<FlowComponentDefinitionName>", None))
+    def retranslateUi(self, QFlowComponentDefinitionEditor):
+        QFlowComponentDefinitionEditor.setWindowTitle(_translate("QFlowComponentDefinitionEditor", "Flow Component Definition Editor", None))
+        self.componentDefinitionGroup.setTitle(_translate("QFlowComponentDefinitionEditor", "<FlowComponentDefinitionName>", None))
         item = self.inputPortsTable.horizontalHeaderItem(0)
-        item.setText(_translate("FlowComponentDefinitionEditor", "PortName", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "PortName", None))
         item = self.inputPortsTable.horizontalHeaderItem(1)
-        item.setText(_translate("FlowComponentDefinitionEditor", "TypeName", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "TypeName", None))
         item = self.inputPortsTable.horizontalHeaderItem(2)
-        item.setText(_translate("FlowComponentDefinitionEditor", "IsOptional", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "IsOptional", None))
         item = self.inputPortsTable.horizontalHeaderItem(3)
-        item.setText(_translate("FlowComponentDefinitionEditor", "IsMultiplex", None))
-        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.inputPortsGroup), _translate("FlowComponentDefinitionEditor", "Input Ports", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "IsMultiplex", None))
+        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.inputPortsGroup), _translate("QFlowComponentDefinitionEditor", "Input Ports", None))
         item = self.outputPortsTable.horizontalHeaderItem(0)
-        item.setText(_translate("FlowComponentDefinitionEditor", "PortName", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "PortName", None))
         item = self.outputPortsTable.horizontalHeaderItem(1)
-        item.setText(_translate("FlowComponentDefinitionEditor", "TypeName", None))
-        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.outputGroup), _translate("FlowComponentDefinitionEditor", "Output Ports", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "TypeName", None))
+        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.outputGroup), _translate("QFlowComponentDefinitionEditor", "Output Ports", None))
         item = self.annotationsTable.horizontalHeaderItem(0)
-        item.setText(_translate("FlowComponentDefinitionEditor", "Process", None))
-        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.annotationGroup), _translate("FlowComponentDefinitionEditor", "Annotations", None))
+        item.setText(_translate("QFlowComponentDefinitionEditor", "Process", None))
+        self.interfaceGroups.setItemText(self.interfaceGroups.indexOf(self.annotationGroup), _translate("QFlowComponentDefinitionEditor", "Annotations", None))
 

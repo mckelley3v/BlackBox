@@ -1,10 +1,10 @@
-import sys
+﻿import sys
 from PyQt4 import QtGui
-from FlowSystemDesigner import FlowSystemDesigner
+from QFlowSystemDesigner import QFlowSystemDesigner
 
 def main(argv):
     app = QtGui.QApplication(argv)
-    window = FlowSystemDesigner()
+    window = QFlowSystemDesigner()
     window.show()
     sys.exit(app.exec_())
 

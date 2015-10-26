@@ -1,9 +1,9 @@
-from PyQt4 import QtGui, QtDesigner
-from FlowComponentDefinitionEditor import FlowComponentDefinitionEditor
+﻿from PyQt4 import QtGui, QtDesigner
+from QFlowComponentDefinitionEditor import QFlowComponentDefinitionEditor
 
-class FlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
+class QFlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     def __init__(self, parent = None):
-        super(FlowComponentDefinitionEditorPlugin, self).__init__(parent)
+        super(QFlowComponentDefinitionEditorPlugin, self).__init__(parent)
         self.initialized = False
 
     def initialize(self, core):
@@ -15,13 +15,13 @@ class FlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlug
         return self.initialized
 
     def createWidget(self, parent):
-        return FlowComponentDefinitionEditor(parent)
+        return QFlowComponentDefinitionEditor(parent)
 
     def name(self):
-        return 'FlowComponentDefinitionEditor'
+        return "QFlowComponentDefinitionEditor"
 
     def group(self):
-        return 'Flow'
+        return "Flow"
 
     def icon(self):
         return QtGui.QIcon()
@@ -36,7 +36,7 @@ class FlowComponentDefinitionEditorPlugin(QtDesigner.QPyDesignerCustomWidgetPlug
         return False
 
     def domXml(self):
-        return '<widget class="FlowComponentDefinitionEditor" name="flowComponentDefinitionEditor"/>\n'
+        return """<ui><widget class="QFlowComponentDefinitionEditor" name="componentDefinition"/></ui>"""
  
     def includeFile(self):
-        return 'FlowComponentDefinitionEditor'
+        return "QFlowComponentDefinitionEditor"

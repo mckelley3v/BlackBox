@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FlowSystemDesigner</class>
- <widget class="QMainWindow" name="FlowSystemDesigner">
+ <class>QFlowSystemDesigner</class>
+ <widget class="QMainWindow" name="QFlowSystemDesigner">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,26 +13,16 @@
   <property name="windowTitle">
    <string>Flow System Designer</string>
   </property>
-  <widget class="QWidget" name="flowSystemDesignerContents">
+  <widget class="QWidget" name="systemDesignerContents">
    <layout class="QGridLayout" name="gridLayout">
     <property name="margin">
      <number>1</number>
     </property>
     <item row="0" column="0">
-     <widget class="QScrollArea" name="systemDesignerArea">
-      <property name="widgetResizable">
+     <widget class="QFlowSystemEditorView" name="systemView">
+      <property name="acceptDrops">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="systemDesignerAreaContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>758</width>
-         <height>723</height>
-        </rect>
-       </property>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -111,25 +101,59 @@
       <number>0</number>
      </property>
      <item row="0" column="1">
-      <widget class="QListWidget" name="componentDefinitionList"/>
+      <widget class="QListWidget" name="componentDefinitionList">
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="componentActiveDefinitionDock">
+  <widget class="QDockWidget" name="propertiesViewerDock">
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="propertiesViewerDockContents">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <property name="margin">
+      <number>0</number>
+     </property>
+     <item row="0" column="1">
+      <widget class="QDictWidget" name="propertiesDictViewer">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="componentDefinitionViewerDock">
    <property name="windowTitle">
     <string>Component Definition</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="componentActiveDefinitionDockContents">
-    <layout class="QGridLayout" name="gridLayout_4">
+   <widget class="QWidget" name="componentDefinitionViewerDockContents">
+    <layout class="QGridLayout" name="gridLayout_2">
      <property name="margin">
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="FlowComponentDefinitionEditor" name="componentDefinitionEditor"/>
+      <widget class="QFlowComponentInstance" name="componentDefinitionViewer"/>
      </item>
     </layout>
    </widget>
@@ -237,20 +261,27 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>FlowComponentDefinitionEditor</class>
+   <class>QFlowComponentInstance</class>
    <extends>QWidget</extends>
-   <header>FlowComponentDefinitionEditor</header>
+   <header>QFlowComponentInstance</header>
+  </customwidget>
+  <customwidget>
+   <class>QFlowSystemEditorView</class>
+   <extends>QGraphicsView</extends>
+   <header>QFlowSystemEditorView</header>
+  </customwidget>
+  <customwidget>
+   <class>QDictWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>QDictWidget.h</header>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>systemDesignerArea</tabstop>
- </tabstops>
  <resources/>
  <connections>
   <connection>
    <sender>actionFileExit</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -266,7 +297,7 @@
   <connection>
    <sender>actionHelpAbout</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>helpAbout()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -282,7 +313,7 @@
   <connection>
    <sender>actionFileNew</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>newProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -298,7 +329,7 @@
   <connection>
    <sender>actionFileOpen</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>openProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -314,7 +345,7 @@
   <connection>
    <sender>actionFileSave</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>saveProject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -330,7 +361,7 @@
   <connection>
    <sender>actionFileSaveAs</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>saveProjectAs()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -362,7 +393,7 @@
   <connection>
    <sender>actionViewComponentActiveDefinition</sender>
    <signal>toggled(bool)</signal>
-   <receiver>componentActiveDefinitionDock</receiver>
+   <receiver>propertiesViewerDock</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -392,7 +423,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>componentActiveDefinitionDock</sender>
+   <sender>propertiesViewerDock</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>actionViewComponentActiveDefinition</receiver>
    <slot>setChecked(bool)</slot>
@@ -410,7 +441,7 @@
   <connection>
    <sender>actionProjectAddComponentDefinition</sender>
    <signal>triggered()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>addComponentDefinition()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -426,7 +457,7 @@
   <connection>
    <sender>componentDefinitionList</sender>
    <signal>currentTextChanged(QString)</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>showComponentDefinition(QString)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -440,9 +471,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>FlowSystemDesigner</sender>
+   <sender>QFlowSystemDesigner</sender>
    <signal>activeProjectChanged()</signal>
-   <receiver>FlowSystemDesigner</receiver>
+   <receiver>QFlowSystemDesigner</receiver>
    <slot>refreshProject()</slot>
    <hints>
     <hint type="sourcelabel">

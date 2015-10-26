@@ -2,21 +2,21 @@
 import os.path
 import traceback
 from PyQt4 import QtCore, QtGui
-from Ui_FlowSystemDesigner import Ui_FlowSystemDesigner
+from Ui_QFlowSystemDesigner import Ui_QFlowSystemDesigner
 
-class FlowSystemDesigner(QtGui.QMainWindow):
+class QFlowSystemDesigner(QtGui.QMainWindow):
     activeProjectChanged = QtCore.pyqtSignal(name = "activeProjectChanged")
 
     def __init__(self, parent = None):
-        super(FlowSystemDesigner, self).__init__(parent)
-        self.ui = Ui_FlowSystemDesigner()
+        super(QFlowSystemDesigner, self).__init__(parent)
+        self.ui = Ui_QFlowSystemDesigner()
         self.ui.setupUi(self)
         self.activeProject = None
         self.refreshProject()
 
     def newProject(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, caption = "Flow System", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             try:
                 filePathStr = str(filePath)
                 projectName = os.path.splitext(os.path.basename(filePathStr))[0]
@@ -30,7 +30,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
     def openProject(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             filePathStr = str(filePath)
             try:
                 with open(filePathStr, "r") as fin:
@@ -55,7 +55,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
             return
 
         filePath = QtGui.QFileDialog.getSaveFileName(self, caption = "Flow System", filter = "*.json")
-        if filePath is not None:
+        if filePath:
             filePathStr = str(filePath)
             projectName = os.path.splitext(os.path.basename(filePathStr))[0]
             self.activeProject.name = projectName
@@ -74,7 +74,7 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
         filePath = QtGui.QFileDialog.getOpenFileName(self, caption = "Flow Component Definition", filter = "*.json")
 
-        if filePath is not None:
+        if filePath:
             try:
                 componentDefinition = self.activeProject.load_component_definition(str(filePath))
                 if componentDefinition is not None:
@@ -89,7 +89,10 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
             componentDefinition = self.activeProject.component_definitions.get(str(componentDefinitionName))
             if componentDefinition is not None:
-                self.ui.componentDefinitionEditor.setComponentDefinition(componentDefinition)
+                componentDefinitionDict = componentDefinition.as_dict()
+                self.ui.propertiesDictViewer.setDict(componentDefinitionDict)
+                self.ui.componentDefinitionViewer.setDict(componentDefinitionDict)
+
         except:
             self.showException()
 
@@ -99,17 +102,18 @@ class FlowSystemDesigner(QtGui.QMainWindow):
 
             # consider how to not erase any active selections on these widgets
             self.ui.componentDefinitionList.clear()
-            self.ui.componentDefinitionEditor.clear()
+            self.ui.propertiesDictViewer.clear()
+            self.ui.componentDefinitionViewer.clear()
             self.ui.actionFileSave.setEnabled(hasProject)
             self.ui.actionFileSaveAs.setEnabled(hasProject)
             self.ui.menuProject.setEnabled(hasProject)
 
             if hasProject:
                 for componentDefinitionName in self.activeProject.component_definitions.iterkeys():
-                    self.ui.componentDefinitionList.addItem(QtCore.QString(componentDefinitionName))
+                    self.ui.componentDefinitionList.addItem(unicode(componentDefinitionName))
         except:
             self.showException()
 
     def showException(self):
-        QtGui.QMessageBox.critical(self, self.windowTitle(), QtCore.QString(traceback.format_exc()))
+        QtGui.QMessageBox.critical(self, self.windowTitle(), unicode(traceback.format_exc()))
 
