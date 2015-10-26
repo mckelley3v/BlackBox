@@ -32,6 +32,8 @@
                 "libs/m1/numeric/m1_numeric.gyp:m1_numeric_test",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization",
                 "libs/m1/serialization/m1_serialization.gyp:m1_serialization_test",
+                "libs/m1/vector/m1_vector.gyp:m1_vector",
+                "libs/m1/vector/m1_vector.gyp:m1_vector_test",
             ],
         },
     ],

@@ -1,0 +1,57 @@
+﻿{
+    "targets":
+    [
+        {
+            "target_name": "m1_vector",
+            "type": "static_library",
+            "include_dirs":
+            [
+                "include",
+                "source",
+            ],
+            "sources":
+            [
+                "include/m1/vector.hpp",
+                "include/m1/vector_numeric.hpp",
+                "include/m1/vector_ops.hpp",
+                "include/m1/vector_traits.hpp",
+                "include/m1/vector_type.hpp",
+                "source/m1/vector.cpp",
+                "m1_vector.gyp",
+            ],
+            "dependencies":
+            [
+                "../numeric/m1_numeric.gyp:m1_numeric",
+            ],
+            "export_dependent_settings":
+            [
+                "../numeric/m1_numeric.gyp:m1_numeric",
+            ],
+            "direct_dependent_settings":
+            {
+                "include_dirs":
+                [
+                    "include",
+                ],
+            },
+        },
+        {
+            "target_name": "m1_vector_test",
+            "type": "executable",
+            "include_dirs":
+            [
+                "test",
+            ],
+            "sources":
+            [
+                "test/test_main.cpp",
+                "test/test_vector.cpp",
+            ],
+            "dependencies":
+            [
+                "<(catch_gyp_file):catch",
+                "m1_vector",
+            ],
+        },
+    ],
+}
