@@ -1,12 +1,24 @@
 #include "m1/vector.hpp"
 #include "catch.hpp"
 
+template class m1::vector<bool[4]>;
+template class m1::vector<int[4]>;
+template class m1::vector<float[4]>;
+template class m1::vector<double[4]>;
+
 template <typename T> struct print_type;
 
 constexpr const m1::index_constant<0> x{};
 constexpr const m1::index_constant<1> y{};
 constexpr const m1::index_constant<2> z{};
 constexpr const m1::index_constant<3> w{};
+
+constexpr float test_dot(m1::vector3f const &lhs, m1::vector3f const &rhs) noexcept
+{
+    return lhs.data[0] * rhs.data[0] +
+           lhs.data[1] * rhs.data[1] +
+           lhs.data[2] * rhs.data[2];
+}
 
 template <typename T>
 void TestVectorStructure(m1::vector<T> const &v)
@@ -319,10 +331,14 @@ TEST_CASE("Test m1::vector", "[m1]")
        vector3f const u = {0.8f, 0.6f, 0.0f};
        CHECK(length(u) == Approx(1.0f));
 
-       vector3f const v = normalize(2.5f * u);
-       CHECK(u[0] == Approx(v[0]));
-       CHECK(u[1] == Approx(v[1]));
-       CHECK(u[2] == Approx(v[2]));
+       vector3f const v = {-0.5f, 0.5f, 0.0f};
+       float const u_dot_v = test_dot(u, v);
+       CHECK(u_dot_v == Approx(u[0] * v[0] + u[1] * v[1] + u[2] * v[2]));
+
+       vector3f const u2 = normalize(2.5f * u);
+       CHECK(u2[0] == Approx(u[0]));
+       CHECK(u2[1] == Approx(u[1]));
+       CHECK(u2[2] == Approx(u[2]));
 
        vector3f const unit_x = {1.0f, 0.0f, 0.0f};
        vector3f const unit_y = {0.0f, 1.0f, 0.0f};
@@ -361,16 +377,25 @@ TEST_CASE("Test m1::vector", "[m1]")
     // to manually compare assembly
     {
         float const v_data[] = {1.0f, 2.0f, 3.0f};
-        float u_data[] = {v_data[0], v_data[1], v_data[2]};
-        CHECK(u_data[0] == Approx(v_data[0]));
-        CHECK(u_data[1] == Approx(v_data[1]));
-        CHECK(u_data[2] == Approx(v_data[2]));
 
-        u_data[0] += v_data[0];
-        u_data[1] += v_data[1];
-        u_data[2] += v_data[2];
-        CHECK(u_data[0] == Approx(v_data[0] + v_data[0]));
-        CHECK(u_data[1] == Approx(v_data[1] + v_data[1]));
-        CHECK(u_data[2] == Approx(v_data[2] + v_data[2]));
+        {
+            float u_data[] = {v_data[0], v_data[1], v_data[2]};
+            CHECK(u_data[0] == Approx(v_data[0]));
+            CHECK(u_data[1] == Approx(v_data[1]));
+            CHECK(u_data[2] == Approx(v_data[2]));
+
+            u_data[0] += v_data[0];
+            u_data[1] += v_data[1];
+            u_data[2] += v_data[2];
+            CHECK(u_data[0] == Approx(v_data[0] + v_data[0]));
+            CHECK(u_data[1] == Approx(v_data[1] + v_data[1]));
+            CHECK(u_data[2] == Approx(v_data[2] + v_data[2]));
+        }
+
+        {
+            float const u_data[] = {0.8f, 0.6f, 0.0f};
+            float const u_dot_v = u_data[0] * v_data[0] + u_data[1] * v_data[1] + u_data[2] * v_data[2];
+            CHECK(u_dot_v == Approx(2.0f));
+        }
     }
 }

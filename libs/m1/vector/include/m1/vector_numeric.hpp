@@ -10,9 +10,6 @@ namespace m1
     // ================================================================================================================
 
     // logical functions:
-    // template <typename T> constexpr bool all_of(vector<T> const &v) noexcept;
-    // template <typename T> constexpr bool any_of(vector<T> const &v) noexcept;
-    // template <typename T> constexpr bool none_of(vector<T> const &v) noexcept;
     // template <typename L, typename R> constexpr vector_bool_type<T> is_close(vector<L> const &lhs, vector<R> const &rhs);
     // template <typename L, typename R, typename T> constexpr vector_bool_type<T> is_close(vector<L> const &lhs,
     //                                                                                      vector<R> const &rhs,

@@ -180,13 +180,60 @@ namespace impl
 
     // ================================================================================================================
 
+    template <typename F,
+              typename T>
+    constexpr auto accumulate(F &&/*f*/, T &&t) noexcept
+    {
+        return t;
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename F,
+              typename T>
+    constexpr auto accumulate(F &&f, T &&t0, T &&t1) noexcept
+    {
+        return f(t0, t1);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename F,
+              typename T,
+              typename... Ts>
+    constexpr auto accumulate(F &&f, T &&t, Ts &&...ts) noexcept
+    {
+        return f(std::forward<T>(t), accumulate(f, std::forward<Ts>(ts)...));
+    }
+
+    // ================================================================================================================
+
+    template <typename F,
+              typename V,
+              std::size_t... Indices>
+    constexpr auto accumulate_vector_values(F &&f, V &&v, index_sequence<Indices...> const /*indices*/) noexcept
+    {
+        return accumulate(std::forward<F>(f), v[(index_constant<Indices>())]...);
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename F,
+              typename V>
+    constexpr auto accumulate_vector_values(F &&f, V &&v) noexcept
+    {
+        return accumulate_vector_values(std::forward<F>(f), v, make_index_sequence<V::static_size>());
+    }
+
+    // ================================================================================================================
+
     // generic construction from function of index_constant
-    template <typename R,
-              std::size_t... Indices,
-              typename F>
-    constexpr R generate_value(index_sequence<Indices...> const /*indices*/, F const &f) noexcept
+    template <typename V,
+              typename F,
+              std::size_t... Indices>
+    constexpr auto generate_vector(F &&f, index_sequence<Indices...> const /*indices*/) noexcept
     {
-        return R { f(index_constant<Indices>())... };
+        return V { f(index_constant<Indices>())... };
     }
 
     // ================================================================================================================
@@ -194,9 +241,9 @@ namespace impl
     // helper function for generic component wise construction
     template <typename... Ts,
               typename F>
-    constexpr vector_copy_type<Ts...> generate_vector_copy(F const &f) noexcept
+    constexpr auto generate_vector_copy(F &&f) noexcept
     {
-        return generate_value<vector_copy_type<Ts...>>(make_index_sequence<vector_data_size<Ts...>::value>(), f);
+        return generate_vector<vector_copy_type<Ts...>>(std::forward<F>(f), make_index_sequence<vector_data_size<Ts...>::value>());
     }
 
     // ================================================================================================================
@@ -204,9 +251,9 @@ namespace impl
     // helper function for generic component wise construction
     template <typename... Ts,
               typename F>
-    constexpr vector_bool_type<Ts...> generate_vector_bool(F const &f) noexcept
+    constexpr auto generate_vector_bool(F &&f) noexcept
     {
-        return generate_value<vector_bool_type<Ts...>>(make_index_sequence<vector_data_size<Ts...>::value>(), f);
+        return generate_vector<vector_bool_type<Ts...>>(std::forward<F>(f), make_index_sequence<vector_data_size<Ts...>::value>());
     }
 
     // ================================================================================================================
@@ -215,7 +262,7 @@ namespace impl
     // https://isocpp.org/blog/2015/01/for-each-argument-sean-parent
     template <typename F,
               typename... Args>
-    void for_each_arg(F const &f, Args &&...args)
+    void for_each_arg(F &&f, Args &&...args)
     {
         [](...) {}((f(std::forward<Args>(args)), 0)...);
     }
@@ -223,9 +270,9 @@ namespace impl
     // ================================================================================================================
 
     // generic construction from function of index_constant
-    template <std::size_t... Indices,
-              typename F>
-    void for_each_index(index_sequence<Indices...> const /*indices*/, F const &f)
+    template <typename F,
+              std::size_t... Indices>
+    void for_each_index(F &&f, index_sequence<Indices...> const /*indices*/)
     {
         for_each_arg(f, index_constant<Indices>()...);
     }
@@ -233,11 +280,11 @@ namespace impl
     // ================================================================================================================
 
     // helper function for generic component wise construction
-    template <std::size_t N,
+    template <typename... Ts,
               typename F>
-    void for_each_index(F const &f)
+    void for_each_vector_value(F &&f)
     {
-        return for_each_index(make_index_sequence<N>(), f);
+        return for_each_index(f, make_index_sequence<vector_data_size<Ts...>::value>());
     }
 
     // ================================================================================================================
