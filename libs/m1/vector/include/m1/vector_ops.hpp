@@ -93,7 +93,7 @@ namespace impl
 
 template <typename L, typename R> m1::vector<L>& m1::operator += (vector<L> &lhs, vector<R> const &rhs) noexcept
 {
-    impl::for_each_vector_value<L, R>([&](auto index) { lhs[index] += rhs[index]; });
+    impl::for_each_vector_index<L, R>([&](auto index) { lhs[index] += rhs[index]; });
     return lhs;
 }
 
@@ -101,7 +101,7 @@ template <typename L, typename R> m1::vector<L>& m1::operator += (vector<L> &lhs
 
 template <typename L, typename R> m1::vector<L>& m1::operator -= (vector<L> &lhs, vector<R> const &rhs) noexcept
 {
-    impl::for_each_vector_value<L, R>([&](auto index) { lhs[index] -= rhs[index]; });
+    impl::for_each_vector_index<L, R>([&](auto index) { lhs[index] -= rhs[index]; });
     return lhs;
 }
 
@@ -109,7 +109,7 @@ template <typename L, typename R> m1::vector<L>& m1::operator -= (vector<L> &lhs
 
 template <typename T> m1::vector<T>& m1::operator *= (vector<T> &lhs, typename vector<T>::const_reference rhs) noexcept
 {
-    impl::for_each_vector_value<T>([&](auto index) { lhs[index] *= rhs; });
+    impl::for_each_vector_index<T>([&](auto index) { lhs[index] *= rhs; });
     return lhs;
 }
 
@@ -117,7 +117,7 @@ template <typename T> m1::vector<T>& m1::operator *= (vector<T> &lhs, typename v
 
 template <typename T> m1::vector<T>& m1::operator /= (vector<T> &lhs, typename vector<T>::const_reference rhs) noexcept
 {
-    impl::for_each_vector_value<T>([&](auto index) { lhs[index] /= rhs; });
+    impl::for_each_vector_index<T>([&](auto index) { lhs[index] /= rhs; });
     return lhs;
 }
 
@@ -258,7 +258,7 @@ template <typename T> constexpr bool m1::none_of(vector<T> const &v) noexcept
 
 template <typename L, typename R> m1::vector<L>& m1::operator &= (vector<L> &lhs, vector<R> const &rhs) noexcept
 {
-    impl::for_each_vector_value<L, R>([&](auto index) { lhs[index] &= rhs[index]; });
+    impl::for_each_vector_index<L, R>([&](auto index) { lhs[index] &= rhs[index]; });
     return lhs;
 }
 
@@ -266,7 +266,7 @@ template <typename L, typename R> m1::vector<L>& m1::operator &= (vector<L> &lhs
 
 template <typename L, typename R> m1::vector<L>& m1::operator |= (vector<L> &lhs, vector<R> const &rhs) noexcept
 {
-    impl::for_each_vector_value<L, R>([&](auto index) { lhs[index] |= rhs[index]; });
+    impl::for_each_vector_index<L, R>([&](auto index) { lhs[index] |= rhs[index]; });
     return lhs;
 }
 
@@ -274,7 +274,7 @@ template <typename L, typename R> m1::vector<L>& m1::operator |= (vector<L> &lhs
 
 template <typename L, typename R> m1::vector<L>& m1::operator ^= (vector<L> &lhs, vector<R> const &rhs) noexcept
 {
-    impl::for_each_vector_value<L, R>([&](auto index) { lhs[index] ^= rhs[index]; });
+    impl::for_each_vector_index<L, R>([&](auto index) { lhs[index] ^= rhs[index]; });
     return lhs;
 }
 

@@ -282,7 +282,7 @@ namespace impl
     // helper function for generic component wise construction
     template <typename... Ts,
               typename F>
-    void for_each_vector_value(F &&f)
+    void for_each_vector_index(F &&f)
     {
         return for_each_index(f, make_index_sequence<vector_data_size<Ts...>::value>());
     }
