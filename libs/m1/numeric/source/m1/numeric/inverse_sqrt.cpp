@@ -5,16 +5,10 @@
 // references:
 // http://www.beyond3d.com/content/articles/8/
 // http://www.lomont.org/Math/Papers/2003/InvSqrt.pdf
-//float xhalf = 0.5f*x;
-//int i = *(int*)&x;
-//i = 0x5f3759df - (i>>1);
-//x = *(float*)&i;
-//x = x*(1.5f - xhalf*x*x);
-//return x;
 
 // =====================================================================================================================
 
-float m1::inverse_sqrt(float const x)
+float m1::inverse_sqrt(float const x) noexcept
 {
     assert(static_cast<float>(std::numeric_limits<int>::min()) <= x);
     assert(x <= static_cast<float>(std::numeric_limits<int>::max()));
@@ -30,7 +24,7 @@ float m1::inverse_sqrt(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::inverse_sqrt(double const x)
+double m1::inverse_sqrt(double const x) noexcept
 {
     assert(static_cast<double>(std::numeric_limits<long long>::min()) <= x);
     assert(x <= static_cast<double>(std::numeric_limits<long long>::max()));

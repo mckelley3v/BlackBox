@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::exp(float const x)
+float m1::exp(float const x) noexcept
 {
     return std::exp(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::exp(double const x)
+double m1::exp(double const x) noexcept
 {
     return std::exp(x);
 }

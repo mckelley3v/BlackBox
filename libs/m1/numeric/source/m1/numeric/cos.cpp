@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::cos(float const x)
+float m1::cos(float const x) noexcept
 {
     return std::cos(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::cos(double const x)
+double m1::cos(double const x) noexcept
 {
     return std::cos(x);
 }

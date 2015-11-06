@@ -5,9 +5,9 @@ namespace m1
 {
     // =================================================================================================================
 
-    bool is_finite(int value);
-    bool is_finite(float value);
-    bool is_finite(double value);
+    bool is_finite(int value) noexcept;
+    bool is_finite(float value) noexcept;
+    bool is_finite(double value) noexcept;
 
     // =================================================================================================================
 } // namespace m1

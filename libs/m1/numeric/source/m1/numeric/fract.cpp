@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::fract(float const x)
+float m1::fract(float const x) noexcept
 {
     return x - floor(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::fract(double const x)
+double m1::fract(double const x) noexcept
 {
     return x - floor(x);
 }

@@ -6,7 +6,7 @@
 
 void m1::frexp(float * const scale,
                int * const exp,
-               float const x)
+               float const x) noexcept
 {
     assert(scale != nullptr);
     assert(exp != nullptr);
@@ -17,7 +17,7 @@ void m1::frexp(float * const scale,
 
 void m1::frexp(double * const scale,
                int * const exp,
-               double const x)
+               double const x) noexcept
 {
     assert(scale != nullptr);
     assert(exp != nullptr);

@@ -5,8 +5,8 @@ namespace m1
 {
     // =================================================================================================================
 
-    float ldexp(float x, int exp);
-    double ldexp(double x, int exp);
+    float ldexp(float x, int exp) noexcept;
+    double ldexp(double x, int exp) noexcept;
 
     // =================================================================================================================
 } // namespace m1

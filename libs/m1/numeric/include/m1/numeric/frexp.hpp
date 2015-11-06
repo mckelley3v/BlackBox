@@ -7,11 +7,11 @@ namespace m1
 
     void frexp(float *scale,
                int *exp,
-               float x);
+               float x) noexcept;
 
     void frexp(double *scale,
                int *exp,
-               double x);
+               double x) noexcept;
 
     // =================================================================================================================
 } // namespace m1

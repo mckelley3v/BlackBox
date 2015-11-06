@@ -2,6 +2,7 @@
 #define M1_VECTOR_OPS_HPP
 
 #include "m1/vector_type.hpp"
+#include "m1/vector_impl.hpp"
 #include "m1/numeric/inverse_sqrt.hpp"
 #include "m1/numeric/sqrt.hpp"
 
@@ -38,9 +39,10 @@ namespace m1
     template <typename L, typename R> constexpr impl::vector_bool_type<L, R> operator >= (vector<L> const &lhs, vector<R> const &rhs) noexcept;
 
     // logical functions:
-    template <typename T> constexpr bool all_of(vector<T> const &v) noexcept;
-    template <typename T> constexpr bool any_of(vector<T> const &v) noexcept;
-    template <typename T> constexpr bool none_of(vector<T> const &v) noexcept;
+    template <typename B> constexpr bool all_of(vector<B> const &v) noexcept;
+    template <typename B> constexpr bool any_of(vector<B> const &v) noexcept;
+    template <typename B> constexpr bool none_of(vector<B> const &v) noexcept;
+    template <typename B, typename L, typename R> constexpr impl::vector_copy_type<L, R> select(vector<B> const &condition, vector<L> const &lhs, vector<R> const &rhs) noexcept;
 
     // bitwise operators:
     template <typename L, typename R> vector<L>& operator &= (vector<L> &lhs, vector<R> const &rhs) noexcept;
@@ -235,23 +237,30 @@ template <typename L, typename R> constexpr m1::impl::vector_bool_type<L, R> m1:
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T> constexpr bool m1::all_of(vector<T> const &v) noexcept
+template <typename B> constexpr bool m1::all_of(vector<B> const &v) noexcept
 {
     return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return lhs && rhs; }, v);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T> constexpr bool m1::any_of(vector<T> const &v) noexcept
+template <typename B> constexpr bool m1::any_of(vector<B> const &v) noexcept
 {
     return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return lhs || rhs; }, v);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T> constexpr bool m1::none_of(vector<T> const &v) noexcept
+template <typename B> constexpr bool m1::none_of(vector<B> const &v) noexcept
 {
     return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return !lhs && !rhs; }, v);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename B, typename L, typename R> constexpr m1::impl::vector_copy_type<L, R> m1::select(vector<B> const &condition, vector<L> const &lhs, vector<R> const &rhs) noexcept
+{
+   return impl::generate_vector_copy<L, R>([&](auto index) { return condition[index] ? lhs[index] : rhs[index]; });
 }
 
 // --------------------------------------------------------------------------------------------------------------------

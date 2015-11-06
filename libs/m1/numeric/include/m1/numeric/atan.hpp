@@ -5,13 +5,13 @@ namespace m1
 {
     // =================================================================================================================
 
-    float atan(float x);
-    double atan(double x);
+    float atan(float x) noexcept;
+    double atan(double x) noexcept;
 
     // =================================================================================================================
 
-    float atan2(float y, float x);
-    double atan2(double y, double x);
+    float atan2(float y, float x) noexcept;
+    double atan2(double y, double x) noexcept;
 
     // =================================================================================================================
 } // namespace m1

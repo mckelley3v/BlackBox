@@ -5,9 +5,9 @@ namespace m1
 {
     // =================================================================================================================
 
-    bool is_nan(int value);
-    bool is_nan(float value);
-    bool is_nan(double value);
+    bool is_nan(int value) noexcept;
+    bool is_nan(float value) noexcept;
+    bool is_nan(double value) noexcept;
 
     // =================================================================================================================
 } // namespace m1

@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::cosh(float const x)
+float m1::cosh(float const x) noexcept
 {
     return std::cosh(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::cosh(double const x)
+double m1::cosh(double const x) noexcept
 {
     return std::cosh(x);
 }

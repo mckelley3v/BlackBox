@@ -1,24 +1,25 @@
 #include "m1/numeric/is_nan.hpp"
+#include <cmath>
 
 // =====================================================================================================================
 
-bool m1::is_nan(int const /*value*/)
+bool m1::is_nan(int const /*value*/) noexcept
 {
     return false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool m1::is_nan(float const value)
+bool m1::is_nan(float const value) noexcept
 {
-    return value != value;
+    return std::isnan(value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool m1::is_nan(double const value)
+bool m1::is_nan(double const value) noexcept
 {
-    return value != value;
+    return std::isnan(value);
 }
 
 // =====================================================================================================================

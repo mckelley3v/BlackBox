@@ -3,7 +3,6 @@
 
 #include "m1/vector_traits.hpp"
 #include <stdexcept>
-#include <utility>
 
 // ====================================================================================================================
 
@@ -74,7 +73,7 @@ namespace m1
     constexpr vector<std::common_type_t<Ts...>[sizeof...(Ts)]> make_vector(Ts &&...ts) noexcept;
 
     template <typename T>
-    constexpr vector<T&> make_vector_ref(T &&v) noexcept;
+    constexpr vector<T&> make_vector_ref(T &v) noexcept;
 
     template <typename T>
     constexpr vector<T const&> make_vector_cref(T const &v) noexcept;
@@ -274,9 +273,9 @@ constexpr m1::vector<std::common_type_t<Ts...>[sizeof...(Ts)]> m1::make_vector(T
 // ====================================================================================================================
 
 template <typename T>
-constexpr m1::vector<T&> m1::make_vector_ref(T &&v) noexcept
+constexpr m1::vector<T&> m1::make_vector_ref(T &v) noexcept
 {
-    return vector<T&> { std::forward<T>(v) };
+    return vector<T&> { v };
 }
 
 // ====================================================================================================================

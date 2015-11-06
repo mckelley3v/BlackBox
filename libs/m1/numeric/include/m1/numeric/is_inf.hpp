@@ -5,8 +5,9 @@ namespace m1
 {
     // =================================================================================================================
 
-    bool is_inf(float value);
-    bool is_inf(double value);
+    bool is_inf(int value) noexcept;
+    bool is_inf(float value) noexcept;
+    bool is_inf(double value) noexcept;
 
     // =================================================================================================================
 } // namespace m1

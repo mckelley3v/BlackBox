@@ -5,8 +5,8 @@ namespace m1
 {
     // =================================================================================================================
 
-    float inverse_sqrt(float x);
-    double inverse_sqrt(double x);
+    float inverse_sqrt(float x) noexcept;
+    double inverse_sqrt(double x) noexcept;
 
     // =================================================================================================================
 } // namespace m1

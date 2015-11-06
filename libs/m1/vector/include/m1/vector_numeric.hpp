@@ -1,77 +1,60 @@
 #ifndef M1_VECTOR_NUMERIC_HPP
 #define M1_VECTOR_NUMERIC_HPP
 
-#include "m1/vector_type.hpp"
+// logical functions:
+#include "m1/vector_numeric/is_close.hpp"
+#include "m1/vector_numeric/is_finite.hpp"
+#include "m1/vector_numeric/is_inf.hpp"
+#include "m1/vector_numeric/is_nan.hpp"
+#include "m1/vector_numeric/is_pow2.hpp"
+#include "m1/vector_numeric/is_small.hpp"
 
-// ====================================================================================================================
-
-namespace m1
-{
-    // ================================================================================================================
-
-    // logical functions:
-    // template <typename L, typename R> constexpr vector_bool_type<T> is_close(vector<L> const &lhs, vector<R> const &rhs);
-    // template <typename L, typename R, typename T> constexpr vector_bool_type<T> is_close(vector<L> const &lhs,
-    //                                                                                      vector<R> const &rhs,
-    //                                                                                      T const &relative_tolerance,
-    //                                                                                      T const &absolute_tolerance);
-    // is_finite
-    // is_inf
-    // is_nan
-    // is_pow2
-    // is_small
-
-    // componentwise functions:
-    // abs
-    // acos
-    // asin
-    // atan
-    // ceil
-    // clamp
-    // cos
-    // cosh
-    // degrees
-    // exp
-    // exp10
-    // exp2
-    // floor
-    // fract
-    // frexp
-    // inverse_lerp
-    // inverse_sqrt
-    // ldexp
-    // lerp
-    // linear_step
-    // log
-    // log10
-    // log2
-    // max
-    // min
-    // mirror
-    // mix
-    // mod
-    // modf
-    // pow
-    // radians
-    // repeat
-    // round
-    // round_even
-    // saturate
-    // sign
-    // sin
-    // sinh
-    // smooth_step
-    // sqrt
-    // step
-    // tan
-    // tanh
-    // trunc
-    // multiply
-    // divide
-
-    // ================================================================================================================
-} // namespace m1
-
-// ====================================================================================================================
+// pointwise functions:
+#include "m1/vector_numeric/abs.hpp"
+#include "m1/vector_numeric/acos.hpp"
+#include "m1/vector_numeric/asin.hpp"
+#include "m1/vector_numeric/atan.hpp"
+#include "m1/vector_numeric/ceil.hpp"
+#include "m1/vector_numeric/clamp.hpp"
+#include "m1/vector_numeric/cos.hpp"
+#include "m1/vector_numeric/cosh.hpp"
+#include "m1/vector_numeric/degrees.hpp"
+#include "m1/vector_numeric/exp.hpp"
+#include "m1/vector_numeric/exp10.hpp"
+#include "m1/vector_numeric/exp2.hpp"
+#include "m1/vector_numeric/floor.hpp"
+#include "m1/vector_numeric/fract.hpp"
+#include "m1/vector_numeric/frexp.hpp"
+#include "m1/vector_numeric/inverse_lerp.hpp"
+#include "m1/vector_numeric/inverse_sqrt.hpp"
+#include "m1/vector_numeric/ldexp.hpp"
+#include "m1/vector_numeric/lerp.hpp"
+#include "m1/vector_numeric/linear_step.hpp"
+#include "m1/vector_numeric/log.hpp"
+#include "m1/vector_numeric/log10.hpp"
+#include "m1/vector_numeric/log2.hpp"
+#include "m1/vector_numeric/max.hpp"
+#include "m1/vector_numeric/min.hpp"
+#include "m1/vector_numeric/mirror.hpp"
+#include "m1/vector_numeric/mix.hpp"
+#include "m1/vector_numeric/mod.hpp"
+#include "m1/vector_numeric/modf.hpp"
+#include "m1/vector_numeric/pow.hpp"
+#include "m1/vector_numeric/radians.hpp"
+#include "m1/vector_numeric/repeat.hpp"
+#include "m1/vector_numeric/round.hpp"
+#include "m1/vector_numeric/round_even.hpp"
+#include "m1/vector_numeric/saturate.hpp"
+#include "m1/vector_numeric/sign.hpp"
+#include "m1/vector_numeric/sin.hpp"
+#include "m1/vector_numeric/sinh.hpp"
+#include "m1/vector_numeric/smooth_step.hpp"
+#include "m1/vector_numeric/sqrt.hpp"
+#include "m1/vector_numeric/step.hpp"
+#include "m1/vector_numeric/tan.hpp"
+#include "m1/vector_numeric/tanh.hpp"
+#include "m1/vector_numeric/trunc.hpp"
+#include "m1/vector_numeric/pointwise_multiply.hpp"
+#include "m1/vector_numeric/pointwise_divide.hpp"
 
 #endif // M1_VECTOR_NUMERIC_HPP

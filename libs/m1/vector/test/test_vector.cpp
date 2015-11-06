@@ -372,6 +372,48 @@ TEST_CASE("Test m1::vector", "[m1]")
        CHECK(u_reflect_y[0] == Approx( 0.8f));
        CHECK(u_reflect_y[1] == Approx(-0.6f));
        CHECK(u_reflect_y[2] == Approx( 0.0f));
+
+       vector3b const select_condition = u_reflect_y == vector3f{0.0f, 0.0f, 0.0f};
+       vector3f const select_u_v = select(select_condition, u, v);
+       CHECK(select_u_v[0] == Approx(v[0]));
+       CHECK(select_u_v[1] == Approx(v[1]));
+       CHECK(select_u_v[2] == Approx(u[2]));
+    }
+
+    {
+        vector3i e = {};
+        vector3f s = {};
+        vector3f const t = {0.6f, 0.8f, 2.0f};
+        vector3f const u = {0.7f, 0.2f, 0.0f};
+        vector3f const v = {0.8f, 0.6f, 1.0f};
+
+        abs(u);
+        acos(u);
+        asin(u);
+        atan(u);
+        ceil(u);
+        clamp(t, u, v);
+        clamp(u, 0.2f, 0.6f);
+        cos(u);
+        cosh(u);
+        degrees(u);
+        exp(u);
+        exp2(u);
+        exp10(u);
+        floor(u);
+        fract(u);
+        frexp(&s, &e, t);
+        inverse_lerp(u, v, t);
+        inverse_sqrt(u);
+        is_close(u, v);
+        is_finite(u);
+        is_inf(u);
+        is_nan(u);
+        is_pow2(e);
+        is_small(v);
+        ldexp(s, e);
+        lerp(u, v, t);
+        lerp(u, v, 0.6f);
     }
 
     // to manually compare assembly

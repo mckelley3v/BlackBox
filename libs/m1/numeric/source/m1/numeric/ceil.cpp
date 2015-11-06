@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::ceil(float const x)
+float m1::ceil(float const x) noexcept
 {
     return std::ceil(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::ceil(double const x)
+double m1::ceil(double const x) noexcept
 {
     return std::ceil(x);
 }

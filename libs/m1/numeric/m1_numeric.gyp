@@ -1,4 +1,4 @@
-{
+﻿{
     "targets":
     [
         {
@@ -21,6 +21,7 @@
                 "include/m1/numeric/cosh.hpp",
                 "include/m1/numeric/cos.hpp",
                 "include/m1/numeric/degrees.hpp",
+                "include/m1/numeric/epsilon.hpp",
                 "include/m1/numeric/exp10.hpp",
                 "include/m1/numeric/exp2.hpp",
                 "include/m1/numeric/exp.hpp",
@@ -62,7 +63,6 @@
                 "include/m1/numeric/tanh.hpp",
                 "include/m1/numeric/tan.hpp",
                 "include/m1/numeric/trunc.hpp",
-                "source/m1/numeric/default_tolerance.hpp",
                 "source/m1/numeric/abs.cpp",
                 "source/m1/numeric/acos.cpp",
                 "source/m1/numeric/asin.cpp",

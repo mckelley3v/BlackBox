@@ -4,19 +4,19 @@
 
 // =====================================================================================================================
 
-float m1::asin(float const x)
+float m1::asin(float const x) noexcept
 {
     assert(x >= -1.0f);
-    assert(x >= +1.0f);
+    assert(x <= +1.0f);
     return std::asin(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::asin(double const x)
+double m1::asin(double const x) noexcept
 {
     assert(x >= -1.0);
-    assert(x >= +1.0);
+    assert(x <= +1.0);
     return std::asin(x);
 }
 

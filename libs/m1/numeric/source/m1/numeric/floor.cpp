@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::floor(float const x)
+float m1::floor(float const x) noexcept
 {
     return std::floor(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::floor(double const x)
+double m1::floor(double const x) noexcept
 {
     return std::floor(x);
 }

@@ -1,27 +1,25 @@
 #include "m1/numeric/is_finite.hpp"
-#include <limits>
+#include <cmath>
 
 // =====================================================================================================================
 
-bool m1::is_finite(int const /*value*/)
+bool m1::is_finite(int const /*value*/) noexcept
 {
     return true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool m1::is_finite(float const value)
+bool m1::is_finite(float const value) noexcept
 {
-    return (value >= -std::numeric_limits<float>::max())
-        || (value <= +std::numeric_limits<float>::max());
+    return std::isfinite(value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool m1::is_finite(double const value)
+bool m1::is_finite(double const value) noexcept
 {
-    return (value >= -std::numeric_limits<double>::max())
-        || (value <= +std::numeric_limits<double>::max());
+    return std::isfinite(value);
 }
 
 // =====================================================================================================================

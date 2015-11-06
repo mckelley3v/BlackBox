@@ -1,27 +1,25 @@
 #include "m1/numeric/is_inf.hpp"
-#include <limits>
+#include <cmath>
 
 // =====================================================================================================================
 
-bool is_inf(int const /*value*/)
+bool m1::is_inf(int const /*value*/) noexcept
 {
     return false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool is_inf(float const value)
+bool m1::is_inf(float const value) noexcept
 {
-    return (value < -std::numeric_limits<float>::max())
-        || (value > +std::numeric_limits<float>::max());
+    return std::isinf(value);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-bool is_inf(double const value)
+bool m1::is_inf(double const value) noexcept
 {
-    return (value < -std::numeric_limits<double>::max())
-        || (value > +std::numeric_limits<double>::max());
+    return std::isinf(value);
 }
 
 // =====================================================================================================================

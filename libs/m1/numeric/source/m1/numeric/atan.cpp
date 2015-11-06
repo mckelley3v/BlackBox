@@ -3,28 +3,28 @@
 
 // =====================================================================================================================
 
-float m1::atan(float const x)
+float m1::atan(float const x) noexcept
 {
     return std::atan(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::atan(double const x)
+double m1::atan(double const x) noexcept
 {
     return std::atan(x);
 }
 
 // =====================================================================================================================
 
-float m1::atan2(float const y, float const x)
+float m1::atan2(float const y, float const x) noexcept
 {
     return std::atan2(y, x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::atan2(double const y, double const x)
+double m1::atan2(double const y, double const x) noexcept
 {
     return std::atan2(y, x);
 }
