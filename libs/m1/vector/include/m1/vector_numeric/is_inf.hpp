@@ -11,16 +11,22 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename T> impl::vector_bool_type<T> is_inf(vector<T> const &v) noexcept;
+    template <typename T>
+    impl::vector_bool_type<T> is_inf(vector<T> const &v) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
 // ====================================================================================================================
 
-template <typename T> m1::impl::vector_bool_type<T> m1::is_inf(vector<T> const &v) noexcept
+template <typename T>
+m1::impl::vector_bool_type<T> m1::is_inf(vector<T> const &v) noexcept
 {
-    return impl::generate_vector_bool<T>([&](auto index) { using m1::is_inf; return is_inf(v[index]); });
+    return impl::generate_vector_bool<T>([&](auto index)
+                                         {
+                                             using m1::is_inf;
+                                             return is_inf(v[index]);
+                                         });
 }
 
 // ====================================================================================================================

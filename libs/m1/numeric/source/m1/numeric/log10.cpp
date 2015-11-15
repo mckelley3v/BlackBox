@@ -4,7 +4,7 @@
 
 // =====================================================================================================================
 
-float m1::log10(float const x)
+float m1::log10(float const x) noexcept
 {
     assert(x > 0.0f);
     return std::log10(x);
@@ -12,7 +12,7 @@ float m1::log10(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::log10(double const x)
+double m1::log10(double const x) noexcept
 {
     assert(x > 0.0);
     return std::log10(x);

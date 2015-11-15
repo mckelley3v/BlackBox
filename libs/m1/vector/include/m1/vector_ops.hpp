@@ -3,8 +3,12 @@
 
 #include "m1/vector_type.hpp"
 #include "m1/vector_impl.hpp"
+#include "m1/numeric/all_of.hpp"
+#include "m1/numeric/any_of.hpp"
+#include "m1/numeric/none_of.hpp"
 #include "m1/numeric/inverse_sqrt.hpp"
 #include "m1/numeric/sqrt.hpp"
+#include "m1/numeric/sum.hpp"
 
 // ====================================================================================================================
 
@@ -84,7 +88,7 @@ namespace impl
                                           vector<R> const &rhs,
                                           index_sequence<Indices...> const /*indices*/) noexcept
     {
-        return accumulate([](auto &&lhs, auto &&rhs) { return lhs + rhs; }, (lhs[(index_constant<Indices>())] * rhs[(index_constant<Indices>())])...);
+        return sum((lhs[(index_constant<Indices>())] * rhs[(index_constant<Indices>())])...);
     }
 
     // ================================================================================================================
@@ -239,21 +243,21 @@ template <typename L, typename R> constexpr m1::impl::vector_bool_type<L, R> m1:
 
 template <typename B> constexpr bool m1::all_of(vector<B> const &v) noexcept
 {
-    return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return lhs && rhs; }, v);
+    return impl::accumulate_vector_values(M1_LAMBDA_FORWARD(all_of), v);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 template <typename B> constexpr bool m1::any_of(vector<B> const &v) noexcept
 {
-    return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return lhs || rhs; }, v);
+    return impl::accumulate_vector_values(M1_LAMBDA_FORWARD(any_of), v);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 template <typename B> constexpr bool m1::none_of(vector<B> const &v) noexcept
 {
-    return impl::accumulate_vector_values([](auto &&lhs, auto &&rhs) { return !lhs && !rhs; }, v);
+    return impl::accumulate_vector_values(M1_LAMBDA_FORWARD(none_of), v);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

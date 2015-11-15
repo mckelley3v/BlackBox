@@ -5,9 +5,9 @@ namespace m1
 {
     // =================================================================================================================
 
-    int log2(int x);
-    float log2(float x);
-    double log2(double x);
+    int log2(int x) noexcept;
+    float log2(float x) noexcept;
+    double log2(double x) noexcept;
 
     // =================================================================================================================
 } // namespace m1

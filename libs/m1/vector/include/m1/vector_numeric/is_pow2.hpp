@@ -11,16 +11,22 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename T> constexpr impl::vector_bool_type<T> is_pow2(vector<T> const &v) noexcept;
+    template <typename T>
+    constexpr impl::vector_bool_type<T> is_pow2(vector<T> const &v) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
 // ====================================================================================================================
 
-template <typename T> constexpr m1::impl::vector_bool_type<T> m1::is_pow2(vector<T> const &v) noexcept
+template <typename T>
+constexpr m1::impl::vector_bool_type<T> m1::is_pow2(vector<T> const &v) noexcept
 {
-    return impl::generate_vector_bool<T>([&](auto index) { using m1::is_pow2; return is_pow2(v[index]); });
+    return impl::generate_vector_bool<T>([&](auto index)
+                                         {
+                                             using m1::is_pow2;
+                                             return is_pow2(v[index]);
+                                         });
 }
 
 // ====================================================================================================================

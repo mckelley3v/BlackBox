@@ -1,32 +1,30 @@
-#ifndef M1_NUMERIC_SATURATE_HPP
-#define M1_NUMERIC_SATURATE_HPP
+#ifndef M1_NUMERIC_NONE_OF_HPP
+#define M1_NUMERIC_NONE_OF_HPP
 
 namespace m1
 {
     // =================================================================================================================
 
-    constexpr float saturate(float value) noexcept;
-    constexpr double saturate(double value) noexcept;
+    constexpr bool none_of(bool lhs, bool rhs) noexcept;
+    template <typename... Ts> constexpr bool none_of(bool arg0, bool arg1, Ts ...argN) noexcept;
 
     // =================================================================================================================
 } // namespace m1
 
 // =====================================================================================================================
 
-constexpr float m1::saturate(float const value) noexcept
+constexpr bool m1::none_of(bool const lhs, bool const rhs) noexcept
 {
-    return (value < 0.0f) ? 0.0f :
-           (value > 1.0f) ? 1.0f : value;
+    return !lhs && !rhs;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-constexpr double m1::saturate(double const value) noexcept
+template <typename... Ts> constexpr bool m1::none_of(bool const arg0, bool const arg1, Ts const ...argN) noexcept
 {
-    return (value < 0.0) ? 0.0 :
-           (value > 1.0) ? 1.0 : value;
+    return none_of(arg0, none_of(arg1, argN...));
 }
 
 // =====================================================================================================================
 
-#endif // M1_NUMERIC_SATURATE_HPP
+#endif // M1_NUMERIC_NONE_OF_HPP

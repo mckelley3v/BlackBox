@@ -11,16 +11,22 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename T> impl::vector_copy_type<T> acos(vector<T> const &v) noexcept;
+    template <typename T>
+    impl::vector_copy_type<T> acos(vector<T> const &v) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
 // ====================================================================================================================
 
-template <typename T> m1::impl::vector_copy_type<T> m1::acos(vector<T> const &v) noexcept
+template <typename T>
+m1::impl::vector_copy_type<T> m1::acos(vector<T> const &v) noexcept
 {
-    return impl::generate_vector_copy<T>([&](auto index) { using m1::acos; return acos(v[index]); });
+    return impl::generate_vector_copy<T>([&](auto index)
+                                         {
+                                             using m1::acos;
+                                             return acos(v[index]);
+                                         });
 }
 
 // ====================================================================================================================

@@ -7,6 +7,10 @@
 
 // ====================================================================================================================
 
+#define M1_LAMBDA_FORWARD(F) ([] (auto &&...args) { return F(std::forward<decltype(args)>(args)...);})
+
+// ====================================================================================================================
+
 namespace m1
 {
    // ================================================================================================================
@@ -103,29 +107,19 @@ namespace impl
     // ================================================================================================================
 
     template <typename F,
-              typename T>
-    constexpr auto accumulate(F &&/*f*/, T &&t) noexcept
+              std::size_t... Indices>
+    constexpr auto apply_each_vector_index(F &&f, index_sequence<Indices...> const /*indices*/) noexcept
     {
-        return t;
+        return f(index_constant<Indices>()...);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    template <typename F,
-              typename T>
-    constexpr auto accumulate(F &&f, T &&t0, T &&t1) noexcept
+    template <typename... Ts,
+              typename F>
+    constexpr auto apply_each_vector_index(F &&f) noexcept
     {
-        return f(t0, t1);
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    template <typename F,
-              typename T,
-              typename... Ts>
-    constexpr auto accumulate(F &&f, T &&t, Ts &&...ts) noexcept
-    {
-        return f(std::forward<T>(t), accumulate(f, std::forward<Ts>(ts)...));
+        return apply_each_vector_index(std::forward<F>(f), make_index_sequence<vector_data_size<Ts...>::value>());
     }
 
     // ================================================================================================================
@@ -135,7 +129,7 @@ namespace impl
               std::size_t... Indices>
     constexpr auto accumulate_vector_values(F &&f, V &&v, index_sequence<Indices...> const /*indices*/) noexcept
     {
-        return accumulate(std::forward<F>(f), v[(index_constant<Indices>())]...);
+        return f(v[(index_constant<Indices>())]...);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -144,7 +138,8 @@ namespace impl
               typename V>
     constexpr auto accumulate_vector_values(F &&f, V &&v) noexcept
     {
-        return accumulate_vector_values(std::forward<F>(f), v, make_index_sequence<V::static_size>());
+        using vector_type = std::decay_t<V>;
+        return accumulate_vector_values(std::forward<F>(f), std::forward<V>(v), make_index_sequence<vector_type::static_size>());
     }
 
     // ================================================================================================================

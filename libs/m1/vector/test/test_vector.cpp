@@ -414,6 +414,16 @@ TEST_CASE("Test m1::vector", "[m1]")
         ldexp(s, e);
         lerp(u, v, t);
         lerp(u, v, 0.6f);
+        linear_step(u, v, 0.5f);
+        linear_step(u, v, t);
+        log(t);
+        log2(e);
+        log2(t);
+        log10(t);
+        max(u);
+        max(u, v);
+        min(u);
+        min(u, v);
     }
 
     // to manually compare assembly

@@ -11,16 +11,22 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename T> impl::vector_copy_type<T> exp10(vector<T> const &v) noexcept;
+    template <typename T>
+    impl::vector_copy_type<T> exp10(vector<T> const &v) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
-  // ====================================================================================================================
+// ====================================================================================================================
 
-template <typename T> m1::impl::vector_copy_type<T> m1::exp10(vector<T> const &v) noexcept
+template <typename T>
+m1::impl::vector_copy_type<T> m1::exp10(vector<T> const &v) noexcept
 {
-    return impl::generate_vector_copy<T>([&](auto index) { using m1::exp10; return exp10(v[index]); });
+    return impl::generate_vector_copy<T>([&](auto index)
+                                         {
+                                             using m1::exp10;
+                                             return exp10(v[index]);
+                                         });
 }
 
 // ====================================================================================================================

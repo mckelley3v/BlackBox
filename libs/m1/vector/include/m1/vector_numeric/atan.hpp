@@ -11,26 +11,39 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename T> impl::vector_copy_type<T> atan(vector<T> const &v) noexcept;
-    template <typename Y, typename X> impl::vector_copy_type<Y, X> atan2(vector<Y> const &y,
-                                                                         vector<X> const &x) noexcept;
+    template <typename T>
+    impl::vector_copy_type<T> atan(vector<T> const &v) noexcept;
+
+    template <typename Y, typename X>
+    impl::vector_copy_type<Y, X> atan2(vector<Y> const &y,
+                                       vector<X> const &x) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
 // ====================================================================================================================
 
-template <typename T> m1::impl::vector_copy_type<T> m1::atan(vector<T> const &v) noexcept
+template <typename T>
+m1::impl::vector_copy_type<T> m1::atan(vector<T> const &v) noexcept
 {
-    return impl::generate_vector_copy<T>([&](auto index) { using m1::atan; return atan(v[index]); });
+    return impl::generate_vector_copy<T>([&](auto index)
+                                         {
+                                             using m1::atan;
+                                             return atan(v[index]);
+                                         });
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename Y, typename X> m1::impl::vector_copy_type<Y, X> m1::atan2(vector<Y> const &y,
-                                                                             vector<X> const &x) noexcept
+template <typename Y, typename X>
+m1::impl::vector_copy_type<Y, X> m1::atan2(vector<Y> const &y,
+                                           vector<X> const &x) noexcept
 {
-    return impl::generate_vector_copy<Y, X>([&](auto index) { using m1::atan2; return atan2(y[index], x[index]); });
+    return impl::generate_vector_copy<Y, X>([&](auto index)
+                                            {
+                                                using m1::atan2;
+                                                return atan2(y[index], x[index]);
+                                            });
 }
 
 // ====================================================================================================================

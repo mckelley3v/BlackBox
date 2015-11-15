@@ -11,22 +11,30 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename S, typename E, typename T> void frexp(vector<S> *scales,
-                                                             vector<E> *exps,
-                                                             vector<T> const &v) noexcept;
+    template <typename S, typename E, typename T>
+    void frexp(vector<S> *scales,
+               vector<E> *exps,
+               vector<T> const &v) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
-  // ====================================================================================================================
+// ====================================================================================================================
 
-template <typename S, typename E, typename T> void m1::frexp(vector<S> * const scales,
-                                                             vector<E> * const exps,
-                                                             vector<T> const &v) noexcept
+template <typename S, typename E, typename T>
+void m1::frexp(vector<S> * const scales,
+               vector<E> * const exps,
+               vector<T> const &v) noexcept
 {
     assert(scales != nullptr);
     assert(exps != nullptr);
-    impl::for_each_vector_index<S, E, T>([&](auto index) { using m1::frexp; frexp(&((*scales)[index]), &((*exps)[index]), v[index]); });
+    impl::for_each_vector_index<S, E, T>([&](auto index)
+                                         {
+                                             using m1::frexp;
+                                             frexp(&((*scales)[index]),
+                                                   &((*exps)[index]),
+                                                   v[index]);
+                                         });
 }
 
 // ====================================================================================================================

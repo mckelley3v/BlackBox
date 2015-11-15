@@ -5,11 +5,11 @@
 
 // =====================================================================================================================
 
-static std::uint32_t log2_impl(std::uint32_t x);
+static std::uint32_t log2_impl(std::uint32_t x) noexcept;
 
 // =====================================================================================================================
 
-int m1::log2(int const x)
+int m1::log2(int const x) noexcept
 {
     static_assert(sizeof(x) == sizeof(std::uint32_t), "32-bit implementation");
     return static_cast<int>(log2_impl(static_cast<std::uint32_t>(x)));
@@ -17,7 +17,7 @@ int m1::log2(int const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-float m1::log2(float const x)
+float m1::log2(float const x) noexcept
 {
     assert(x > 0.0f);
     return std::log2(x);
@@ -25,7 +25,7 @@ float m1::log2(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::log2(double const x)
+double m1::log2(double const x) noexcept
 {
     assert(x > 0.0);
     return std::log2(x);
@@ -33,7 +33,7 @@ double m1::log2(double const x)
 
 // =====================================================================================================================
 
-/*static*/ std::uint32_t log2_impl(std::uint32_t x)
+/*static*/ std::uint32_t log2_impl(std::uint32_t x) noexcept
 {
     std::uint32_t result = 0;
 
