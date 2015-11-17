@@ -20,7 +20,7 @@ constexpr bool m1::none_of(bool const lhs, bool const rhs) noexcept
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename... Ts> constexpr bool m1::none_of(bool const arg0, bool const arg1, Ts const ...argN) noexcept
+template <typename... Ts> constexpr bool m1::none_of(bool const arg0, bool const arg1, Ts ...argN) noexcept
 {
     return none_of(arg0, none_of(arg1, argN...));
 }

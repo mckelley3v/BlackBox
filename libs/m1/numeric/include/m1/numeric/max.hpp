@@ -38,21 +38,21 @@ constexpr double m1::max(double const lhs, double const rhs) noexcept
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename... Ts> constexpr int m1::max(int const arg0, int const arg1, Ts const ...argN) noexcept
+template <typename... Ts> constexpr int m1::max(int const arg0, int const arg1, Ts ...argN) noexcept
 {
     return max(arg0, max(arg1, argN...));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename... Ts> constexpr float m1::max(float const arg0, float const arg1, Ts const ...argN) noexcept
+template <typename... Ts> constexpr float m1::max(float const arg0, float const arg1, Ts ...argN) noexcept
 {
     return max(arg0, max(arg1, argN...));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename... Ts> constexpr double m1::max(double const arg0, double const arg1, Ts const ...argN) noexcept
+template <typename... Ts> constexpr double m1::max(double const arg0, double const arg1, Ts ...argN) noexcept
 {
     return max(arg0, max(arg1, argN...));
 }
