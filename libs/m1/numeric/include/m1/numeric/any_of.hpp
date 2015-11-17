@@ -20,7 +20,7 @@ constexpr bool m1::any_of(bool const lhs, bool const rhs) noexcept
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-template <typename... Ts> constexpr bool m1::any_of(bool const arg0, bool const arg1, Ts const ...argN) noexcept
+template <typename... Ts> constexpr bool m1::any_of(bool const arg0, bool const arg1, Ts ...argN) noexcept
 {
     return any_of(arg0, any_of(arg1, argN...));
 }

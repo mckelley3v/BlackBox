@@ -306,25 +306,25 @@ TEST_CASE("Test m1::vector", "[m1]")
         CHECK(bitxor_assign[1] == (i[1] ^ j[1]));
         CHECK(bitxor_assign[2] == (i[2] ^ j[2]));
 
-        vector3i const bitnot = ~i;
-        CHECK(bitnot[0] == ~i[0]);
-        CHECK(bitnot[1] == ~i[1]);
-        CHECK(bitnot[2] == ~i[2]);
+        vector3i const bit_not = ~i;
+        CHECK(bit_not[0] == ~i[0]);
+        CHECK(bit_not[1] == ~i[1]);
+        CHECK(bit_not[2] == ~i[2]);
 
-        vector3i const bitand = i & j;
-        CHECK(bitand[0] == (i[0] & j[0]));
-        CHECK(bitand[1] == (i[1] & j[1]));
-        CHECK(bitand[2] == (i[2] & j[2]));
+        vector3i const bit_and = i & j;
+        CHECK(bit_and[0] == (i[0] & j[0]));
+        CHECK(bit_and[1] == (i[1] & j[1]));
+        CHECK(bit_and[2] == (i[2] & j[2]));
 
-        vector3i const bitor = i | j;
-        CHECK(bitor[0] == (i[0] | j[0]));
-        CHECK(bitor[1] == (i[1] | j[1]));
-        CHECK(bitor[2] == (i[2] | j[2]));
+        vector3i const bit_or = i | j;
+        CHECK(bit_or[0] == (i[0] | j[0]));
+        CHECK(bit_or[1] == (i[1] | j[1]));
+        CHECK(bit_or[2] == (i[2] | j[2]));
 
-        vector3i const bitxor = i ^ j;
-        CHECK(bitxor[0] == (i[0] ^ j[0]));
-        CHECK(bitxor[1] == (i[1] ^ j[1]));
-        CHECK(bitxor[2] == (i[2] ^ j[2]));
+        vector3i const bit_xor = i ^ j;
+        CHECK(bit_xor[0] == (i[0] ^ j[0]));
+        CHECK(bit_xor[1] == (i[1] ^ j[1]));
+        CHECK(bit_xor[2] == (i[2] ^ j[2]));
     }
 
     {
