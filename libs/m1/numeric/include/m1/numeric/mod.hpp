@@ -5,9 +5,14 @@ namespace m1
 {
     // =================================================================================================================
 
-    int mod(int numer, int denom);
-    float mod(float numer, float denom);
-    double mod(double numer, double denom);
+    int mod(int numer,
+            int denom) noexcept;
+
+    float mod(float numer,
+              float denom) noexcept;
+
+    double mod(double numer,
+               double denom) noexcept;
 
     // =================================================================================================================
 } // namespace m1

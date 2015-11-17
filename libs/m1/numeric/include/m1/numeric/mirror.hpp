@@ -5,16 +5,16 @@ namespace m1
 {
     // =================================================================================================================
 
-    float mirror(float value);
-    double mirror(double value);
+    float mirror(float value) noexcept;
+    double mirror(double value) noexcept;
 
     float mirror(float value,
                  float min_value,
-                 float max_value);
+                 float max_value) noexcept;
 
     double mirror(double value,
                   double min_value,
-                  double max_value);
+                  double max_value) noexcept;
 
     // =================================================================================================================
 } // namespace m1

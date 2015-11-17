@@ -424,6 +424,14 @@ TEST_CASE("Test m1::vector", "[m1]")
         max(u, v);
         min(u);
         min(u, v);
+        mirror(t);
+        mirror(t, u, v);
+        mirror(t, 0.1f, 0.5f);
+        mix(u, v, t);
+        mix(u, v, 0.6f);
+        mod(u, v);
+        mod(0.5f, v);
+        mod(u, 0.5f);
     }
 
     // to manually compare assembly
