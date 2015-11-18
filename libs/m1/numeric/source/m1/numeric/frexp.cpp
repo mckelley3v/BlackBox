@@ -4,24 +4,20 @@
 
 // =====================================================================================================================
 
-void m1::frexp(float * const scale,
-               int * const exp,
-               float const x) noexcept
+float m1::frexp(float const x,
+                int * const exp) noexcept
 {
-    assert(scale != nullptr);
     assert(exp != nullptr);
-    *scale = std::frexp(x, exp);
+    return std::frexp(x, exp);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-void m1::frexp(double * const scale,
-               int * const exp,
-               double const x) noexcept
+double m1::frexp(double const x,
+                 int * const exp) noexcept
 {
-    assert(scale != nullptr);
     assert(exp != nullptr);
-    *scale = std::frexp(x, exp);
+    return std::frexp(x, exp);
 }
 
 // =====================================================================================================================

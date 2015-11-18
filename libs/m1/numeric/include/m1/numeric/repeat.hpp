@@ -7,11 +7,11 @@ namespace m1
 
     float repeat(float value,
                  float min_value,
-                 float max_value);
+                 float max_value) noexcept;
 
     double repeat(double value,
                   double min_value,
-                  double max_value);
+                  double max_value) noexcept;
 
     // =================================================================================================================
 } // namespace m1

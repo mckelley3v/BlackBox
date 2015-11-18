@@ -6,7 +6,9 @@
 
 // =====================================================================================================================
 
-float m1::repeat(float const value, float const min_value, float const max_value)
+float m1::repeat(float const value,
+                 float const min_value,
+                 float const max_value) noexcept
 {
     assert(min_value < max_value);
     float const t = inverse_lerp(min_value, max_value, value);
@@ -16,7 +18,9 @@ float m1::repeat(float const value, float const min_value, float const max_value
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::repeat(double const value, double const min_value, double const max_value)
+double m1::repeat(double const value,
+                  double const min_value,
+                  double const max_value) noexcept
 {
     assert(min_value < max_value);
     double const t = inverse_lerp(min_value, max_value, value);

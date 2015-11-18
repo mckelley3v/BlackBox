@@ -6,7 +6,8 @@
 
 // =====================================================================================================================
 
-float m1::pow(float const base, int const exp)
+float m1::pow(float const base,
+              int const exp) noexcept
 {
     // more restrictive than std::pow
     // but asserts on implementation defined behavior
@@ -18,7 +19,8 @@ float m1::pow(float const base, int const exp)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-float m1::pow(float const base, float const exp)
+float m1::pow(float const base,
+              float const exp) noexcept
 {
     // more restrictive than std::pow
     // but asserts on implementation defined behavior
@@ -29,7 +31,8 @@ float m1::pow(float const base, float const exp)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::pow(const double base, int const exp)
+double m1::pow(double const base,
+               int const exp) noexcept
 {
     // TODO - consider allowing negative base if exp is odd
     assert(base >= 0.0);
@@ -39,7 +42,8 @@ double m1::pow(const double base, int const exp)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::pow(const double base, const double exp)
+double m1::pow(double const base,
+               double const exp) noexcept
 {
     // more restrictive than std::pow
     // but asserts on implementation defined behavior

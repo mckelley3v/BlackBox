@@ -11,30 +11,27 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename S, typename E, typename T>
-    void frexp(vector<S> *scales,
-               vector<E> *exps,
-               vector<T> const &v) noexcept;
+    template <typename T, typename I>
+    impl::vector_copy_type<T> frexp(vector<T> const &v,
+                                    vector<I> *exps) noexcept;
 
     // ================================================================================================================
 } // namespace m1
 
 // ====================================================================================================================
 
-template <typename S, typename E, typename T>
-void m1::frexp(vector<S> * const scales,
-               vector<E> * const exps,
-               vector<T> const &v) noexcept
+template <typename T, typename I>
+m1::impl::vector_copy_type<T>  m1::frexp(vector<T> const &v,
+                                         vector<I> *exps) noexcept
 {
-    assert(scales != nullptr);
     assert(exps != nullptr);
-    impl::for_each_vector_index<S, E, T>([&](auto index)
-                                         {
-                                             using m1::frexp;
-                                             frexp(&((*scales)[index]),
-                                                   &((*exps)[index]),
-                                                   v[index]);
-                                         });
+
+    return impl::generate_vector_copy<T>([&](auto index)
+                                        {
+                                            using m1::frexp;
+                                            return frexp(v[index],
+                                                         &(*exps)[index]);
+                                        });
 }
 
 // ====================================================================================================================

@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::round(float const x)
+float m1::round(float const x) noexcept
 {
     return std::floor(x + 0.5f);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::round(double const x)
+double m1::round(double const x) noexcept
 {
     return std::floor(x + 0.5);
 }

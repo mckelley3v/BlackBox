@@ -3,14 +3,16 @@
 
 // =====================================================================================================================
 
-float m1::modf(float const x, float * const int_part)
+float m1::modf(float const x,
+               float * const int_part) noexcept
 {
     return std::modf(x, int_part);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::modf(double const x, double * const int_part)
+double m1::modf(double const x,
+                double * const int_part) noexcept
 {
     return std::modf(x, int_part);
 }

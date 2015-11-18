@@ -5,8 +5,11 @@ namespace m1
 {
     // =================================================================================================================
 
-    float modf(float x, float *int_part);
-    double modf(double x, double *int_part);
+    float modf(float x,
+               float *int_part) noexcept;
+
+    double modf(double x,
+                double *int_part) noexcept;
 
     // =================================================================================================================
 } // namespace m1

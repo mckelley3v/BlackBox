@@ -5,13 +5,11 @@ namespace m1
 {
     // =================================================================================================================
 
-    void frexp(float *scale,
-               int *exp,
-               float x) noexcept;
+    float frexp(float x,
+                int *exp) noexcept;
 
-    void frexp(double *scale,
-               int *exp,
-               double x) noexcept;
+    double frexp(double x,
+                 int *exp) noexcept;
 
     // =================================================================================================================
 } // namespace m1

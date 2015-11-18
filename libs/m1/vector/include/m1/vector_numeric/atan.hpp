@@ -42,7 +42,8 @@ m1::impl::vector_copy_type<Y, X> m1::atan2(vector<Y> const &y,
     return impl::generate_vector_copy<Y, X>([&](auto index)
                                             {
                                                 using m1::atan2;
-                                                return atan2(y[index], x[index]);
+                                                return atan2(y[index],
+                                                             x[index]);
                                             });
 }
 
