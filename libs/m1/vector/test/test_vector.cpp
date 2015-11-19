@@ -406,6 +406,7 @@ TEST_CASE("Test m1::vector", "[m1]")
         p = floor(u);
         p = fract(u);
         p = frexp(t, &i);
+        p = inverse_lerp(0.1f, 0.8f, t);
         p = inverse_lerp(u, v, t);
         p = inverse_sqrt(u);
         b = is_close(u, v);
@@ -417,7 +418,7 @@ TEST_CASE("Test m1::vector", "[m1]")
         p = ldexp(p, j);
         p = lerp(u, v, t);
         p = lerp(u, v, 0.6f);
-        p = linear_step(u, v, 0.5f);
+        p = linear_step(0.1f, 0.8f, t);
         p = linear_step(u, v, t);
         p = log(t);
         i = log2(j);
@@ -445,6 +446,19 @@ TEST_CASE("Test m1::vector", "[m1]")
         p = repeat(t, u, v);
         p = repeat(t, 0.1f, 0.5f);
         p = round(t);
+        p = round_even(t);
+        p = saturate(t);
+        p = sign(t);
+        p = sin(t);
+        p = sinh(t);
+        p = smooth_step(0.1f, 0.8f, t);
+        p = smooth_step(u, v, t);
+        p = sqrt(t);
+        p = step(u, t);
+        p = step(0.2f, t);
+        p = tan(t);
+        p = tanh(t);
+        p = trunc(t);
     }
 
     // to manually compare assembly

@@ -39,6 +39,8 @@
 #include "m1/vector_numeric/mix.hpp"
 #include "m1/vector_numeric/mod.hpp"
 #include "m1/vector_numeric/modf.hpp"
+#include "m1/vector_numeric/pointwise_multiply.hpp"
+#include "m1/vector_numeric/pointwise_divide.hpp"
 #include "m1/vector_numeric/pow.hpp"
 #include "m1/vector_numeric/radians.hpp"
 #include "m1/vector_numeric/repeat.hpp"
@@ -54,7 +56,5 @@
 #include "m1/vector_numeric/tan.hpp"
 #include "m1/vector_numeric/tanh.hpp"
 #include "m1/vector_numeric/trunc.hpp"
-#include "m1/vector_numeric/pointwise_multiply.hpp"
-#include "m1/vector_numeric/pointwise_divide.hpp"
 
 #endif // M1_VECTOR_NUMERIC_HPP

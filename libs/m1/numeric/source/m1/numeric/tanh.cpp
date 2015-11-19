@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::tanh(float const x)
+float m1::tanh(float const x) noexcept
 {
     return std::tanh(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::tanh(double const x)
+double m1::tanh(double const x) noexcept
 {
     return std::tanh(x);
 }

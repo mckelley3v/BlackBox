@@ -4,7 +4,7 @@
 
 // =====================================================================================================================
 
-float m1::trunc(float const x)
+float m1::trunc(float const x) noexcept
 {
     assert(static_cast<float>(std::numeric_limits<int>::min()) <= x);
     assert(x <= static_cast<float>(std::numeric_limits<int>::max()));
@@ -13,7 +13,7 @@ float m1::trunc(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::trunc(double const x)
+double m1::trunc(double const x) noexcept
 {
     assert(static_cast<double>(std::numeric_limits<int>::min()) <= x);
     assert(x <= static_cast<double>(std::numeric_limits<int>::max()));

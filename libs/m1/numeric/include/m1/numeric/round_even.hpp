@@ -5,8 +5,8 @@ namespace m1
 {
     // =================================================================================================================
 
-    float round_even(float x);
-    double round_even(double x);
+    float round_even(float x) noexcept;
+    double round_even(double x) noexcept;
 
     // =================================================================================================================
 } // namespace m1

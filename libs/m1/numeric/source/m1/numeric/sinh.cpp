@@ -3,14 +3,14 @@
 
 // =====================================================================================================================
 
-float m1::sinh(float const x)
+float m1::sinh(float const x) noexcept
 {
     return std::sinh(x);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::sinh(double const x)
+double m1::sinh(double const x) noexcept
 {
     return std::sinh(x);
 }

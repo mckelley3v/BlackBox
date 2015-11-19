@@ -7,7 +7,7 @@
 
 // =====================================================================================================================
 
-float m1::round_even(float const x)
+float m1::round_even(float const x) noexcept
 {
     assert(static_cast<float>(std::numeric_limits<int>::min()) <= x);
     assert(x <= static_cast<float>(std::numeric_limits<int>::max()));
@@ -32,7 +32,7 @@ float m1::round_even(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::round_even(double const x)
+double m1::round_even(double const x) noexcept
 {
     assert(static_cast<double>(std::numeric_limits<int>::min()) <= x);
     assert(x <= static_cast<double>(std::numeric_limits<int>::max()));

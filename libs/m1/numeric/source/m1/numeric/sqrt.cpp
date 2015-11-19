@@ -4,7 +4,7 @@
 
 // =====================================================================================================================
 
-float m1::sqrt(float const x)
+float m1::sqrt(float const x) noexcept
 {
     assert(x >= 0.0f);
     return std::sqrt(x);
@@ -12,7 +12,7 @@ float m1::sqrt(float const x)
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-double m1::sqrt(double const x)
+double m1::sqrt(double const x) noexcept
 {
     assert(x >= 0.0);
     return std::sqrt(x);
