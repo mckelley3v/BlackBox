@@ -15,8 +15,8 @@ namespace m1
     {
     public:
         // types:
-        typedef T data_type;
-        typedef vector_data_traits<data_type> traits_type;
+        typedef vector_data_traits<T> traits_type;
+        typedef typename traits_type::data_type data_type;
         typedef typename traits_type::value_type value_type;
         typedef typename traits_type::reference reference;
         typedef typename traits_type::const_reference const_reference;

@@ -25,6 +25,7 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T const>
     {
+        typedef T const data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::value_type value_type;
         typedef typename vector_data_traits<T>::const_reference reference;
@@ -44,6 +45,7 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T&>
     {
+        typedef T& data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::reference value_type;
         typedef typename vector_data_traits<T>::reference reference;
@@ -63,6 +65,7 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T const&>
     {
+        typedef T const& data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::const_reference value_type;
         typedef typename vector_data_traits<T>::const_reference reference;
@@ -82,6 +85,7 @@ namespace m1
     template <typename T, std::size_t N>
     struct vector_data_traits<T[N]>
     {
+        typedef T data_type[N];
         typedef T copy_type[N];
         typedef T value_type;
         typedef T& reference;
