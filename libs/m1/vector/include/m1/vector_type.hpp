@@ -29,7 +29,7 @@ namespace m1
         template <typename U> constexpr explicit vector(U &&u) noexcept;
         template <typename U0, typename... UN> constexpr vector(U0 &&u0, UN &&...uN) noexcept;
         vector(vector &&rhs) noexcept = default;
-        vector(vector const &rhs) noexcept = default;
+        constexpr vector(vector const &rhs) noexcept = default;
         vector& operator = (vector &&rhs) noexcept = default;
         vector& operator = (vector const &rhs) noexcept = default;
         ~vector() noexcept = default;

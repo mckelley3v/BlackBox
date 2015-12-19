@@ -25,14 +25,17 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T const>
     {
+        // types:
         typedef T const data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::value_type value_type;
         typedef typename vector_data_traits<T>::const_reference reference;
         typedef typename vector_data_traits<T>::const_reference const_reference;
 
+        // constants:
         constexpr static std::size_t const static_size = vector_data_traits<T>::static_size;
 
+        // element access:
         static reference ref(T const &data, std::size_t index);
         template <std::size_t I> static reference ref(T const &data, index_constant<I> index);
 
@@ -45,14 +48,17 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T&>
     {
+        // types:
         typedef T& data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::reference value_type;
         typedef typename vector_data_traits<T>::reference reference;
         typedef typename vector_data_traits<T>::const_reference const_reference;
 
+        // constants:
         constexpr static std::size_t const static_size = vector_data_traits<T>::static_size;
 
+        // element access:
         static reference ref(T &data, std::size_t index);
         template <std::size_t I> static reference ref(T &data, index_constant<I> index);
 
@@ -65,14 +71,17 @@ namespace m1
     template <typename T>
     struct vector_data_traits<T const&>
     {
+        // types:
         typedef T const& data_type;
         typedef T copy_type;
         typedef typename vector_data_traits<T>::const_reference value_type;
         typedef typename vector_data_traits<T>::const_reference reference;
         typedef typename vector_data_traits<T>::const_reference const_reference;
 
+        // constants:
         constexpr static std::size_t const static_size = vector_data_traits<T>::static_size;
 
+        // element access:
         static reference ref(T const &data, std::size_t index);
         template <std::size_t I> static reference ref(T const &data, index_constant<I> index);
 
@@ -85,16 +94,19 @@ namespace m1
     template <typename T, std::size_t N>
     struct vector_data_traits<T[N]>
     {
+        // types:
         typedef T data_type[N];
         typedef T copy_type[N];
         typedef T value_type;
         typedef T& reference;
         typedef T const& const_reference;
 
+        // constants:
         constexpr static std::size_t const static_size = N;
 
-        static reference ref(T(&data)[N], std::size_t index);
-        template <std::size_t I> static reference ref(T(&data)[N], index_constant<I> index);
+        // element access:
+        static reference ref(T (&data)[N], std::size_t index);
+        template <std::size_t I> static reference ref(T (&data)[N], index_constant<I> index);
 
         constexpr static const_reference get(T const (&data)[N], std::size_t index);
         template <std::size_t I> constexpr static const_reference get(T const (&data)[N], index_constant<I> index);
