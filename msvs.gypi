@@ -35,10 +35,6 @@
                     "VCCLCompilerTool":
                     {
                         "Optimization": 0, # "Disabled"
-                        "PreprocessorDefinitions":
-                        [
-                            "_DEBUG",
-                        ],
                     },
                     "VCLinkerTool":
                     {

@@ -1,0 +1,68 @@
+{
+    "targets":
+    [
+        {
+            "target_name": "m1_ustring",
+            "type": "static_library",
+            "include_dirs":
+            [
+                "include",
+                "source",
+            ],
+            "sources":
+            [
+                "include/m1/byte_order.hpp",
+                "include/m1/byte_order_iterator.hpp",
+                "include/m1/code_unit_terminator.hpp",
+                "include/m1/pragma_message.hpp",
+                "include/m1/ustring.hpp",
+                "include/m1/utf8_decode.hpp",
+                "include/m1/utf16_decode.hpp",
+                "include/m1/utf32_decode.hpp",
+                "source/m1/byte_order_iterator.cpp",
+                "source/m1/ustring.cpp",
+                "source/m1/ustring_buffer.hpp",
+                "source/m1/ustring_buffer.cpp",
+                "source/m1/ustring_code_point_iterator.cpp",
+                "m1_ustring.gyp",
+            ],
+            "dependencies":
+            [
+            ],
+            "export_dependent_settings":
+            [
+            ],
+            "direct_dependent_settings":
+            {
+                "include_dirs":
+                [
+                    "include",
+                ],
+            },
+        },
+        {
+            "target_name": "m1_ustring_test",
+            "type": "executable",
+            "include_dirs":
+            [
+                "test",
+            ],
+            "sources":
+            [
+                "test/array_size.hpp",
+                "test/test_main.cpp",
+                "test/test_byte_order.cpp",
+                "test/test_code_unit_terminator.cpp",
+                "test/test_ustring.cpp",
+                "test/test_utf8_decode.cpp",
+                "test/test_utf16_decode.cpp",
+                "test/test_utf32_decode.cpp",
+            ],
+            "dependencies":
+            [
+                "<(catch_gyp_file):catch",
+                "m1_ustring",
+            ],
+        },
+    ],
+}

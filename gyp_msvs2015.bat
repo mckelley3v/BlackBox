@@ -1,6 +1,7 @@
 @ECHO OFF
 
-SET PATH=%PATH%;C:\Python27
-SET PYTHONPATH=%PYTHONPATH%;%~dp0external_tools\gyp\pylib
+SET THIS_DIR=%~dp0
+SET GYPPATH=%THIS_DIR%external_tools\gyp
+SET PYTHONPATH=%GYPPATH%\pylib;%PYTHONPATH%
 
-python gen_proj.py --ignore-environment --format=msvs -G msvs_version=2015 --generator-output=build/msvs2015 --include=msvs.gypi
+CALL %GYPPATH%\gyp.bat --ignore-environment --format=msvs -G msvs_version=2015 --generator-output=build/msvs2015 --include=%THIS_DIR%msvs.gypi --include=%THIS_DIR%include.gypi --depth=%CD% %*

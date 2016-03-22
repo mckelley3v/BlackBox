@@ -1,0 +1,6 @@
+; Top-most EditorConfig file
+root = true
+
+[*.{c,cc,cxx,cpp,h,hh,hxx,hpp,glsl,hlsl,cs}]
+indent_style = space
+indent_size = 4
