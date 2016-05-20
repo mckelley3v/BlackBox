@@ -1,0 +1,6 @@
+[submodule "external_tools/gyp"]
+	path = external_tools/gyp
+	url = https://chromium.googlesource.com/external/gyp
+[submodule "external_libs/catch"]
+	path = external_libs/catch
+	url = https://github.com/philsquared/Catch.git
