@@ -11,12 +11,81 @@ namespace m1
 {
     // ================================================================================================================
 
+    template <typename T> class intrusive_list;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
     template <typename T>
-    struct is_iterator;
+    void swap(intrusive_list<T> &lhs,
+              intrusive_list<T> &rhs) noexcept;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename T>
+    bool operator == (intrusive_list<T> const &lhs,
+                      intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator != (intrusive_list<T> const &lhs,
+                      intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator < (intrusive_list<T> const &lhs,
+                     intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator <= (intrusive_list<T> const &lhs,
+                      intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator > (intrusive_list<T> const &lhs,
+                     intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator >= (intrusive_list<T> const &lhs,
+                      intrusive_list<T> const &rhs) noexcept;
+
+    template <typename T>
+    std::size_t hash(intrusive_list<T> const &l) noexcept;
+
+    // ================================================================================================================
+
+    template <typename T> class intrusive_list_iterator;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename T>
+    void swap(intrusive_list_iterator<T> &lhs,
+              intrusive_list_iterator<T> &rhs) noexcept;
+
+    template <typename T>
+    bool operator == (intrusive_list_iterator<T> const &lhs,
+                      intrusive_list_iterator<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator != (intrusive_list_iterator<T> const &lhs,
+                      intrusive_list_iterator<T> const &rhs) noexcept;
+
+    // ================================================================================================================
+
+    template <typename T> class intrusive_list_const_iterator;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename T>
+    void swap(intrusive_list_const_iterator<T> &lhs,
+              intrusive_list_const_iterator<T> &rhs) noexcept;
+
+    template <typename T>
+    bool operator == (intrusive_list_const_iterator<T> const &lhs,
+                      intrusive_list_const_iterator<T> const &rhs) noexcept;
+
+    template <typename T>
+    bool operator != (intrusive_list_const_iterator<T> const &lhs,
+                      intrusive_list_const_iterator<T> const &rhs) noexcept;
 
     // ================================================================================================================
 } // namespace m1
-
 
 // ====================================================================================================================
 
@@ -24,34 +93,47 @@ namespace m1
 {
     // ================================================================================================================
 
-    template <typename ValueType,
-              typename NodeAccessTraits>
+    template <typename T,
+              typename ValueType>
+    struct is_forward_iterator
+        : std::bool_constant<std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<T>::iterator_category>::value &&
+                             std::is_base_of<ValueType, typename std::iterator_traits<T>::value_type>::value>
+    {};
+
+    template <typename T,
+              typename ValueType>
+    using enable_if_forward_iterator = std::enable_if_t<is_forward_iterator<T, ValueType>::value>;
+
+    // ================================================================================================================
+
+    template <typename T>
     class intrusive_list
         : private intrusive_list_impl
     {
     private:
+        static_assert(std::is_base_of<intrusive_list_node, T>::value, "T must inherit from m1::intrusive_list_node");
         typedef intrusive_list_impl impl_type;
 
     public:
         // types:
-        typedef ValueType value_type;
+        typedef T value_type;
         using impl_type::size_type;
         using impl_type::difference_type;
 
-        class iterator;
-        class const_iterator;
+        typedef intrusive_list_iterator<value_type> iterator;
+        typedef intrusive_list_const_iterator<value_type> const_iterator;
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
         // construct/move/copy/destroy:
         intrusive_list() noexcept = default;
         template <typename InputIterator,
-                  typename = std::enable_if_t<is_iterator<InputIterator>::value>>
+                  typename = enable_if_forward_iterator<InputIterator, value_type>>
         intrusive_list(InputIterator range_first,
                        InputIterator range_last) noexcept;
-        intrusive_list(intrusive_list &&rhs) noexcept;
-        intrusive_list& operator = (intrusive_list &&rhs) noexcept;
-        ~intrusive_list() noexcept;
+        intrusive_list(intrusive_list &&rhs) noexcept = default;
+        intrusive_list& operator = (intrusive_list &&rhs) noexcept = default;
+        ~intrusive_list() noexcept = default;
 
         // iterators:
         iterator begin() noexcept;
@@ -83,13 +165,15 @@ namespace m1
         using impl_type::pop_front;
         using impl_type::pop_back;
 
-        iterator insert(const_iterator at, value_type &node) noexcept;
-        iterator insert(const_iterator at, std::initializer_list<value_type> const &nodes) noexcept;
-        template <typename InputIterator,
-                  typename = std::enable_if_t<is_iterator<InputIterator>::value>>
         iterator insert(const_iterator at,
-                        InputIterator range_first,
-                        InputIterator range_last) noexcept;
+                        value_type &node) noexcept;
+        void insert(const_iterator at,
+                    std::initializer_list<value_type&> const &nodes) noexcept;
+        template <typename InputIterator,
+                  typename = enable_if_forward_iterator<InputIterator, value_type>>
+        void insert(const_iterator at,
+                    InputIterator range_first,
+                    InputIterator range_last) noexcept;
 
         iterator erase(const_iterator from_position) noexcept;
         iterator erase(const_iterator from_range_first,
@@ -139,115 +223,118 @@ namespace m1
 
         using impl_type::reverse;
 
+        friend bool operator == <T>(intrusive_list<T> const &lhs,
+                                    intrusive_list<T> const &rhs) noexcept;
+
+        friend bool operator != <T>(intrusive_list<T> const &lhs,
+                                    intrusive_list<T> const &rhs) noexcept;
+
+        friend bool operator < <T>(intrusive_list<T> const &lhs,
+                                   intrusive_list<T> const &rhs) noexcept;
+
+        friend bool operator <= <T>(intrusive_list<T> const &lhs,
+                                    intrusive_list<T> const &rhs) noexcept;
+
+        friend bool operator > <T>(intrusive_list<T> const &lhs,
+                                   intrusive_list<T> const &rhs) noexcept;
+
+        friend bool operator >= <T>(intrusive_list<T> const &lhs,
+                                    intrusive_list<T> const &rhs) noexcept;
+
+        friend std::size_t hash<T>(intrusive_list<T> const &l) noexcept;
+
     private:
         intrusive_list(intrusive_list const &rhs) = delete;
         intrusive_list& operator = (intrusive_list const &rhs) = delete;
     };
 
-    // ----------------------------------------------------------------------------------------------------------------
-
-    void swap(intrusive_list_impl &lhs,
-              intrusive_list_impl &rhs) noexcept;
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    bool operator == (intrusive_list_impl const &lhs,
-                      intrusive_list_impl const &rhs) noexcept;
-
-    bool operator != (intrusive_list_impl const &lhs,
-                      intrusive_list_impl const &rhs) noexcept;
-
-    bool operator < (intrusive_list_impl const &lhs,
-                     intrusive_list_impl const &rhs) noexcept;
-
-    bool operator <= (intrusive_list_impl const &lhs,
-                      intrusive_list_impl const &rhs) noexcept;
-
-    bool operator > (intrusive_list_impl const &lhs,
-                     intrusive_list_impl const &rhs) noexcept;
-
-    bool operator >= (intrusive_list_impl const &lhs,
-                      intrusive_list_impl const &rhs) noexcept;
-
-    std::size_t hash(intrusive_list_impl const &l) noexcept;
-
     // ================================================================================================================
 
-    class intrusive_list_impl::iterator
-        : public std::iterator<std::bidirectional_iterator_tag,
-                               intrusive_list_node>
+    template <typename T>
+    class intrusive_list_iterator
+        : private intrusive_list_iterator_impl
+        , public std::iterator<std::bidirectional_iterator_tag,
+                               T>
     {
     public:
-        iterator() noexcept = default;
-        iterator(iterator &&rhs) noexcept;
-        iterator(iterator const &rhs) noexcept = default;
-        iterator& operator = (iterator &&rhs) noexcept;
-        iterator& operator = (iterator const &rhs) noexcept = default;
-        ~iterator() noexcept = default;
+        intrusive_list_iterator(intrusive_list_iterator &&rhs) noexcept = default;
+        intrusive_list_iterator(intrusive_list_iterator const &rhs) noexcept = default;
+        intrusive_list_iterator& operator = (intrusive_list_iterator &&rhs) noexcept = default;
+        intrusive_list_iterator& operator = (intrusive_list_iterator const &rhs) noexcept = default;
+        ~intrusive_list_iterator() noexcept = default;
 
-        iterator& operator ++ ();
-        iterator operator ++ (int);
+        intrusive_list_iterator& operator ++ ();
+        intrusive_list_iterator operator ++ (int);
 
-        iterator& operator -- ();
-        iterator operator -- (int);
+        intrusive_list_iterator& operator -- ();
+        intrusive_list_iterator operator -- (int);
 
         value_type& operator * () const;
         value_type* operator -> () const;
 
+        friend void swap<T>(intrusive_list_iterator<T> &lhs,
+                            intrusive_list_iterator<T> &rhs) noexcept;
+
+        friend bool operator == <T>(intrusive_list_iterator<T> const &lhs,
+                                    intrusive_list_iterator<T> const &rhs) noexcept;
+
+        friend bool operator != <T>(intrusive_list_iterator<T> const &lhs,
+                                    intrusive_list_iterator<T> const &rhs) noexcept;
+
     private:
+        friend class intrusive_list<T>;
+        intrusive_list_iterator() noexcept = delete;
+        explicit intrusive_list_iterator(intrusive_list_node *node_ptr);
+
         // members:
         intrusive_list_node *m_NodePtr = nullptr;
     };
 
-    // ----------------------------------------------------------------------------------------------------------------
-
-    void swap(intrusive_list_impl::iterator &lhs,
-              intrusive_list_impl::iterator &rhs) noexcept;
-
-    bool operator == (intrusive_list_impl::iterator const &lhs,
-                      intrusive_list_impl::iterator const &rhs) noexcept;
-
-    bool operator != (intrusive_list_impl::iterator const &lhs,
-                      intrusive_list_impl::iterator const &rhs) noexcept;
-
     // ================================================================================================================
 
-    class intrusive_list_impl::const_iterator
-        : public std::iterator<std::bidirectional_iterator_tag,
-                               intrusive_list_node const>
+    template <typename T>
+    class intrusive_list_const_iterator
+        : private intrusive_list_const_iterator_impl
+        , public std::iterator<std::bidirectional_iterator_tag,
+                               T const>
     {
     public:
-        const_iterator() noexcept = default;
-        const_iterator(const_iterator &&rhs) noexcept;
-        const_iterator(const_iterator const &rhs) noexcept = default;
-        const_iterator& operator = (const_iterator &&rhs) noexcept;
-        const_iterator& operator = (const_iterator const &rhs) noexcept = default;
-        ~const_iterator() noexcept = default;
+        intrusive_list_const_iterator(iterator &&rhs) noexcept;
+        intrusive_list_const_iterator(intrusive_list_const_iterator &&rhs) noexcept = default;
+        intrusive_list_const_iterator(iterator const &rhs) noexcept;
+        intrusive_list_const_iterator(intrusive_list_const_iterator const &rhs) noexcept = default;
+        intrusive_list_const_iterator& operator = (iterator &&rhs) noexcept;
+        intrusive_list_const_iterator& operator = (intrusive_list_const_iterator &&rhs) noexcept = default;
+        intrusive_list_const_iterator& operator = (iterator const &rhs) noexcept;
+        intrusive_list_const_iterator& operator = (intrusive_list_const_iterator const &rhs) noexcept = default;
+        ~intrusive_list_const_iterator() noexcept = default;
 
-        const_iterator& operator ++ ();
-        const_iterator operator ++ (int);
+        intrusive_list_const_iterator& operator ++ ();
+        intrusive_list_const_iterator operator ++ (int);
 
-        const_iterator& operator -- ();
-        const_iterator operator -- (int);
+        intrusive_list_const_iterator& operator -- ();
+        intrusive_list_const_iterator operator -- (int);
 
         value_type const& operator * () const;
         value_type const* operator -> () const;
 
+        friend void swap<T>(intrusive_list_const_iterator<T> &lhs,
+                            intrusive_list_const_iterator<T> &rhs) noexcept;
+
+        friend bool operator == <T>(intrusive_list_const_iterator<T> const &lhs,
+                                    intrusive_list_const_iterator<T> const &rhs) noexcept;
+
+        friend bool operator != <T>(intrusive_list_const_iterator<T> const &lhs,
+                                    intrusive_list_const_iterator<T> const &rhs) noexcept;
+
     private:
+        friend class intrusive_list<T>;
+        intrusive_list_const_iterator() noexcept = delete;
+        explicit intrusive_list_const_iterator(intrusive_list_node const *node_ptr);
+
         // members:
         intrusive_list_node const *m_NodePtr = nullptr;
     };
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    void swap(intrusive_list_impl::const_iterator &lhs,
-              intrusive_list_impl::const_iterator &rhs) noexcept;
-
-    bool operator == (intrusive_list_impl::const_iterator const &lhs,
-                      intrusive_list_impl::const_iterator const &rhs) noexcept;
-
-    bool operator != (intrusive_list_impl::const_iterator const &lhs,
-                      intrusive_list_impl::const_iterator const &rhs) noexcept;
 
     // ================================================================================================================
 } // namespace m1
@@ -258,10 +345,10 @@ namespace std
 {
     // ================================================================================================================
 
-    template <>
-    struct hash<m1::intrusive_list_impl>
+    template <typename T>
+    struct hash<m1::intrusive_list<T>>
     {
-       typedef m1::intrusive_list_impl argument_type;
+       typedef m1::intrusive_list<T> argument_type;
        typedef std::size_t result_type;
 
        result_type operator () (argument_type const &arg) const;
@@ -269,70 +356,208 @@ namespace std
 
     // ================================================================================================================
 
-    void swap(m1::intrusive_list_impl &lhs,
-              m1::intrusive_list_impl &rhs) noexcept;
+    template <typename T>
+    void swap(m1::intrusive_list<T> &lhs,
+              m1::intrusive_list<T> &rhs) noexcept;
 
     // ================================================================================================================
 } // namespace std
 
 // ====================================================================================================================
-
-namespace m1
-{
-    namespace impl
-    {
-        // ============================================================================================================
-
-        template <typename T>
-        struct is_iterator_test
-        {
-            typedef char (&no_type)[1];
-            typedef char (&yes_type)[2];
-
-            constexpr static no_type test(...);
-
-            template <typename U,
-                      typename = typename std::iterator_traits<U>::iterator_category,
-                      typename = typename std::iterator_traits<U>::value_type,
-                      typename = typename std::iterator_traits<U>::pointer,
-                      typename = typename std::iterator_traits<U>::reference,
-                      typename = typename std::iterator_traits<U>::distance_type>
-            constexpr static yes_type test(T*);
-
-            constexpr static bool const value = sizeof(test(std::declval<T>())) == sizeof(yes_type);
-        };
-
-        // ============================================================================================================
-    } // namespace impl
-
-    // ================================================================================================================
-
-    template <typename T>
-    struct is_iterator
-        : std::integral_constant<bool, is_iterator_test<T>::value>
-    {};
-
-    // ================================================================================================================
-} // namespace m1
-
-// ====================================================================================================================
 // ====================================================================================================================
 
+template <typename T>
 template <typename InputIterator,
-          typename = std::enable_if_t<is_iterator<InputIterator>::value>>
-m1::intrusive_list_impl::iterator m1::intrusive_list_impl::insert(InputIterator const range_first,
-                                                                  InputIterator const range_last) noexcept
+          typename /*= enable_if_forward_iterator<InputIterator, value_type>*/>
+m1::intrusive_list<T>::intrusive_list(InputIterator range_first,
+                                      InputIterator range_last) noexcept
 {
-    for(InputIterator range_itr = range_first; range_itr != range_last; ++range_itr)
+    while (range_first != range_last)
     {
-        insert(*range_itr);
+        insert(*range_first);
+        ++range_first;
     }
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
+template <typename T>
+typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::begin() noexcept
+{
+    return iterator(begin_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_iterator m1::intrusive_list<T>::begin() const noexcept
+{
+    return const_iterator(get_begin_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::end() noexcept
+{
+    return iterator(end_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_iterator m1::intrusive_list<T>::end() const noexcept
+{
+    return const_iterator(get_end_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::reverse_iterator m1::intrusive_list<T>::rbegin() noexcept
+{
+    return reverse_iterator(begin());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_reverse_iterator m1::intrusive_list<T>::rbegin() const noexcept
+{
+    return cosnt_reverse_iterator(begin());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::reverse_iterator m1::intrusive_list<T>::rend() noexcept
+{
+    return reverse_iterator(end());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_reverse_iterator m1::intrusive_list<T>::rend() const noexcept
+{
+    return const_reverse_iterator(end());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_iterator m1::intrusive_list<T>::cbegin() const noexcept
+{
+    return const_iterator(get_begin_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_iterator m1::intrusive_list<T>::cend() const noexcept
+{
+    return const_iterator(get_end_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_reverse_iterator m1::intrusive_list<T>::crbegin() const noexcept
+{
+    return const_reverse_iterator(cbegin());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::const_reverse_iterator m1::intrusive_list<T>::crend() const noexcept
+{
+    return const_reverse_iterator(cend());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::value_type& m1::intrusive_list<T>::front() noexcept
+{
+    return *begin_node_ptr();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::value_type const& m1::intrusive_list<T>::front() const noexcept
+{
+    return *get_begin_node_ptr();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::value_type& m1::intrusive_list<T>::back() noexcept
+{
+    return *end_node_ptr()->prev_node_ptr();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::value_type const& m1::intrusive_list<T>::back() const noexcept
+{
+    return *get_end_node_ptr()->get_prev_node_ptr();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+void m1::intrusive_list<T>::push_front(value_type &node) noexcept
+{
+    node.add_link(*begin_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+void m1::intrusive_list<T>::push_back(value_type &node) noexcept
+{
+    node.add_link(*end_node_ptr());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::insert(const_iterator at,
+                                                                       value_type &node) noexcept;
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+void m1::intrusive_list<T>::insert(const_iterator at,
+                                                                       std::initializer_list<value_type&> const &nodes) noexcept
+{
+    insert(at, nodes.begin(), nodes.end());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+template <typename InputIterator,
+          typename /*= enable_if_forward_iterator<InputIterator, value_type>*/>
+void m1::intrusive_list<T>::insert(const_iterator at,
+                                                                       InputIterator const range_first,
+                                                                       InputIterator const range_last) noexcept
+{
+    for(InputIterator range_itr = range_first; range_itr != range_last; ++range_itr)
+    {
+        insert(at, *range_itr);
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
 template <typename Predicate>
-void m1::intrusive_list_impl::remove_if(Predicate pred) noexcept
+void m1::intrusive_list<T>::remove_if(Predicate pred) noexcept
 {
     const_iterator const end_itr = cend();
     for(const_iterator curr_itr = cbegin(); curr_itr != end_itr; /*increment in loop*/)
@@ -349,9 +574,10 @@ void m1::intrusive_list_impl::remove_if(Predicate pred) noexcept
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-#include <list>
+
+template <typename T>
 template <typename BinaryPredicate>
-void m1::intrusive_list_impl::unique(BinaryPredicate binary_pred)
+void m1::intrusive_list<T>::unique(BinaryPredicate binary_pred)
 {
     if(empty())
     {
@@ -378,8 +604,10 @@ void m1::intrusive_list_impl::unique(BinaryPredicate binary_pred)
 
 // --------------------------------------------------------------------------------------------------------------------
 
+template <typename T>
 template <typename Compare>
-void m1::intrusive_list_impl::merge(intrusive_list_impl &&from_list, Compare comp) noexcept
+void m1::intrusive_list<T>::merge(intrusive_list<T> &&from_list,
+                                  Compare comp) noexcept
 {
     if(this == &from_list)
     {
@@ -424,9 +652,46 @@ void m1::intrusive_list_impl::merge(intrusive_list_impl &&from_list, Compare com
 
 // --------------------------------------------------------------------------------------------------------------------
 
+//template <typename T>
 //template <typename Compare>
 //void m1::intrusive_list_impl::sort(Compare comp) noexcept;
 
 // ====================================================================================================================
+
+template <typename T>
+bool m1::operator == (intrusive_list_iterator<T> const &lhs,
+                      intrusive_list_iterator<T> const &rhs) noexcept
+{
+    return lhs.m_NodePtr == rhs.m_NodePtr;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+bool m1::operator != (intrusive_list_iterator<T> const &lhs,
+                      intrusive_list_iterator<T> const &rhs) noexcept
+{
+    return lhs.m_NodePtr != rhs.m_NodePtr;
+}
+
+// ====================================================================================================================
+
+template <typename T>
+bool m1::operator == (intrusive_list_const_iterator<T> const &lhs,
+                      intrusive_list_const_iterator<T> const &rhs) noexcept
+{
+    return lhs.m_NodePtr == rhs.m_NodePtr;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+bool m1::operator != (intrusive_list_const_iterator<T> const &lhs,
+                      intrusive_list_const_iterator<T> const &rhs) noexcept
+{
+    return lhs.m_NodePtr != rhs.m_NodePtr;
+}
+
+// ================================================================================================================
 
 #endif // M1_INTRUSIVE_LIST_HPP

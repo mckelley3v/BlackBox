@@ -22,6 +22,7 @@
                 "source/m1/platform_impl/windows/m1/game_platform_impl.cpp",
                 "source/m1/intrusive_list_impl.cpp",
                 "source/m1/intrusive_list_node.cpp",
+                "source/m1/signal.cpp",
                 "m1_game_platform.gyp",
             ],
             "dependencies":
@@ -55,6 +56,7 @@
             [
                 "test/test_main.cpp",
                 "test/test_game_platform.cpp",
+                "test/test_intrusive_list.cpp",
             ],
             "dependencies":
             [

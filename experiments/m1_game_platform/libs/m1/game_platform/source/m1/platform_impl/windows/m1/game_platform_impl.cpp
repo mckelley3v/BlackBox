@@ -56,7 +56,7 @@ m1::game_platform::impl const& m1::game_platform::get_platform_impl() const
 
 int m1::game_platform::run()
 {
-    event_destroy = [&] { exit(0); };
+    m1::signal<void()>::connection const exit_connection = event_destroy.connect([&] { exit(0); });
     ShowWindow(m_ImplPtr->window_handle, SW_SHOW);
 
     while(do_events())
@@ -118,7 +118,7 @@ bool m1::game_platform::do_events()
     {
         m1::game_platform * const game_platform_ptr = reinterpret_cast<m1::game_platform*>(wnd_user_data);
 
-        switch (message)
+        switch(message)
         {
             case WM_PAINT:
                 game_platform_ptr->on_display();
