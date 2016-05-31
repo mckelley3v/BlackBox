@@ -20,16 +20,16 @@ namespace m1
         ~intrusive_list_node() noexcept;
 
         // properties:
-        intrusive_list_node* next_node_ptr();
-        intrusive_list_node const* get_next_node_ptr();
-        intrusive_list_node* next_prev_ptr();
-        intrusive_list_node const* get_prev_node_ptr();
+        intrusive_list_node* next_node_ptr() noexcept;
+        intrusive_list_node const* get_next_node_ptr() const noexcept;
+        intrusive_list_node* prev_node_ptr() noexcept;
+        intrusive_list_node const* get_prev_node_ptr() const noexcept;
 
         // methods:
         bool is_linked() const noexcept;
-        void add_link(intrusive_list_node &next) noexcept;
+        void link_next(intrusive_list_node &next) noexcept;
         void swap_links(intrusive_list_node &rhs) noexcept;
-        void remove_links() noexcept;
+        void clear_links() noexcept;
 
     private:
         intrusive_list_node(intrusive_list_node const &rhs) = delete;

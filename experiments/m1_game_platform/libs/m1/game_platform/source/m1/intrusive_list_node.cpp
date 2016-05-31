@@ -6,7 +6,7 @@
 m1::intrusive_list_node::intrusive_list_node(intrusive_list_node &&rhs) noexcept
 {
     swap_links(rhs);
-    rhs.remove_links();
+    rhs.clear_links();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -14,7 +14,7 @@ m1::intrusive_list_node::intrusive_list_node(intrusive_list_node &&rhs) noexcept
 m1::intrusive_list_node& m1::intrusive_list_node::operator = (intrusive_list_node &&rhs) noexcept
 {
     swap_links(rhs);
-    rhs.remove_links();
+    rhs.clear_links();
     return *this;
 }
 
@@ -22,36 +22,33 @@ m1::intrusive_list_node& m1::intrusive_list_node::operator = (intrusive_list_nod
 
 m1::intrusive_list_node::~intrusive_list_node() noexcept
 {
-    if(is_linked())
-    {
-        remove_links();
-    }
+    clear_links();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-m1::intrusive_list_node* m1::intrusive_list_node::next_node_ptr()
+m1::intrusive_list_node* m1::intrusive_list_node::next_node_ptr() noexcept
 {
     return m_NextPtr;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-m1::intrusive_list_node const* m1::intrusive_list_node::get_next_node_ptr()
+m1::intrusive_list_node const* m1::intrusive_list_node::get_next_node_ptr() const noexcept
 {
     return m_NextPtr;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-m1::intrusive_list_node* m1::intrusive_list_node::next_prev_ptr()
+m1::intrusive_list_node* m1::intrusive_list_node::prev_node_ptr() noexcept
 {
     return m_PrevPtr;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-m1::intrusive_list_node const* m1::intrusive_list_node::get_prev_node_ptr()
+m1::intrusive_list_node const* m1::intrusive_list_node::get_prev_node_ptr() const noexcept
 {
     return m_PrevPtr;
 }
@@ -67,10 +64,8 @@ bool m1::intrusive_list_node::is_linked() const noexcept
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void m1::intrusive_list_node::add_link(intrusive_list_node &next) noexcept
+void m1::intrusive_list_node::link_next(intrusive_list_node &next) noexcept
 {
-    assert(!is_linked());
-
     m_NextPtr = &next;
     m_PrevPtr = next.m_PrevPtr;
     next.m_PrevPtr->m_NextPtr = this;
@@ -105,10 +100,8 @@ void m1::intrusive_list_node::swap_links(intrusive_list_node &rhs) noexcept
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void m1::intrusive_list_node::remove_links() noexcept
+void m1::intrusive_list_node::clear_links() noexcept
 {
-    assert(is_linked());
-
     m_PrevPtr->m_NextPtr = m_NextPtr;
     m_NextPtr->m_PrevPtr = m_PrevPtr;
 

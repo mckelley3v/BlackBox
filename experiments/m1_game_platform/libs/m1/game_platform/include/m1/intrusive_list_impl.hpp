@@ -105,8 +105,7 @@ namespace m1
         intrusive_list_iterator_impl& operator -- ();
         intrusive_list_iterator_impl operator -- (int);
 
-        intrusive_list_node* node_ptr();
-        intrusive_list_node const* get_node_ptr() const;
+        intrusive_list_node* get_node_ptr() const;
 
         friend void swap(intrusive_list_iterator_impl &lhs,
                          intrusive_list_iterator_impl &rhs) noexcept;
@@ -117,10 +116,13 @@ namespace m1
         friend bool operator != (intrusive_list_iterator_impl const &lhs,
                                  intrusive_list_iterator_impl const &rhs) noexcept;
 
+    protected:
+        explicit intrusive_list_iterator_impl(intrusive_list_node *node_ptr);
+
     private:
         friend class intrusive_list_impl;
+        friend class intrusive_list_const_iterator_impl;
         intrusive_list_iterator_impl() noexcept = delete;
-        explicit intrusive_list_iterator_impl(intrusive_list_node *node_ptr);
 
         // members:
         intrusive_list_node *m_NodePtr = nullptr;
@@ -147,6 +149,8 @@ namespace m1
         intrusive_list_const_iterator_impl& operator -- ();
         intrusive_list_const_iterator_impl operator -- (int);
 
+        intrusive_list_node const* get_node_ptr() const;
+
         friend void swap(intrusive_list_const_iterator_impl &lhs,
                          intrusive_list_const_iterator_impl &rhs) noexcept;
 
@@ -156,10 +160,12 @@ namespace m1
         friend bool operator != (intrusive_list_const_iterator_impl const &lhs,
                                  intrusive_list_const_iterator_impl const &rhs) noexcept;
 
+    protected:
+        explicit intrusive_list_const_iterator_impl(intrusive_list_node const *node_ptr);
+
     private:
         friend class intrusive_list_impl;
         intrusive_list_const_iterator_impl() noexcept = delete;
-        explicit intrusive_list_const_iterator_impl(intrusive_list_node const *node_ptr);
 
         // members:
         intrusive_list_node const *m_NodePtr = nullptr;

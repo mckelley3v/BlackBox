@@ -192,7 +192,7 @@ template <typename R,
 void m1::signal<R(Args...)>::connection::disconnect()
 {
     // consider possibility of disconnect called from signal::emit()
-    node_base::remove_links();
+    node_base::clear_links();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
