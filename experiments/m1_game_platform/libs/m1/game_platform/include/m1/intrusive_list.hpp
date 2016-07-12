@@ -517,7 +517,7 @@ typename m1::intrusive_list<T>::value_type const& m1::intrusive_list<T>::back() 
 template <typename T>
 void m1::intrusive_list<T>::push_front(value_type &node) noexcept
 {
-    node.link_next(*begin_node_ptr());
+    node.insert_link(*begin_node_ptr());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -525,7 +525,7 @@ void m1::intrusive_list<T>::push_front(value_type &node) noexcept
 template <typename T>
 void m1::intrusive_list<T>::push_back(value_type &node) noexcept
 {
-    node.link_next(*end_node_ptr());
+    node.insert_link(*end_node_ptr());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -534,7 +534,7 @@ template <typename T>
 typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::insert(iterator at,
                                                                        value_type &node) noexcept
 {
-    node.link_next(*at);
+    node.insert_link(*at);
     return iterator(&node);
 }
 
@@ -665,13 +665,17 @@ void m1::intrusive_list<T>::splice(iterator at,
 // --------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-void m1::intrusive_list<T>::splice(iterator /*at*/,
+void m1::intrusive_list<T>::splice(iterator at,
                                    intrusive_list &from_list,
-                                   iterator /*from_range_first*/,
-                                   iterator /*from_range_last*/) noexcept
+                                   iterator from_range_first,
+                                   iterator from_range_last) noexcept
 {
     assert(this != &from_list);
-    static_assert(false, "Not implemented");
+    assert(from_range_first.node_ptr() != nullptr);
+    assert(from_range_last.node_ptr() != nullptr);
+
+    at.node_ptr()->splice_link_range(*from_range_first.node_ptr(),
+                                     *from_range_last.node_ptr());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -962,7 +966,7 @@ m1::intrusive_list_iterator<T> m1::intrusive_list_iterator<T>::operator -- (int)
 template <typename T>
 typename m1::intrusive_list_iterator<T>::value_type& m1::intrusive_list_iterator<T>::operator * () const
 {
-    return *static_cast<value_type*>(get_node_ptr());
+    return *static_cast<value_type*>(node_ptr());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -970,7 +974,7 @@ typename m1::intrusive_list_iterator<T>::value_type& m1::intrusive_list_iterator
 template <typename T>
 typename m1::intrusive_list_iterator<T>::value_type* m1::intrusive_list_iterator<T>::operator -> () const
 {
-    return static_cast<value_type*>(get_node_ptr());
+    return static_cast<value_type*>(node_ptr());
 }
 
 // --------------------------------------------------------------------------------------------------------------------

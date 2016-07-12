@@ -171,6 +171,8 @@ bool m1::game_platform::do_events()
         L"M1_GAME_WNDCLASS",                // lpszClassName
     };
 
+    assert(wc.hInstance == hInstance);
+
     static WCHAR const *result = MAKEINTRESOURCEW(RegisterClassW(&wc));
     return result;
 }

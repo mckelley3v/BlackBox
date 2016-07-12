@@ -20,14 +20,14 @@ bool m1::intrusive_list_impl::empty() const noexcept
 
 void m1::intrusive_list_impl::push_front(node_type &node) noexcept
 {
-    m_SentinelNode.link_next(node);
+    m_SentinelNode.insert_link(node);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 void m1::intrusive_list_impl::push_back(node_type &node) noexcept
 {
-    node.link_next(m_SentinelNode);
+    node.insert_link(m_SentinelNode);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -165,7 +165,14 @@ m1::intrusive_list_iterator_impl m1::intrusive_list_iterator_impl::operator -- (
 
 // --------------------------------------------------------------------------------------------------------------------
 
-m1::intrusive_list_node* m1::intrusive_list_iterator_impl::get_node_ptr() const
+m1::intrusive_list_node* m1::intrusive_list_iterator_impl::node_ptr() const
+{
+    return m_NodePtr;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+m1::intrusive_list_node const* m1::intrusive_list_iterator_impl::get_node_ptr() const
 {
     return m_NodePtr;
 }

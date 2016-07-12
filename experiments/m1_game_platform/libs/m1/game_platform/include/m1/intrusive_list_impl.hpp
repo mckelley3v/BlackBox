@@ -105,7 +105,8 @@ namespace m1
         intrusive_list_iterator_impl& operator -- ();
         intrusive_list_iterator_impl operator -- (int);
 
-        intrusive_list_node* get_node_ptr() const;
+        intrusive_list_node* node_ptr() const;
+        intrusive_list_node const* get_node_ptr() const;
 
         friend void swap(intrusive_list_iterator_impl &lhs,
                          intrusive_list_iterator_impl &rhs) noexcept;

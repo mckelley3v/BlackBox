@@ -64,12 +64,32 @@ bool m1::intrusive_list_node::is_linked() const noexcept
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void m1::intrusive_list_node::link_next(intrusive_list_node &next) noexcept
+void m1::intrusive_list_node::insert_link(intrusive_list_node &next) noexcept
 {
     m_NextPtr = &next;
     m_PrevPtr = next.m_PrevPtr;
     next.m_PrevPtr->m_NextPtr = this;
     next.m_PrevPtr = this;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void m1::intrusive_list_node::splice_link_range(intrusive_list_node &next,
+                                                intrusive_list_node &end) noexcept
+{
+    intrusive_list_node * const n = m_NextPtr;
+    intrusive_list_node * const p = next.m_PrevPtr;
+    intrusive_list_node * const e = end.m_PrevPtr;
+
+    p->m_NextPtr = &end;
+    end.m_PrevPtr = p;
+
+    m_NextPtr = &next;
+    next.m_PrevPtr = this;
+
+    e->m_NextPtr = n;
+    n->m_PrevPtr = e;
+
 }
 
 // --------------------------------------------------------------------------------------------------------------------
