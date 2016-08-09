@@ -65,8 +65,6 @@ TEST_CASE("Test m1::intrusive_list", "[m1]")
     l.push_back(x4);
     CHECK(std::distance(l.begin(), l.end()) == 5);
 
-
-
     m1::intrusive_list<X> m;
     swap(l, m);
 }
