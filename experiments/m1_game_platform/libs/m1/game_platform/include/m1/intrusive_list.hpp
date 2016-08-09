@@ -229,6 +229,12 @@ namespace m1
         intrusive_list(intrusive_list const &rhs) = delete;
         intrusive_list& operator = (intrusive_list const &rhs) = delete;
 
+        template <typename Compare>
+        iterator sort_impl(iterator first,
+                           iterator last,
+                           Compare comp,
+                           size_type size) noexcept;
+
         impl_type& impl();
         impl_type const& get_impl() const;
     };
@@ -827,9 +833,58 @@ void m1::intrusive_list<T>::sort() noexcept
 
 template <typename T>
 template <typename Compare>
-void m1::intrusive_list<T>::sort(Compare /*comp*/) noexcept
+void m1::intrusive_list<T>::sort(Compare comp) noexcept
 {
-    static_assert(false, "Not implemented");
+    sort_impl(begin(),
+              end(),
+              comp,
+              std::distance(begin(), end()));
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+template <typename Compare>
+typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::sort_impl(iterator first,
+                                                                          iterator last,
+                                                                          Compare comp,
+                                                                          size_type size) noexcept
+{
+    if(size < 2)
+    {
+        return first;
+    }
+
+    iterator mid = std::next(first, size / 2);
+    first = sort_impl(first, mid, comp, size / 2);
+    mid = sort_impl(mid, last, comp, size - size / 2);
+
+    iterator result = first;
+    for (bool init = true; ; init = false)
+    {
+        if(comp(*mid, *first))
+        {
+            if(init)
+            {
+                result = mid;
+            }
+
+            splice(first, *this, mid++);
+
+            if(mid == last)
+            {
+                return result;
+            }
+        }
+        else
+        {
+            ++first;
+            if(first == mid)
+            {
+                return result;
+            }
+        }
+    }
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -999,8 +1054,8 @@ template <typename T>
 void m1::swap(intrusive_list_iterator<T> &lhs,
               intrusive_list_iterator<T> &rhs) noexcept
 {
-    swap(static_cast<intrusive_list_iterator_impl&>(lhs),
-         static_cast<intrusive_list_iterator_impl&>(rhs));
+    swap(lhs.impl(),  // ref
+         rhs.impl()); // ref
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1009,8 +1064,7 @@ template <typename T>
 bool m1::operator == (intrusive_list_iterator<T> const &lhs,
                       intrusive_list_iterator<T> const &rhs) noexcept
 {
-    return static_cast<intrusive_list_iterator_impl const&>(lhs) ==
-           static_cast<intrusive_list_iterator_impl const&>(rhs);
+    return lhs.get_impl() == rhs.get_impl();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1019,8 +1073,7 @@ template <typename T>
 bool m1::operator != (intrusive_list_iterator<T> const &lhs,
                       intrusive_list_iterator<T> const &rhs) noexcept
 {
-    return static_cast<intrusive_list_iterator_impl const&>(lhs) !=
-           static_cast<intrusive_list_iterator_impl const&>(rhs);
+    return lhs.get_impl() != rhs.get_impl();
 }
 
 // ====================================================================================================================
@@ -1143,8 +1196,8 @@ template <typename T>
 void m1::swap(intrusive_list_const_iterator<T> &lhs,
               intrusive_list_const_iterator<T> &rhs) noexcept
 {
-    swap(static_cast<intrusive_list_const_iterator_impl&>(lhs),
-         static_cast<intrusive_list_const_iterator_impl&>(rhs));
+    swap(lhs.impl(),  // ref
+         rhs.impl()); // ref
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1153,8 +1206,7 @@ template <typename T>
 bool m1::operator == (intrusive_list_const_iterator<T> const &lhs,
                       intrusive_list_const_iterator<T> const &rhs) noexcept
 {
-    return static_cast<intrusive_list_const_iterator_impl const&>(lhs) ==
-           static_cast<intrusive_list_const_iterator_impl const&>(rhs);
+    return lhs.get_impl() == rhs.get_impl();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1163,8 +1215,7 @@ template <typename T>
 bool m1::operator != (intrusive_list_const_iterator<T> const &lhs,
                       intrusive_list_const_iterator<T> const &rhs) noexcept
 {
-    return static_cast<intrusive_list_const_iterator_impl const&>(lhs) !=
-           static_cast<intrusive_list_const_iterator_impl const&>(rhs);
+    return lhs.get_impl() != rhs.get_impl();
 }
 
 // ====================================================================================================================
