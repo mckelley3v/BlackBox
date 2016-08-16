@@ -11,10 +11,10 @@ namespace m1
 
     // ================================================================================================================
 
-    template <typename ForwardItr,
-              typename ForwardEnd>
-    void consume_utf8_byte_order_mark(ForwardItr &code_unit_itr,
-                                      ForwardEnd code_unit_end) noexcept;
+    template <typename InputItr,
+              typename InputEnd>
+    void consume_utf8_byte_order_mark(InputItr &code_unit_itr,
+                                      InputEnd code_unit_end) noexcept;
 
     // ================================================================================================================
 
@@ -104,22 +104,17 @@ namespace impl
 
 // ====================================================================================================================
 
-template <typename ForwardItr,
-          typename ForwardEnd>
-void m1::consume_utf8_byte_order_mark(ForwardItr &code_unit_itr,
-                                      ForwardEnd code_unit_end) noexcept
+template <typename InputItr,
+          typename InputEnd>
+void m1::consume_utf8_byte_order_mark(InputItr &code_unit_itr,
+                                      InputEnd code_unit_end) noexcept
 {
-    ForwardItr bom_itr = code_unit_itr;
     for(unsigned char bom : {'\xEF', '\xBB', '\xBF'})
     {
-        if(bom_itr == code_unit_end) return;
-        if(*bom_itr != bom) return;
-        ++bom_itr;
+        if(code_unit_itr == code_unit_end) return;
+        if(*code_unit_itr != bom) return;
+        ++code_unit_itr;
     }
-
-    ++code_unit_itr;
-    ++code_unit_itr;
-    ++code_unit_itr;
 }
 
 // ====================================================================================================================

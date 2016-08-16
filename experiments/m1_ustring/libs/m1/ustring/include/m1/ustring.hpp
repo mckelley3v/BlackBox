@@ -210,7 +210,7 @@ namespace m1
 
         // members:
         // m_CodePointSize is calculated from max value of code point in string (0xFF => 1, 0xFFFF => 2, else 4)
-        // support non-owning buffer (fixed sized encodings only, others will have to be decoded to support random access)
+        // supports non-owning buffer (fixed sized encodings only, others will have to be decoded to support random access)
         // supports sharing of owning buffer between strings/substrings
         // strings are null terminated, substrings not ending at the same location as the original string are not null terminated
         size_type m_StrLength                   {0};
