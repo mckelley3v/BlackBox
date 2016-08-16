@@ -1,0 +1,58 @@
+{
+    "targets":
+    [
+        {
+            "target_name": "m1_input_archive",
+            "type": "static_library",
+            "include_dirs":
+            [
+                "include",
+                "<(workspace_dir)libs\m1\serialization\include",
+                "<(workspace_dir)experiments\m1_ustring\libs\m1\ustring\include",
+                "source",
+            ],
+            "sources":
+            [
+                "include/m1/string_builder_base.hpp",
+                "include/m1/string_builder.hpp",
+                "include/m1/serialization/json_input_archive.hpp",
+                "include/m1/input_archive.hpp",
+                "source/m1/string_builder.cpp",
+                "source/m1/serialization/json_input_archive.cpp",
+                "m1_input_archive.gyp",
+            ],
+            "dependencies":
+            [
+            ],
+            "export_dependent_settings":
+            [
+            ],
+            "direct_dependent_settings":
+            {
+                "include_dirs":
+                [
+                    "include",
+                    "<(workspace_dir)libs\m1\serialization\include",
+                ],
+            },
+        },
+        {
+            "target_name": "m1_input_archive_test",
+            "type": "executable",
+            "include_dirs":
+            [
+                "test",
+            ],
+            "sources":
+            [
+                "test/test_main.cpp",
+                "test/test_input_archive.cpp",
+            ],
+            "dependencies":
+            [
+                "<(catch_gyp_file):catch",
+                "m1_input_archive",
+            ],
+        },
+    ],
+}
