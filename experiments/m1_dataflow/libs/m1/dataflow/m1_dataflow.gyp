@@ -1,0 +1,52 @@
+{
+    "targets":
+    [
+        {
+            "target_name": "m1_dataflow",
+            "type": "static_library",
+            "include_dirs":
+            [
+                "include",
+                "source",
+            ],
+            "sources":
+            [
+                "include/m1/dataflow.hpp",
+                "include/m1/observer_ptr.hpp",
+                "source/m1/dataflow.cpp",
+                "m1_dataflow.gyp",
+            ],
+            "dependencies":
+            [
+            ],
+            "export_dependent_settings":
+            [
+            ],
+            "direct_dependent_settings":
+            {
+                "include_dirs":
+                [
+                    "include",
+                ],
+            },
+        },
+        {
+            "target_name": "m1_dataflow_test",
+            "type": "executable",
+            "include_dirs":
+            [
+                "test",
+            ],
+            "sources":
+            [
+                "test/test_main.cpp",
+                "test/test_dataflow.cpp",
+            ],
+            "dependencies":
+            [
+                "<(catch_gyp_file):catch",
+                "m1_dataflow",
+            ],
+        },
+    ],
+}

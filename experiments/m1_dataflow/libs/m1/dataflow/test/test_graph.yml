@@ -1,0 +1,67 @@
+Name: AddNetwork
+InputPorts:
+OutputPorts:
+   -  PortName: Result
+      TypeName: int
+Nodes:
+   -  DefinitionName: Constant<int>
+      InstanceName: const_int_0
+      InstanceData: 0
+   -  DefinitionName: Constant<int>
+      InstanceName: const_int_1
+      InstanceData: 1
+   -  DefinitionName: Constant<int>
+      InstanceName: const_int_2
+      InstanceData: 2
+   -  DefinitionName: Constant<int>
+      InstanceName: const_int_4
+      InstanceData: 4
+   -  DefinitionName: Add<int>
+      InstanceName: add_0
+   -  DefinitionName: Add<int>
+      InstanceName: add_1
+   -  DefinitionName: Add<int>
+      InstanceName: add_2
+Connections:
+   -  SourcePort:
+         NodeInstanceName: const_int_0
+         PortName: Value
+      TargetPort:
+         NodeInstanceName: add_0
+         PortName: Lhs
+   -  SourcePort:
+         NodeInstanceName: const_int_1
+         PortName: Value
+      TargetPort:
+         NodeInstanceName: add_0
+         PortName: Rhs
+   -  SourcePort:
+         NodeInstanceName: const_int_2
+         PortName: Value
+      TargetPort:
+         NodeInstanceName: add_1
+         PortName: Lhs
+   -  SourcePort:
+         NodeInstanceName: const_int_4
+         PortName: Value
+      TargetPort:
+         NodeInstanceName: add_1
+         PortName: Rhs
+   -  SourcePort:
+         NodeInstanceName: add_0
+         PortName: Result
+      TargetPort:
+         NodeInstanceName: add_2
+         PortName: Lhs
+   -  SourcePort:
+         NodeInstanceName: add_1
+         PortName: Result
+      TargetPort:
+         NodeInstanceName: add_2
+         PortName: Rhs
+   -  SourcePort:
+         NodeInstanceName: add_2
+         PortName: Result
+      TargetPort:
+         NodeInstanceName: self
+         PortName: Result
