@@ -490,7 +490,7 @@ bool m1::eval_json_value(log &logger, json_token const &token, std::string &valu
 {
     assert(token.id == m1::json_token_id::property);
 
-    return eval_string_impl(logger, token, m1::crc32_combine_iterator(id));
+    return eval_string_impl(logger, token, m1::crc32_combine_iterator(id = crc32()));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -749,7 +749,7 @@ bool m1::eval_json_value(log &logger, json_token const &token, std::string &valu
 {
     assert(token.id == m1::json_token_id::value_string);
 
-    return eval_string_impl(logger, token, m1::crc32_combine_iterator(crc));
+    return eval_string_impl(logger, token, m1::crc32_combine_iterator(crc = crc32()));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

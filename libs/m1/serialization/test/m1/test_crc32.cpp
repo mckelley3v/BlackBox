@@ -4,7 +4,6 @@
 TEST_CASE("Test m1::crc32", "[m1][m1::serialization]" )
 {
     using m1::crc32;
-    using m1::calc_crc32;
 
     bool is_crc32_constexpr = false;
     switch(crc32("hello"))
@@ -20,7 +19,5 @@ TEST_CASE("Test m1::crc32", "[m1][m1::serialization]" )
     }
 
     static_assert(crc32("caracoles") == 0xF59A8C00, "CRC32 error");
-    static_assert(calc_crc32("caracoles") == 0xF59A8C00, "CRC32 error");
-
     CHECK(is_crc32_constexpr);
 }

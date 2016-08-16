@@ -1,15 +1,54 @@
-#ifndef M1_PROPERTY_ID_HPP
-#define M1_PROPERTY_ID_HPP
+#ifndef M1_SERIALIZATION_PROPERTY_ID_HPP
+#define M1_SERIALIZATION_PROPERTY_ID_HPP
 
 #include "m1/crc32.hpp"
 
 namespace m1
 {
-    // =================================================================================================================
+namespace serialization
+{
+    // ================================================================================================================
 
-    using property_id = crc32;
+    class property_id
+        : private crc32
+    {
+    public:
+        using crc32::crc32;
 
-    // =================================================================================================================
+        property_id(property_id &&rhs) = default;
+        property_id(property_id const &rhs) = default;
+        property_id& operator = (property_id &&rhs) = default;
+        property_id& operator = (property_id const &rhs) = default;
+        ~property_id() = default;
+
+        using crc32::operator std::uint32_t;
+    };
+} // namespace serialization
 } // namespace m1
 
-#endif // M1_PROPERTY_ID_HPP
+// ====================================================================================================================
+
+namespace m1
+{
+namespace literals
+{
+    // ================================================================================================================
+
+    constexpr serialization::property_id operator "" _id(char const *str, std::size_t len);
+
+    // ================================================================================================================
+} // namespace literals
+} // namespace m1
+
+// ====================================================================================================================
+// ====================================================================================================================
+
+constexpr m1::serialization::property_id m1::literals::operator "" _id(char const *str, std::size_t const len)
+{
+    return serialization::property_id(str, str + len);
+}
+
+
+// ====================================================================================================================
+
+#endif // M1_SERIALIZATION_PROPERTY_ID_HPP

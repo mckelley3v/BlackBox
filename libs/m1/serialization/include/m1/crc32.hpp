@@ -11,55 +11,60 @@ namespace m1
     class crc32
     {
     public:
-        crc32() = default;
-        constexpr crc32(char const *str);
+        constexpr crc32() noexcept = default;
+        constexpr explicit crc32(std::uint32_t value) noexcept;
+        constexpr explicit crc32(char const *str) noexcept;
         constexpr crc32(char const *str,
-                        char const *end);
-        constexpr crc32(std::uint32_t value);
-        crc32(crc32 &&rhs) = default;
-        crc32(crc32 const &rhs) = default;
-        crc32& operator = (crc32 &&rhs) = default;
-        crc32& operator = (crc32 const &rhs) = default;
-        ~crc32() = default;
+                        char const *end) noexcept;
+        crc32(crc32 &&rhs) noexcept = default;
+        crc32(crc32 const &rhs) noexcept = default;
+        crc32& operator = (crc32 &&rhs) noexcept = default;
+        crc32& operator = (crc32 const &rhs) noexcept = default;
+        ~crc32() noexcept = default;
 
-        constexpr operator std::uint32_t() const;
+        constexpr operator std::uint32_t() const noexcept;
 
     private:
         // members:
-        std::uint32_t m_Value;
+        std::uint32_t m_Value = 0xFFFFFFFFu;
     };
 
-    // =================================================================================================================
+    // ----------------------------------------------------------------------------------------------------------------
 
-    constexpr std::uint32_t crc32_seed();
+    namespace literals
+    {
+        constexpr crc32 operator "" _crc32(char const *str, std::size_t len) noexcept;
+    }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ================================================================================================================
 
-    constexpr std::uint32_t calc_crc32(char const *str);
+    constexpr crc32 crc32_combine(crc32 const &crc,
+                                  std::uint8_t byte) noexcept;
 
-    constexpr std::uint32_t calc_crc32(char const *str,
-                                       char const *end);
+    constexpr crc32 crc32_combine(crc32 const &crc,
+                                  char const *str) noexcept;
 
-    constexpr std::uint32_t calc_crc32(std::uint32_t crc,
-                                       std::uint8_t byte);
+    constexpr crc32 crc32_combine(crc32 const &crc,
+                                  char const *str,
+                                  char const *end) noexcept;
 
-    // =================================================================================================================
+    // ================================================================================================================
 
     class crc32_combine_iterator
-        : std::iterator<std::output_iterator_tag, void, void, void, void>
+        : public std::iterator<std::output_iterator_tag, void, void, void, void>
     {
     public:
-        explicit crc32_combine_iterator(crc32 &crc);
-        crc32_combine_iterator(crc32_combine_iterator &&rhs) = default;
-        crc32_combine_iterator(crc32_combine_iterator const &rhs) = default;
-        crc32_combine_iterator& operator = (crc32_combine_iterator &&rhs) = default;
-        crc32_combine_iterator& operator = (crc32_combine_iterator const &rhs) = default;
-        ~crc32_combine_iterator() = default;
+        explicit crc32_combine_iterator(crc32 &crc) noexcept;
+        crc32_combine_iterator(crc32_combine_iterator &&rhs) noexcept = default;
+        crc32_combine_iterator(crc32_combine_iterator const &rhs) noexcept = default;
+        crc32_combine_iterator& operator = (crc32_combine_iterator &&rhs) noexcept = default;
+        crc32_combine_iterator& operator = (crc32_combine_iterator const &rhs) noexcept = default;
+        ~crc32_combine_iterator() noexcept = default;
 
-        crc32_combine_iterator& operator = (std::uint8_t byte);
-        crc32_combine_iterator& operator * ();
-        crc32_combine_iterator& operator ++ ();
-        crc32_combine_iterator  operator ++ (int);
+        crc32_combine_iterator& operator = (std::uint8_t byte) noexcept;
+        crc32_combine_iterator& operator * () noexcept;
+        crc32_combine_iterator& operator ++ () noexcept;
+        crc32_combine_iterator  operator ++ (int) noexcept;
 
     private:
         crc32_combine_iterator() = delete;
@@ -68,17 +73,43 @@ namespace m1
         crc32 *m_CrcPtr;
     };
 
-    // =================================================================================================================
+    // ================================================================================================================
+
+    class utf8_crc32_iterator
+        : public std::iterator<std::output_iterator_tag, void, void, void, void>
+    {
+    public:
+        explicit utf8_crc32_iterator(crc32 &crc) noexcept;
+        utf8_crc32_iterator(utf8_crc32_iterator &&rhs) noexcept = default;
+        utf8_crc32_iterator(utf8_crc32_iterator const &rhs) noexcept = default;
+        utf8_crc32_iterator& operator = (utf8_crc32_iterator &&rhs) noexcept = default;
+        utf8_crc32_iterator& operator = (utf8_crc32_iterator const &rhs) noexcept = default;
+        ~utf8_crc32_iterator() noexcept = default;
+
+        utf8_crc32_iterator& operator = (char ch) noexcept;
+        utf8_crc32_iterator& operator = (char32_t ch) noexcept;
+        utf8_crc32_iterator& operator * () noexcept;
+        utf8_crc32_iterator& operator ++ () noexcept;
+        utf8_crc32_iterator  operator ++ (int) noexcept;
+
+    private:
+        utf8_crc32_iterator() = delete;
+
+        // members:
+        crc32_combine_iterator m_Itr;
+    };
+
+    // ================================================================================================================
 } // namespace m1
 
-// =====================================================================================================================
+// ====================================================================================================================
 
 namespace m1
 {
 namespace crc32_impl
 {
 
-// =====================================================================================================================
+// ====================================================================================================================
 
 static constexpr std::uint32_t const sCrc32Table[256] =
 {
@@ -116,84 +147,81 @@ static constexpr std::uint32_t const sCrc32Table[256] =
     0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D,
 };
 
-// =====================================================================================================================
+// ====================================================================================================================
 
 } // namespace m1
 } // namespace crc32_impl
 
-// =====================================================================================================================
+// ====================================================================================================================
 
-constexpr m1::crc32::crc32(char const * const str)
-    : crc32(calc_crc32(str))
-{
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-constexpr m1::crc32::crc32(char const * const str,
-                           char const * const end)
-    : crc32(calc_crc32(str, end))
-{
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-constexpr m1::crc32::crc32(std::uint32_t const value)
+constexpr /*explicit*/ m1::crc32::crc32(std::uint32_t const value) noexcept
     : m_Value(value)
 {
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
-constexpr m1::crc32::operator std::uint32_t() const
+constexpr /*explicit*/ m1::crc32::crc32(char const * const str) noexcept
+    : crc32(crc32_combine(crc32(), str))
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+constexpr m1::crc32::crc32(char const * const str,
+                           char const * const end) noexcept
+    : crc32(crc32_combine(crc32(), str, end))
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+constexpr m1::crc32::operator std::uint32_t() const noexcept
 {
     return m_Value;
 }
 
-// =====================================================================================================================
+// ====================================================================================================================
 
-constexpr std::uint32_t m1::crc32_seed()
+constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
+                                      std::uint8_t const byte) noexcept
 {
-    return 0xFFFFFFFFu;
+    return crc32(crc32_impl::sCrc32Table[static_cast<std::uint8_t>(static_cast<std::uint32_t>(crc) ^ static_cast<std::uint32_t>(byte))] ^ (crc >> 8));
 }
+// --------------------------------------------------------------------------------------------------------------------
 
-// =====================================================================================================================
-
-constexpr std::uint32_t m1::calc_crc32(char const * const str)
+constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
+                                      char const *str) noexcept
 {
-    std::uint32_t result = crc32_seed();
+    crc32 result = crc;
     for(char const *p = str; *p; ++p)
     {
-        result = calc_crc32(result, *p);
+        result = crc32_combine(result, *p);
     }
 
     return result;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
-constexpr std::uint32_t m1::calc_crc32(char const * const str,
-                                       char const * const end)
+constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
+                                      char const *str,
+                                      char const *end) noexcept
 {
-    std::uint32_t result = crc32_seed();
+    crc32 result = crc;
     for(char const *p = str; p != end; ++p)
     {
-        result = calc_crc32(result, *p);
+        result = crc32_combine(result, *p);
     }
-
-    return result;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ====================================================================================================================
 
-constexpr std::uint32_t m1::calc_crc32(std::uint32_t const crc,
-                                       std::uint8_t const byte)
+constexpr m1::crc32 m1::literals::operator "" _crc32(char const *str, std::size_t const len) noexcept
 {
-    std::uint32_t const c = static_cast<std::uint32_t>(byte);
-    std::uint8_t const i = static_cast<std::uint8_t>(crc ^ c);
-    return crc32_impl::sCrc32Table[i] ^ (crc >> 8);
+    return crc32_combine(crc32(), str, str + len);
 }
 
-// =====================================================================================================================
+// ====================================================================================================================
 
 #endif // M1_CRC32_HPP
