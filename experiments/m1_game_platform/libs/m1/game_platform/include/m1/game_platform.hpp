@@ -1,25 +1,20 @@
 #ifndef M1_GAME_PLATFORM_HPP
 #define M1_GAME_PLATFORM_HPP
 
-//#include "m1/signal.hpp"
-#include <functional>
+#include "m1/signal.hpp"
 #include <memory>
 
 // ====================================================================================================================
 
 namespace m1
 {
+namespace input
+{
     // ================================================================================================================
 
-    enum class game_keyboard_button
+    enum class keyboard_button
     {
         unknown,
-
-        a, b, c, d, e, f,
-        g, h, i, j, k, l,
-        m, n, o, p, q, r,
-        s, t, u, v, w, x,
-        y, z,
 
 //A	A key
 //Add	Add key
@@ -185,7 +180,7 @@ namespace m1
 
     // ================================================================================================================
 
-    enum class game_mouse_button
+    enum class mouse_button
     {
         left,
         middle,
@@ -194,6 +189,14 @@ namespace m1
         x2,
     };
 
+    // ================================================================================================================
+} // namespace input
+} // namespace m1
+
+// ====================================================================================================================
+
+namespace m1
+{
     // ================================================================================================================
 
     class game_platform
@@ -217,30 +220,30 @@ namespace m1
         void exit(int code = 0);
 
         // system events:
-        std::function<void()> event_idle;
-        std::function<void()> event_display;
-        std::function<void()> event_close;
-        std::function<void()> event_destroy;
-        std::function<void()> event_exit;
-        std::function<void()> event_focus_won;
-        std::function<void()> event_focus_lost;
-        std::function<void(int width, int height)> event_resize;
+        m1::signal<void()> event_idle;
+        m1::signal<void()> event_display;
+        m1::signal<void()> event_close;
+        m1::signal<void()> event_destroy;
+        m1::signal<void()> event_exit;
+        m1::signal<void()> event_focus_won;
+        m1::signal<void()> event_focus_lost;
+        m1::signal<void(int width, int height)> event_resize;
 
         // keyboard events:
-        std::function<void(game_keyboard_button button)> event_keyboard_button_click;
-        std::function<void(game_keyboard_button button)> event_keyboard_button_press;
-        std::function<void(game_keyboard_button button)> event_keyboard_button_release;
+        m1::signal<void(input::keyboard_button button)> event_keyboard_button_click;
+        m1::signal<void(input::keyboard_button button)> event_keyboard_button_press;
+        m1::signal<void(input::keyboard_button button)> event_keyboard_button_release;
 
         // mouse events:
         // (x, y) is in NDC coordinates: [-1, +1] X [-1, +1]
         // where (-1, -1) is lower-left of screen and (+1, +1) is upper-right of screen
-        std::function<void(float x, float y)> event_mouse_moved;
-        std::function<void(int wheel, float x, float y)> event_mouse_wheel_change;
-        std::function<void(game_mouse_button button, float x, float y)> event_mouse_button_click;
-        std::function<void(game_mouse_button button, float x, float y)> event_mouse_button_double_click;
-        std::function<void(game_mouse_button button, float x, float y)> event_mouse_button_press;
-        std::function<void(game_mouse_button button, float x, float y)> event_mouse_button_drag;
-        std::function<void(game_mouse_button button, float x, float y)> event_mouse_button_release;
+        m1::signal<void(float x, float y)> event_mouse_moved;
+        m1::signal<void(int wheel, float x, float y)> event_mouse_wheel_change;
+        m1::signal<void(input::mouse_button button, float x, float y)> event_mouse_button_click;
+        m1::signal<void(input::mouse_button button, float x, float y)> event_mouse_button_double_click;
+        m1::signal<void(input::mouse_button button, float x, float y)> event_mouse_button_press;
+        m1::signal<void(input::mouse_button button, float x, float y)> event_mouse_button_drag;
+        m1::signal<void(input::mouse_button button, float x, float y)> event_mouse_button_release;
 
         // gamepad events:
 
@@ -272,43 +275,3 @@ namespace m1
 // ====================================================================================================================
 
 #endif // M1_GAME_PLATFORM_HPP
-
-/*
-
-m1::game_platform platform;
-for(m1::game_event const &e : platform.run())
-{
-    switch(e.type)
-    {
-        case m1::event_type::idle:
-            ...
-            break;
-        case m1::event_type::display:
-            ...
-            break;
-        case m1::event_type::focus_won:
-            ...
-            break;
-        case m1::event_type::focus_lost:
-            ...
-            break;
-}
-
-*/
-
-/*
-class m1::signal<T(Args...)>
-    class connection<?> is instrusive_list_node<?>
-        -   void enable/disable
-    intrusive_list<signal_connection> m_Connections;
-*/
-
-/*
-m1::game_platform platform;
-m1::signal_connection idle_connection = platform.event_idle.connect([](){...});
-m1::signal_connection display_connection = platform.event_display.connect([](){...});
-m1::signal_connection focus_won_connection = platform.event_focus_won.connect([](){...});
-m1::signal_connection focus_lost_connection = platform.event_focus_lost.connect([](){...});
-
-return platform.run();
-*/

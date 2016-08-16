@@ -14,16 +14,24 @@ namespace m1
     friend class intrusive_list_impl;
     public:
         // construct/move/destroy:
-        intrusive_list_node() = default;
-        intrusive_list_node(intrusive_list_node &&rhs);
-        intrusive_list_node& operator = (intrusive_list_node &&rhs);
-        ~intrusive_list_node();
+        intrusive_list_node() noexcept = default;
+        intrusive_list_node(intrusive_list_node &&rhs) noexcept;
+        intrusive_list_node& operator = (intrusive_list_node &&rhs) noexcept;
+        ~intrusive_list_node() noexcept;
+
+        // properties:
+        intrusive_list_node* next_node_ptr() noexcept;
+        intrusive_list_node const* get_next_node_ptr() const noexcept;
+        intrusive_list_node* prev_node_ptr() noexcept;
+        intrusive_list_node const* get_prev_node_ptr() const noexcept;
 
         // methods:
-        bool unique() const;
-        void unlink();
-        void link(intrusive_list_node &next);
-        void swap(intrusive_list_node &rhs);
+        bool is_linked() const noexcept;
+        void insert_link(intrusive_list_node &next) noexcept;
+        void splice_link_range(intrusive_list_node &next,
+                               intrusive_list_node &end) noexcept;
+        void swap_links(intrusive_list_node &rhs) noexcept;
+        void clear_links() noexcept;
 
     private:
         intrusive_list_node(intrusive_list_node const &rhs) = delete;
@@ -37,7 +45,7 @@ namespace m1
     // ----------------------------------------------------------------------------------------------------------------
 
     void swap(intrusive_list_node &lhs,
-              intrusive_list_node &rhs);
+              intrusive_list_node &rhs) noexcept;
 
     // ================================================================================================================
 } // namespace m1
