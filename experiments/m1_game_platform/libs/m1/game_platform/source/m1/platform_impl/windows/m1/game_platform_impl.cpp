@@ -13,7 +13,7 @@ m1::game_platform::game_platform()
 {
     m_ImplPtr->program_handle = GetModuleHandleW(nullptr);
     m_ImplPtr->window_handle = CreateWND(m_ImplPtr->program_handle);
-    SetWindowLongPtrW(m_ImplPtr->window_handle, GWL_USERDATA, reinterpret_cast<LONG_PTR>(this));
+    SetWindowLongPtrW(m_ImplPtr->window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ bool m1::game_platform::do_events()
                                                              WPARAM const wParam,
                                                              LPARAM const lParam)
 {
-    LONG_PTR const wnd_user_data = GetWindowLongPtr(hWnd, GWL_USERDATA);
+    LONG_PTR const wnd_user_data = GetWindowLongPtr(hWnd, GWLP_USERDATA);
     if(wnd_user_data)
     {
         m1::game_platform * const game_platform_ptr = reinterpret_cast<m1::game_platform*>(wnd_user_data);

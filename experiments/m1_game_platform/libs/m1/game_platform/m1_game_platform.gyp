@@ -17,9 +17,6 @@
                 "include/m1/signal.hpp",
                 "include/m1/game_platform.hpp",
                 "source/m1/game_platform.cpp",
-                # windows:
-                "include/m1/platform_impl/windows/m1/game_platform_impl.hpp",
-                "source/m1/platform_impl/windows/m1/game_platform_impl.cpp",
                 "source/m1/intrusive_list_impl.cpp",
                 "source/m1/intrusive_list_node.cpp",
                 "source/m1/signal.cpp",
@@ -36,14 +33,42 @@
                 "include_dirs":
                 [
                     "include",
-                    # windows:
-                    "include/m1/platform_impl/windows",
-                ],
-                "libraries":
-                [
-                    "-luser32.lib",
                 ],
             },
+            "conditions":
+            [
+                [
+                    "OS == 'win'",
+                    {
+                        "defines":
+                        [
+                            "M1_GAME_PLATFORM_WINDOWS",
+                        ],
+                        "sources":
+                        [
+                            "include/m1/platform_impl/windows/m1/game_platform_impl.hpp",
+                            "source/m1/platform_impl/windows/m1/game_platform_impl.cpp",
+                        ],
+                        "direct_dependent_settings":
+                        {
+                            "defines":
+                            [
+                                "M1_GAME_PLATFORM_WINDOWS",
+                            ],
+                            "include_dirs":
+                            [
+                                "include",
+                                # windows:
+                                "include/m1/platform_impl/windows",
+                            ],
+                            "libraries":
+                            [
+                                "-luser32.lib",
+                            ],
+                        },
+                    },
+                ],
+            ],
         },
         {
             "target_name": "m1_game_platform_test",
