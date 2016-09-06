@@ -6,5 +6,7 @@
         "glbinding_gyp_file": "external_libs/glbinding.gyp",
         "glfw_gyp_file": "external_libs/glfw.gyp",
         "utf8-cpp_gyp_file": "external_libs/utf8-cpp.gyp",
+        "vulkan_gyp_file": "external_libs/vulkan.gyp",
+        "vulkan-hpp_gyp_file": "external_libs/vulkan-hpp.gyp",
     },
 }
