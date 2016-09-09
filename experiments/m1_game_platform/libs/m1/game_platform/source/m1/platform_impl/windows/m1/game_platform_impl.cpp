@@ -4,15 +4,17 @@
 // ====================================================================================================================
 
 static const WCHAR* GetWNDCLASS(HINSTANCE hInstance);
-static HWND CreateWND(HINSTANCE hInstance);
+static HWND CreateWND(HINSTANCE hInstance,
+                      std::string const &window_name);
 
 // ====================================================================================================================
 
-m1::game_platform::game_platform()
-    : m_ImplPtr(new impl)
+/*explicit*/ m1::game_platform::game_platform(std::string const &name)
+    : m_Name(name)
+    , m_ImplPtr(new impl)
 {
     m_ImplPtr->program_handle = GetModuleHandleW(nullptr);
-    m_ImplPtr->window_handle = CreateWND(m_ImplPtr->program_handle);
+    m_ImplPtr->window_handle = CreateWND(m_ImplPtr->program_handle, m_Name);
     SetWindowLongPtrW(m_ImplPtr->window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 }
 
@@ -113,7 +115,7 @@ bool m1::game_platform::do_events()
                                                              WPARAM const wParam,
                                                              LPARAM const lParam)
 {
-    LONG_PTR const wnd_user_data = GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    LONG_PTR const wnd_user_data = GetWindowLongPtrW(hWnd, GWLP_USERDATA);
     if(wnd_user_data)
     {
         m1::game_platform * const game_platform_ptr = reinterpret_cast<m1::game_platform*>(wnd_user_data);
@@ -150,7 +152,7 @@ bool m1::game_platform::do_events()
         }
     }
 
-    return DefWindowProc(hWnd, message, wParam, lParam);
+    return DefWindowProcW(hWnd, message, wParam, lParam);
 }
 
 // ====================================================================================================================
@@ -179,11 +181,14 @@ bool m1::game_platform::do_events()
 
 // ====================================================================================================================
 
-static HWND CreateWND(HINSTANCE const hInstance)
+static HWND CreateWND(HINSTANCE const hInstance,
+                      std::string const &window_name)
 {
+    std::wstring const window_wname(window_name.begin(), window_name.end());
+
     HWND const wnd = CreateWindowExW(0,                      // dwExStyle
                                      GetWNDCLASS(hInstance), // lpClassName
-                                     nullptr,                // lpWindowName
+                                     window_wname.c_str(),   // lpWindowName
                                      WS_OVERLAPPEDWINDOW,    // dwStyle
                                      CW_USEDEFAULT,          // X
                                      CW_USEDEFAULT,          // Y

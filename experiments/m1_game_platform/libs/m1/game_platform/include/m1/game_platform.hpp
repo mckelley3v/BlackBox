@@ -206,10 +206,13 @@ namespace m1
         struct impl;
 
         // construct/move/destroy:
-        game_platform();
+        explicit game_platform(std::string const &name);
         game_platform(game_platform &&rhs);
         game_platform& operator = (game_platform &&rhs);
         ~game_platform();
+
+        // properties:
+        std::string const& get_name() const;
 
         // impl:
         impl& platform_impl();
@@ -266,6 +269,7 @@ namespace m1
         game_platform& operator = (game_platform const &rhs) = delete;
 
         // members:
+        std::string m_Name;
         std::unique_ptr<impl> m_ImplPtr;
     };
 
