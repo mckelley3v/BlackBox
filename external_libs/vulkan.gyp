@@ -56,6 +56,7 @@
                             ],
                             "library_dirs":
                             [
+                                # TODO: detect x86 vs x64
                                 "<(vulkan_sdk_dir)/bin/",
                             ]
                         },
