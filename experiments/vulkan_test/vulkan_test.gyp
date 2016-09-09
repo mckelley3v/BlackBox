@@ -6,10 +6,12 @@
             "type": "executable",
             "include_dirs":
             [
-                "test",
+                "include",
             ],
             "sources":
             [
+                "include/vku.hpp",
+                "source/vku.cpp",
                 "test/main.cpp",
             ],
             "dependencies":
