@@ -19,6 +19,8 @@ private:
     char const * const m_Lhs = nullptr;
 };
 
+// ====================================================================================================================
+
 class vku_name_compare_to
 {
 public:
@@ -31,30 +33,59 @@ private:
     char const * const m_Lhs = nullptr;
 };
 
+// ====================================================================================================================
+
 static bool c_str_equal(char const *lhs, char const *rhs);
+
+// ====================================================================================================================
 
 template <typename Itr,
           typename End,
           typename Pred>
 static bool contains(Itr itr, End end, Pred pred);
 
+// ====================================================================================================================
+
 static std::vector<VkLayerProperties> enumerate_instance_layer_properties();
+// ====================================================================================================================
+
 static std::vector<VkExtensionProperties> enumerate_instance_layer_extension_properties(VkLayerProperties const &layer);
+// ====================================================================================================================
+
 static std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> enumerate_instance_all_layers_extension_properties();
+
+// ====================================================================================================================
 
 namespace vku
 {
 namespace iostream
 {
-   template <typename T> struct type_tag {};
+    // ================================================================================================================
 
-   std::string to_string(type_tag<VkQueueFlagBits>, VkQueueFlags const &value);
+    int& indent_level();
+    std::ostream& indent_push(std::ostream &out);
+    std::ostream& indent_pop(std::ostream &out);
+    std::ostream& indent(std::ostream &out);
 
-   template <std::size_t N>
-   static std::ostream& operator << (std::ostream &out, uint32_t const (&values)[N]);
-}
-}
+    // ================================================================================================================
 
+    template <typename T> struct type_tag {};
+
+    // ================================================================================================================
+
+    std::string to_string(type_tag<VkQueueFlagBits>, VkQueueFlags const &value);
+
+    // ================================================================================================================
+
+    template <std::size_t N>
+    static std::ostream& operator << (std::ostream &out, uint32_t const (&values)[N]);
+
+    // ================================================================================================================
+} // namespace iostream
+} // namespace vku
+
+// ====================================================================================================================
+// Implementation
 // ====================================================================================================================
 
 vku::Instance::Instance(VkInstance const instance)
@@ -288,7 +319,7 @@ std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const ins
 
 // ====================================================================================================================
 
-std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice)
+std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice const physicalDevice)
 {
    uint32_t family_property_count = 0;
    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
@@ -305,7 +336,7 @@ std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties
 
 // ====================================================================================================================
 
-/*explicit*/ vku::Device::Device(VkDevice device)
+/*explicit*/ vku::Device::Device(VkDevice const device)
    : m_VkDevice(device)
 {
 }
@@ -353,29 +384,68 @@ vku::Device::operator VkDevice() const
 }
 
 // ====================================================================================================================
+// Private Implementation
+// ====================================================================================================================
 
-c_str_compare_to::c_str_compare_to(char const *lhs)
+int& vku::iostream::indent_level()
+{
+   static int s_IndentLevel = 0;
+   return s_IndentLevel;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::indent_push(std::ostream &out)
+{
+   ++indent_level();
+   return out;
+};
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::indent_pop(std::ostream &out)
+{
+   --indent_level();
+   return out;
+};
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::indent(std::ostream &out)
+{
+   int const n = indent_level();
+   for(int i = 0; i < n; ++i)
+   {
+      out.put('\t');
+   }
+
+   return out;
+}
+
+// ====================================================================================================================
+
+c_str_compare_to::c_str_compare_to(char const * const lhs)
     : m_Lhs(lhs)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-bool c_str_compare_to::operator() (char const *rhs) const
+bool c_str_compare_to::operator() (char const * const rhs) const
 {
     return c_str_equal(m_Lhs, rhs);
 }
 
 // ====================================================================================================================
 
-vku_name_compare_to::vku_name_compare_to(char const *lhs)
+vku_name_compare_to::vku_name_compare_to(char const * const lhs)
     : m_Lhs(lhs)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-bool vku_name_compare_to::operator() (char const *rhs) const
+bool vku_name_compare_to::operator() (char const * const rhs) const
 {
     return c_str_equal(m_Lhs, rhs) || c_str_equal("*", m_Lhs) || c_str_equal("*", rhs);
 }
@@ -516,15 +586,17 @@ template <typename Itr,
 std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceProperties const &value)
 {
     out << "\n";
-    out << "apiVersion:        " << VK_VERSION_MAJOR(value.apiVersion)    << "." << VK_VERSION_MINOR(value.apiVersion)    << "." << VK_VERSION_PATCH(value.apiVersion)    << "\n";
-    out << "driverVersion:     " << VK_VERSION_MAJOR(value.driverVersion) << "." << VK_VERSION_MINOR(value.driverVersion) << "." << VK_VERSION_PATCH(value.driverVersion) << "\n";
-    out << "vendorID:          " << value.vendorID          << "\n";
-    out << "deviceID:          " << value.deviceID          << "\n";
-    out << "deviceType:        " << value.deviceType        << "\n";
-    out << "deviceName:        " << value.deviceName        << "\n";
-    out << "pipelineCacheUUID: " << value.pipelineCacheUUID << "\n";
-    out << "limits:            " << value.limits            << "\n";
-    out << "sparseProperties:  " << value.sparseProperties  << "\n";
+    out << indent_push;
+    out << indent << "apiVersion:        " << VK_VERSION_MAJOR(value.apiVersion)    << "." << VK_VERSION_MINOR(value.apiVersion)    << "." << VK_VERSION_PATCH(value.apiVersion)    << "\n";
+    out << indent << "driverVersion:     " << VK_VERSION_MAJOR(value.driverVersion) << "." << VK_VERSION_MINOR(value.driverVersion) << "." << VK_VERSION_PATCH(value.driverVersion) << "\n";
+    out << indent << "vendorID:          " << value.vendorID          << "\n";
+    out << indent << "deviceID:          " << value.deviceID          << "\n";
+    out << indent << "deviceType:        " << value.deviceType        << "\n";
+    out << indent << "deviceName:        " << value.deviceName        << "\n";
+    out << indent << "pipelineCacheUUID: " << value.pipelineCacheUUID << "\n";
+    out << indent << "limits:            " << value.limits            << "\n";
+    out << indent << "sparseProperties:  " << value.sparseProperties  << "\n";
+    out << indent_pop;
     return out;
 }
 
@@ -559,112 +631,114 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceTyp
 std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceLimits const &value)
 {
     out << "\n";
-    out << "maxImageDimension1D:                             " << value.maxImageDimension1D << "\n";
-    out << "maxImageDimension2D:                             " << value.maxImageDimension2D << "\n";
-    out << "maxImageDimension3D:                             " << value.maxImageDimension3D << "\n";
-    out << "maxImageDimensionCube:                           " << value.maxImageDimensionCube << "\n";
-    out << "maxImageArrayLayers:                             " << value.maxImageArrayLayers << "\n";
-    out << "maxTexelBufferElements:                          " << value.maxTexelBufferElements << "\n";
-    out << "maxUniformBufferRange:                           " << value.maxUniformBufferRange << "\n";
-    out << "maxStorageBufferRange:                           " << value.maxStorageBufferRange << "\n";
-    out << "maxPushConstantsSize:                            " << value.maxPushConstantsSize << "\n";
-    out << "maxMemoryAllocationCount:                        " << value.maxMemoryAllocationCount << "\n";
-    out << "maxSamplerAllocationCount:                       " << value.maxSamplerAllocationCount << "\n";
-    out << "bufferImageGranularity:                          " << value.bufferImageGranularity << "\n";
-    out << "sparseAddressSpaceSize:                          " << value.sparseAddressSpaceSize << "\n";
-    out << "maxBoundDescriptorSets:                          " << value.maxBoundDescriptorSets << "\n";
-    out << "maxPerStageDescriptorSamplers:                   " << value.maxPerStageDescriptorSamplers << "\n";
-    out << "maxPerStageDescriptorUniformBuffers:             " << value.maxPerStageDescriptorUniformBuffers << "\n";
-    out << "maxPerStageDescriptorStorageBuffers:             " << value.maxPerStageDescriptorStorageBuffers << "\n";
-    out << "maxPerStageDescriptorSampledImages:              " << value.maxPerStageDescriptorSampledImages << "\n";
-    out << "maxPerStageDescriptorStorageImages:              " << value.maxPerStageDescriptorStorageImages << "\n";
-    out << "maxPerStageDescriptorInputAttachments:           " << value.maxPerStageDescriptorInputAttachments << "\n";
-    out << "maxPerStageResources:                            " << value.maxPerStageResources << "\n";
-    out << "maxDescriptorSetSamplers:                        " << value.maxDescriptorSetSamplers << "\n";
-    out << "maxDescriptorSetUniformBuffers:                  " << value.maxDescriptorSetUniformBuffers << "\n";
-    out << "maxDescriptorSetUniformBuffersDynamic:           " << value.maxDescriptorSetUniformBuffersDynamic << "\n";
-    out << "maxDescriptorSetStorageBuffers:                  " << value.maxDescriptorSetStorageBuffers << "\n";
-    out << "maxDescriptorSetStorageBuffersDynamic:           " << value.maxDescriptorSetStorageBuffersDynamic << "\n";
-    out << "maxDescriptorSetSampledImages:                   " << value.maxDescriptorSetSampledImages << "\n";
-    out << "maxDescriptorSetStorageImages:                   " << value.maxDescriptorSetStorageImages << "\n";
-    out << "maxDescriptorSetInputAttachments:                " << value.maxDescriptorSetInputAttachments << "\n";
-    out << "maxVertexInputAttributes:                        " << value.maxVertexInputAttributes << "\n";
-    out << "maxVertexInputBindings:                          " << value.maxVertexInputBindings << "\n";
-    out << "maxVertexInputAttributeOffset:                   " << value.maxVertexInputAttributeOffset << "\n";
-    out << "maxVertexInputBindingStride:                     " << value.maxVertexInputBindingStride << "\n";
-    out << "maxVertexOutputComponents:                       " << value.maxVertexOutputComponents << "\n";
-    out << "maxTessellationGenerationLevel:                  " << value.maxTessellationGenerationLevel << "\n";
-    out << "maxTessellationPatchSize:                        " << value.maxTessellationPatchSize << "\n";
-    out << "maxTessellationControlPerVertexInputComponents:  " << value.maxTessellationControlPerVertexInputComponents << "\n";
-    out << "maxTessellationControlPerVertexOutputComponents: " << value.maxTessellationControlPerVertexOutputComponents << "\n";
-    out << "maxTessellationControlPerPatchOutputComponents:  " << value.maxTessellationControlPerPatchOutputComponents << "\n";
-    out << "maxTessellationControlTotalOutputComponents:     " << value.maxTessellationControlTotalOutputComponents << "\n";
-    out << "maxTessellationEvaluationInputComponents:        " << value.maxTessellationEvaluationInputComponents << "\n";
-    out << "maxTessellationEvaluationOutputComponents:       " << value.maxTessellationEvaluationOutputComponents << "\n";
-    out << "maxGeometryShaderInvocations:                    " << value.maxGeometryShaderInvocations << "\n";
-    out << "maxGeometryInputComponents:                      " << value.maxGeometryInputComponents << "\n";
-    out << "maxGeometryOutputComponents:                     " << value.maxGeometryOutputComponents << "\n";
-    out << "maxGeometryOutputVertices:                       " << value.maxGeometryOutputVertices << "\n";
-    out << "maxGeometryTotalOutputComponents:                " << value.maxGeometryTotalOutputComponents << "\n";
-    out << "maxFragmentInputComponents:                      " << value.maxFragmentInputComponents << "\n";
-    out << "maxFragmentOutputAttachments:                    " << value.maxFragmentOutputAttachments << "\n";
-    out << "maxFragmentDualSrcAttachments:                   " << value.maxFragmentDualSrcAttachments << "\n";
-    out << "maxFragmentCombinedOutputResources:              " << value.maxFragmentCombinedOutputResources << "\n";
-    out << "maxComputeSharedMemorySize:                      " << value.maxComputeSharedMemorySize << "\n";
-    out << "maxComputeWorkGroupCount:                        " << value.maxComputeWorkGroupCount << "\n";
-    out << "maxComputeWorkGroupInvocations:                  " << value.maxComputeWorkGroupInvocations << "\n";
-    out << "maxComputeWorkGroupSize:                         " << value.maxComputeWorkGroupSize << "\n";
-    out << "subPixelPrecisionBits:                           " << value.subPixelPrecisionBits << "\n";
-    out << "subTexelPrecisionBits:                           " << value.subTexelPrecisionBits << "\n";
-    out << "mipmapPrecisionBits:                             " << value.mipmapPrecisionBits << "\n";
-    out << "maxDrawIndexedIndexValue:                        " << value.maxDrawIndexedIndexValue << "\n";
-    out << "maxDrawIndirectCount:                            " << value.maxDrawIndirectCount << "\n";
-    out << "maxSamplerLodBias:                               " << value.maxSamplerLodBias << "\n";
-    out << "maxSamplerAnisotropy:                            " << value.maxSamplerAnisotropy << "\n";
-    out << "maxViewports:                                    " << value.maxViewports << "\n";
-    out << "maxViewportDimensions:                           " << value.maxViewportDimensions << "\n";
-    out << "viewportBoundsRange:                             " << value.viewportBoundsRange << "\n";
-    out << "viewportSubPixelBits:                            " << value.viewportSubPixelBits << "\n";
-    out << "minMemoryMapAlignment:                           " << value.minMemoryMapAlignment << "\n";
-    out << "minTexelBufferOffsetAlignment:                   " << value.minTexelBufferOffsetAlignment << "\n";
-    out << "minUniformBufferOffsetAlignment:                 " << value.minUniformBufferOffsetAlignment << "\n";
-    out << "minStorageBufferOffsetAlignment:                 " << value.minStorageBufferOffsetAlignment << "\n";
-    out << "minTexelOffset:                                  " << value.minTexelOffset << "\n";
-    out << "maxTexelOffset:                                  " << value.maxTexelOffset << "\n";
-    out << "minTexelGatherOffset:                            " << value.minTexelGatherOffset << "\n";
-    out << "maxTexelGatherOffset:                            " << value.maxTexelGatherOffset << "\n";
-    out << "minInterpolationOffset:                          " << value.minInterpolationOffset << "\n";
-    out << "maxInterpolationOffset:                          " << value.maxInterpolationOffset << "\n";
-    out << "subPixelInterpolationOffsetBits:                 " << value.subPixelInterpolationOffsetBits << "\n";
-    out << "maxFramebufferWidth:                             " << value.maxFramebufferWidth << "\n";
-    out << "maxFramebufferHeight:                            " << value.maxFramebufferHeight << "\n";
-    out << "maxFramebufferLayers:                            " << value.maxFramebufferLayers << "\n";
-    out << "framebufferColorSampleCounts:                    " << value.framebufferColorSampleCounts << "\n";
-    out << "framebufferDepthSampleCounts:                    " << value.framebufferDepthSampleCounts << "\n";
-    out << "framebufferStencilSampleCounts:                  " << value.framebufferStencilSampleCounts << "\n";
-    out << "framebufferNoAttachmentsSampleCounts:            " << value.framebufferNoAttachmentsSampleCounts << "\n";
-    out << "maxColorAttachments:                             " << value.maxColorAttachments << "\n";
-    out << "sampledImageColorSampleCounts:                   " << value.sampledImageColorSampleCounts << "\n";
-    out << "sampledImageIntegerSampleCounts:                 " << value.sampledImageIntegerSampleCounts << "\n";
-    out << "sampledImageDepthSampleCounts:                   " << value.sampledImageDepthSampleCounts << "\n";
-    out << "sampledImageStencilSampleCounts:                 " << value.sampledImageStencilSampleCounts << "\n";
-    out << "storageImageSampleCounts:                        " << value.storageImageSampleCounts << "\n";
-    out << "maxSampleMaskWords:                              " << value.maxSampleMaskWords << "\n";
-    out << "timestampComputeAndGraphics:                     " << value.timestampComputeAndGraphics << "\n";
-    out << "timestampPeriod:                                 " << value.timestampPeriod << "\n";
-    out << "maxClipDistances:                                " << value.maxClipDistances << "\n";
-    out << "maxCullDistances:                                " << value.maxCullDistances << "\n";
-    out << "maxCombinedClipAndCullDistances:                 " << value.maxCombinedClipAndCullDistances << "\n";
-    out << "discreteQueuePriorities:                         " << value.discreteQueuePriorities << "\n";
-    out << "pointSizeRange:                                  " << value.pointSizeRange << "\n";
-    out << "lineWidthRange:                                  " << value.lineWidthRange << "\n";
-    out << "pointSizeGranularity:                            " << value.pointSizeGranularity << "\n";
-    out << "lineWidthGranularity:                            " << value.lineWidthGranularity << "\n";
-    out << "strictLines:                                     " << value.strictLines << "\n";
-    out << "standardSampleLocations:                         " << value.standardSampleLocations << "\n";
-    out << "optimalBufferCopyOffsetAlignment:                " << value.optimalBufferCopyOffsetAlignment << "\n";
-    out << "optimalBufferCopyRowPitchAlignment:              " << value.optimalBufferCopyRowPitchAlignment << "\n";
-    out << "nonCoherentAtomSize:                             " << value.nonCoherentAtomSize << "\n";
+    out << indent_push;
+    out << indent << "maxImageDimension1D:                             " << value.maxImageDimension1D << "\n";
+    out << indent << "maxImageDimension2D:                             " << value.maxImageDimension2D << "\n";
+    out << indent << "maxImageDimension3D:                             " << value.maxImageDimension3D << "\n";
+    out << indent << "maxImageDimensionCube:                           " << value.maxImageDimensionCube << "\n";
+    out << indent << "maxImageArrayLayers:                             " << value.maxImageArrayLayers << "\n";
+    out << indent << "maxTexelBufferElements:                          " << value.maxTexelBufferElements << "\n";
+    out << indent << "maxUniformBufferRange:                           " << value.maxUniformBufferRange << "\n";
+    out << indent << "maxStorageBufferRange:                           " << value.maxStorageBufferRange << "\n";
+    out << indent << "maxPushConstantsSize:                            " << value.maxPushConstantsSize << "\n";
+    out << indent << "maxMemoryAllocationCount:                        " << value.maxMemoryAllocationCount << "\n";
+    out << indent << "maxSamplerAllocationCount:                       " << value.maxSamplerAllocationCount << "\n";
+    out << indent << "bufferImageGranularity:                          " << value.bufferImageGranularity << "\n";
+    out << indent << "sparseAddressSpaceSize:                          " << value.sparseAddressSpaceSize << "\n";
+    out << indent << "maxBoundDescriptorSets:                          " << value.maxBoundDescriptorSets << "\n";
+    out << indent << "maxPerStageDescriptorSamplers:                   " << value.maxPerStageDescriptorSamplers << "\n";
+    out << indent << "maxPerStageDescriptorUniformBuffers:             " << value.maxPerStageDescriptorUniformBuffers << "\n";
+    out << indent << "maxPerStageDescriptorStorageBuffers:             " << value.maxPerStageDescriptorStorageBuffers << "\n";
+    out << indent << "maxPerStageDescriptorSampledImages:              " << value.maxPerStageDescriptorSampledImages << "\n";
+    out << indent << "maxPerStageDescriptorStorageImages:              " << value.maxPerStageDescriptorStorageImages << "\n";
+    out << indent << "maxPerStageDescriptorInputAttachments:           " << value.maxPerStageDescriptorInputAttachments << "\n";
+    out << indent << "maxPerStageResources:                            " << value.maxPerStageResources << "\n";
+    out << indent << "maxDescriptorSetSamplers:                        " << value.maxDescriptorSetSamplers << "\n";
+    out << indent << "maxDescriptorSetUniformBuffers:                  " << value.maxDescriptorSetUniformBuffers << "\n";
+    out << indent << "maxDescriptorSetUniformBuffersDynamic:           " << value.maxDescriptorSetUniformBuffersDynamic << "\n";
+    out << indent << "maxDescriptorSetStorageBuffers:                  " << value.maxDescriptorSetStorageBuffers << "\n";
+    out << indent << "maxDescriptorSetStorageBuffersDynamic:           " << value.maxDescriptorSetStorageBuffersDynamic << "\n";
+    out << indent << "maxDescriptorSetSampledImages:                   " << value.maxDescriptorSetSampledImages << "\n";
+    out << indent << "maxDescriptorSetStorageImages:                   " << value.maxDescriptorSetStorageImages << "\n";
+    out << indent << "maxDescriptorSetInputAttachments:                " << value.maxDescriptorSetInputAttachments << "\n";
+    out << indent << "maxVertexInputAttributes:                        " << value.maxVertexInputAttributes << "\n";
+    out << indent << "maxVertexInputBindings:                          " << value.maxVertexInputBindings << "\n";
+    out << indent << "maxVertexInputAttributeOffset:                   " << value.maxVertexInputAttributeOffset << "\n";
+    out << indent << "maxVertexInputBindingStride:                     " << value.maxVertexInputBindingStride << "\n";
+    out << indent << "maxVertexOutputComponents:                       " << value.maxVertexOutputComponents << "\n";
+    out << indent << "maxTessellationGenerationLevel:                  " << value.maxTessellationGenerationLevel << "\n";
+    out << indent << "maxTessellationPatchSize:                        " << value.maxTessellationPatchSize << "\n";
+    out << indent << "maxTessellationControlPerVertexInputComponents:  " << value.maxTessellationControlPerVertexInputComponents << "\n";
+    out << indent << "maxTessellationControlPerVertexOutputComponents: " << value.maxTessellationControlPerVertexOutputComponents << "\n";
+    out << indent << "maxTessellationControlPerPatchOutputComponents:  " << value.maxTessellationControlPerPatchOutputComponents << "\n";
+    out << indent << "maxTessellationControlTotalOutputComponents:     " << value.maxTessellationControlTotalOutputComponents << "\n";
+    out << indent << "maxTessellationEvaluationInputComponents:        " << value.maxTessellationEvaluationInputComponents << "\n";
+    out << indent << "maxTessellationEvaluationOutputComponents:       " << value.maxTessellationEvaluationOutputComponents << "\n";
+    out << indent << "maxGeometryShaderInvocations:                    " << value.maxGeometryShaderInvocations << "\n";
+    out << indent << "maxGeometryInputComponents:                      " << value.maxGeometryInputComponents << "\n";
+    out << indent << "maxGeometryOutputComponents:                     " << value.maxGeometryOutputComponents << "\n";
+    out << indent << "maxGeometryOutputVertices:                       " << value.maxGeometryOutputVertices << "\n";
+    out << indent << "maxGeometryTotalOutputComponents:                " << value.maxGeometryTotalOutputComponents << "\n";
+    out << indent << "maxFragmentInputComponents:                      " << value.maxFragmentInputComponents << "\n";
+    out << indent << "maxFragmentOutputAttachments:                    " << value.maxFragmentOutputAttachments << "\n";
+    out << indent << "maxFragmentDualSrcAttachments:                   " << value.maxFragmentDualSrcAttachments << "\n";
+    out << indent << "maxFragmentCombinedOutputResources:              " << value.maxFragmentCombinedOutputResources << "\n";
+    out << indent << "maxComputeSharedMemorySize:                      " << value.maxComputeSharedMemorySize << "\n";
+    out << indent << "maxComputeWorkGroupCount:                        " << value.maxComputeWorkGroupCount << "\n";
+    out << indent << "maxComputeWorkGroupInvocations:                  " << value.maxComputeWorkGroupInvocations << "\n";
+    out << indent << "maxComputeWorkGroupSize:                         " << value.maxComputeWorkGroupSize << "\n";
+    out << indent << "subPixelPrecisionBits:                           " << value.subPixelPrecisionBits << "\n";
+    out << indent << "subTexelPrecisionBits:                           " << value.subTexelPrecisionBits << "\n";
+    out << indent << "mipmapPrecisionBits:                             " << value.mipmapPrecisionBits << "\n";
+    out << indent << "maxDrawIndexedIndexValue:                        " << value.maxDrawIndexedIndexValue << "\n";
+    out << indent << "maxDrawIndirectCount:                            " << value.maxDrawIndirectCount << "\n";
+    out << indent << "maxSamplerLodBias:                               " << value.maxSamplerLodBias << "\n";
+    out << indent << "maxSamplerAnisotropy:                            " << value.maxSamplerAnisotropy << "\n";
+    out << indent << "maxViewports:                                    " << value.maxViewports << "\n";
+    out << indent << "maxViewportDimensions:                           " << value.maxViewportDimensions << "\n";
+    out << indent << "viewportBoundsRange:                             " << value.viewportBoundsRange << "\n";
+    out << indent << "viewportSubPixelBits:                            " << value.viewportSubPixelBits << "\n";
+    out << indent << "minMemoryMapAlignment:                           " << value.minMemoryMapAlignment << "\n";
+    out << indent << "minTexelBufferOffsetAlignment:                   " << value.minTexelBufferOffsetAlignment << "\n";
+    out << indent << "minUniformBufferOffsetAlignment:                 " << value.minUniformBufferOffsetAlignment << "\n";
+    out << indent << "minStorageBufferOffsetAlignment:                 " << value.minStorageBufferOffsetAlignment << "\n";
+    out << indent << "minTexelOffset:                                  " << value.minTexelOffset << "\n";
+    out << indent << "maxTexelOffset:                                  " << value.maxTexelOffset << "\n";
+    out << indent << "minTexelGatherOffset:                            " << value.minTexelGatherOffset << "\n";
+    out << indent << "maxTexelGatherOffset:                            " << value.maxTexelGatherOffset << "\n";
+    out << indent << "minInterpolationOffset:                          " << value.minInterpolationOffset << "\n";
+    out << indent << "maxInterpolationOffset:                          " << value.maxInterpolationOffset << "\n";
+    out << indent << "subPixelInterpolationOffsetBits:                 " << value.subPixelInterpolationOffsetBits << "\n";
+    out << indent << "maxFramebufferWidth:                             " << value.maxFramebufferWidth << "\n";
+    out << indent << "maxFramebufferHeight:                            " << value.maxFramebufferHeight << "\n";
+    out << indent << "maxFramebufferLayers:                            " << value.maxFramebufferLayers << "\n";
+    out << indent << "framebufferColorSampleCounts:                    " << value.framebufferColorSampleCounts << "\n";
+    out << indent << "framebufferDepthSampleCounts:                    " << value.framebufferDepthSampleCounts << "\n";
+    out << indent << "framebufferStencilSampleCounts:                  " << value.framebufferStencilSampleCounts << "\n";
+    out << indent << "framebufferNoAttachmentsSampleCounts:            " << value.framebufferNoAttachmentsSampleCounts << "\n";
+    out << indent << "maxColorAttachments:                             " << value.maxColorAttachments << "\n";
+    out << indent << "sampledImageColorSampleCounts:                   " << value.sampledImageColorSampleCounts << "\n";
+    out << indent << "sampledImageIntegerSampleCounts:                 " << value.sampledImageIntegerSampleCounts << "\n";
+    out << indent << "sampledImageDepthSampleCounts:                   " << value.sampledImageDepthSampleCounts << "\n";
+    out << indent << "sampledImageStencilSampleCounts:                 " << value.sampledImageStencilSampleCounts << "\n";
+    out << indent << "storageImageSampleCounts:                        " << value.storageImageSampleCounts << "\n";
+    out << indent << "maxSampleMaskWords:                              " << value.maxSampleMaskWords << "\n";
+    out << indent << "timestampComputeAndGraphics:                     " << value.timestampComputeAndGraphics << "\n";
+    out << indent << "timestampPeriod:                                 " << value.timestampPeriod << "\n";
+    out << indent << "maxClipDistances:                                " << value.maxClipDistances << "\n";
+    out << indent << "maxCullDistances:                                " << value.maxCullDistances << "\n";
+    out << indent << "maxCombinedClipAndCullDistances:                 " << value.maxCombinedClipAndCullDistances << "\n";
+    out << indent << "discreteQueuePriorities:                         " << value.discreteQueuePriorities << "\n";
+    out << indent << "pointSizeRange:                                  " << value.pointSizeRange << "\n";
+    out << indent << "lineWidthRange:                                  " << value.lineWidthRange << "\n";
+    out << indent << "pointSizeGranularity:                            " << value.pointSizeGranularity << "\n";
+    out << indent << "lineWidthGranularity:                            " << value.lineWidthGranularity << "\n";
+    out << indent << "strictLines:                                     " << value.strictLines << "\n";
+    out << indent << "standardSampleLocations:                         " << value.standardSampleLocations << "\n";
+    out << indent << "optimalBufferCopyOffsetAlignment:                " << value.optimalBufferCopyOffsetAlignment << "\n";
+    out << indent << "optimalBufferCopyRowPitchAlignment:              " << value.optimalBufferCopyRowPitchAlignment << "\n";
+    out << indent << "nonCoherentAtomSize:                             " << value.nonCoherentAtomSize << "\n";
+    out << indent_pop;
     return out;
 }
 
@@ -673,11 +747,13 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceLim
 std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceSparseProperties const &value)
 {
     out << "\n";
-    out << "residencyStandard2DBlockShape:            " << value.residencyStandard2DBlockShape << "\n";
-    out << "residencyStandard2DMultisampleBlockShape: " << value.residencyStandard2DMultisampleBlockShape << "\n";
-    out << "residencyStandard3DBlockShape:            " << value.residencyStandard3DBlockShape << "\n";
-    out << "residencyAlignedMipSize:                  " << value.residencyAlignedMipSize << "\n";
-    out << "residencyNonResidentStrict:               " << value.residencyNonResidentStrict << "\n";
+    out << indent_push;
+    out << indent << "residencyStandard2DBlockShape:            " << value.residencyStandard2DBlockShape << "\n";
+    out << indent << "residencyStandard2DMultisampleBlockShape: " << value.residencyStandard2DMultisampleBlockShape << "\n";
+    out << indent << "residencyStandard3DBlockShape:            " << value.residencyStandard3DBlockShape << "\n";
+    out << indent << "residencyAlignedMipSize:                  " << value.residencyAlignedMipSize << "\n";
+    out << indent << "residencyNonResidentStrict:               " << value.residencyNonResidentStrict << "\n";
+    out << indent_pop;
     return out;
 }
 
@@ -686,10 +762,12 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceSpa
 std::ostream& vku::iostream::operator << (std::ostream &out, VkQueueFamilyProperties const &value)
 {
     out << "\n";
-    out << "queueFlags:                  " << to_string(type_tag<VkQueueFlagBits>(), value.queueFlags) << "\n";
-    out << "queueCount:                  " << value.queueCount << "\n";
-    out << "timestampValidBits:          " << value.timestampValidBits << "\n";
-    out << "minImageTransferGranularity: " << value.minImageTransferGranularity << "\n";
+    out << indent_push;
+    out << indent << "queueFlags:                  " << to_string(type_tag<VkQueueFlagBits>(), value.queueFlags) << "\n";
+    out << indent << "queueCount:                  " << value.queueCount << "\n";
+    out << indent << "timestampValidBits:          " << value.timestampValidBits << "\n";
+    out << indent << "minImageTransferGranularity: " << value.minImageTransferGranularity << "\n";
+    out << indent_pop;
     return out;
 }
 
@@ -743,9 +821,11 @@ std::string vku::iostream::to_string(type_tag<VkQueueFlagBits>, VkQueueFlags con
 std::ostream& vku::iostream::operator << (std::ostream &out, VkExtent3D const &value)
 {
     out << "\n";
-    out << "width:  " << value.width << "\n";
-    out << "height: " << value.height << "\n";
-    out << "depth:  " << value.depth << "\n";
+    out << indent_push;
+    out << indent << "width:  " << value.width << "\n";
+    out << indent << "height: " << value.height << "\n";
+    out << indent << "depth:  " << value.depth << "\n";
+    out << indent_pop;
     return out;
 }
 
@@ -755,10 +835,12 @@ template <std::size_t N>
 /*static*/ std::ostream& vku::iostream::operator << (std::ostream &out, uint32_t const (&values)[N])
 {
     out << "\n";
+    out << indent_push;
     for(uint32_t const &value : values)
     {
-        out << "-\n" << value << "\n";
+        out << indent << "-\t" << value << "\n";
     }
+    out << indent_pop;
 
     return out;
 }
