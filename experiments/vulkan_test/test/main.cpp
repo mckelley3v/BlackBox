@@ -24,6 +24,13 @@ int main()
             vkGetPhysicalDeviceProperties(gpu, &gpu_properties);
 
             std::cout << "-\n" << gpu_properties << "\n";
+
+            std::cout << "PhysicalDeviceQueueFamilyProperties: \n";
+            std::vector<VkQueueFamilyProperties> const gpu_queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(gpu);
+            for(VkQueueFamilyProperties const &queue_family_properties : gpu_queue_families_properties)
+            {
+               std::cout << "-\n" << queue_family_properties << "\n";
+            }
         }
 
         return g.run();
@@ -53,18 +60,19 @@ vku::Instance make_vk_instance(m1::game_platform const &game_platform)
         VK_MAKE_VERSION(0, 0, 0),         // apiVersion
     };
 
-    return vku::CreateInstance(app_info,
-                               // requiredLayers
-                               {},
-                               // allowedLayers
-                               {"*"},
-                               // requiredExtensions
-                               {},
-                               // allowedExtensions
-                               {
-                                   VK_KHR_SURFACE_EXTENSION_NAME,
-                                   VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME,
-                               });
+    VkInstance instance = vku::CreateInstance(app_info,
+                                              // requiredLayers
+                                              {},
+                                              // allowedLayers
+                                              {"*"},
+                                              // requiredExtensions
+                                              {},
+                                              // allowedExtensions
+                                              {
+                                                  VK_KHR_SURFACE_EXTENSION_NAME,
+                                                  VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME,
+                                              });
+    return vku::Instance(instance);
 }
 
 // ====================================================================================================================

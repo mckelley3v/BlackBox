@@ -67,14 +67,62 @@ namespace vku
         VkInstance m_VkInstance = VK_NULL_HANDLE;
     };
 
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkInstance CreateInstance(ApplicationInfo const &appInfo,
+                              std::initializer_list<char const * const> const &requiredLayers,
+                              std::initializer_list<char const * const> const &allowedLayers,
+                              std::initializer_list<char const * const> const &requiredExtensions,
+                              std::initializer_list<char const * const> const &allowedExtensions);
+
     // ================================================================================================================
 
-    Instance CreateInstance(ApplicationInfo const &appInfo,
-                            std::initializer_list<char const * const> const &requiredLayers,
-                            std::initializer_list<char const * const> const &allowedLayers,
-                            std::initializer_list<char const * const> const &requiredExtensions,
-                            std::initializer_list<char const * const> const &allowedExtensions);
     std::vector<VkPhysicalDevice> EnumeratePhysicalDevices(VkInstance instance);
+
+    // --------------------------------------------------------------------------------------------------------------------
+
+    std::vector<VkQueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
+
+    // ================================================================================================================
+
+    struct PhysicalDeviceQueueFamily
+    {
+       VkPhysicalDevice        physicalDevice;
+       uint32_t                familyIndex;
+       VkQueueFamilyProperties familyProperties;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    PhysicalDeviceQueueFamily FindPhysicalDeviceQueueFamily(std::vector<VkPhysicalDevice> const &physicalDevices,
+                                                            VkQueueFlags requiredFlags);
+
+    // ================================================================================================================
+
+    class Device
+    {
+    public:
+       Device() = default;
+       explicit Device(VkDevice device);
+       Device(Device &&rhs);
+       Device& operator = (Device &&rhs);
+       ~Device();
+
+       explicit operator bool() const;
+       operator VkDevice() const;
+
+    private:
+       Device(Device const &rhs) = delete;
+       Device& operator = (Device const &rhs) = delete;
+
+       // members:
+       VkDevice m_VkDevice = VK_NULL_HANDLE;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkDevice CreateDevice(VkInstance instance,
+                          PhysicalDeviceQueueFamily physicalDeviceQueueFamily);
 
     // ================================================================================================================
 
@@ -84,6 +132,8 @@ namespace vku
         std::ostream& operator << (std::ostream &out, VkPhysicalDeviceType const &value);
         std::ostream& operator << (std::ostream &out, VkPhysicalDeviceLimits const &value);
         std::ostream& operator << (std::ostream &out, VkPhysicalDeviceSparseProperties const &value);
+        std::ostream& operator << (std::ostream &out, VkQueueFamilyProperties const &value);
+        std::ostream& operator << (std::ostream &out, VkExtent3D const &value);
     }
 
     // ================================================================================================================

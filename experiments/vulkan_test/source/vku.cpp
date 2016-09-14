@@ -1,4 +1,5 @@
 #include "vku.hpp"
+#include <string>
 #include <algorithm>
 #include <ostream>
 #include <stdexcept>
@@ -41,8 +42,18 @@ static std::vector<VkLayerProperties> enumerate_instance_layer_properties();
 static std::vector<VkExtensionProperties> enumerate_instance_layer_extension_properties(VkLayerProperties const &layer);
 static std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> enumerate_instance_all_layers_extension_properties();
 
-template <typename T, std::size_t N>
-static std::ostream& operator << (std::ostream &out, T const (&values)[N]);
+namespace vku
+{
+namespace iostream
+{
+   template <typename T> struct type_tag {};
+
+   std::string to_string(type_tag<VkQueueFlagBits>, VkQueueFlags const &value);
+
+   template <std::size_t N>
+   static std::ostream& operator << (std::ostream &out, uint32_t const (&values)[N]);
+}
+}
 
 // ====================================================================================================================
 
@@ -95,11 +106,11 @@ vku::Instance::operator VkInstance() const
 
 // ====================================================================================================================
 
-vku::Instance vku::CreateInstance(ApplicationInfo const &appInfo,
-                                  std::initializer_list<char const * const> const &requiredLayers,
-                                  std::initializer_list<char const * const> const &allowedLayers,
-                                  std::initializer_list<char const * const> const &requiredExtensions,
-                                  std::initializer_list<char const * const> const &allowedExtensions)
+VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
+                               std::initializer_list<char const * const> const &requiredLayers,
+                               std::initializer_list<char const * const> const &allowedLayers,
+                               std::initializer_list<char const * const> const &requiredExtensions,
+                               std::initializer_list<char const * const> const &allowedExtensions)
 {
     std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> const all_layers_extensions = enumerate_instance_all_layers_extension_properties();
 
@@ -219,7 +230,7 @@ vku::Instance vku::CreateInstance(ApplicationInfo const &appInfo,
             throw std::runtime_error("error: vkCreateInstance returned unknown error");
     };
 
-    return Instance(instance);
+    return instance;
 }
 
 // ====================================================================================================================
@@ -277,6 +288,72 @@ std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const ins
 
 // ====================================================================================================================
 
+std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice)
+{
+   uint32_t family_property_count = 0;
+   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+                                            &family_property_count,
+                                            nullptr);
+
+   std::vector<VkQueueFamilyProperties> family_properties(family_property_count);
+   vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+                                            &family_property_count,
+                                            family_properties.data());
+
+   return family_properties;
+}
+
+// ====================================================================================================================
+
+/*explicit*/ vku::Device::Device(VkDevice device)
+   : m_VkDevice(device)
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Device::Device(Device &&rhs)
+   : m_VkDevice(rhs.m_VkDevice)
+{
+   rhs.m_VkDevice = VK_NULL_HANDLE;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Device& vku::Device::operator = (Device &&rhs)
+{
+   m_VkDevice = rhs.m_VkDevice;
+   rhs.m_VkDevice = VK_NULL_HANDLE;
+   return *this;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Device::~Device()
+{
+   if(m_VkDevice != VK_NULL_HANDLE)
+   {
+      vkDestroyDevice(m_VkDevice, // pDevice
+                      nullptr); // pAllocator
+   }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+/*explicit*/ vku::Device::operator bool() const
+{
+   return m_VkDevice != VK_NULL_HANDLE;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Device::operator VkDevice() const
+{
+   return m_VkDevice;
+}
+
+// ====================================================================================================================
+
 c_str_compare_to::c_str_compare_to(char const *lhs)
     : m_Lhs(lhs)
 {
@@ -300,7 +377,7 @@ vku_name_compare_to::vku_name_compare_to(char const *lhs)
 
 bool vku_name_compare_to::operator() (char const *rhs) const
 {
-    return c_str_equal(m_Lhs, rhs) || c_str_equal("*", rhs);
+    return c_str_equal(m_Lhs, rhs) || c_str_equal("*", m_Lhs) || c_str_equal("*", rhs);
 }
 
 // ====================================================================================================================
@@ -439,8 +516,8 @@ template <typename Itr,
 std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceProperties const &value)
 {
     out << "\n";
-    out << "apiVersion:        " << value.apiVersion        << "\n";
-    out << "driverVersion:     " << value.driverVersion     << "\n";
+    out << "apiVersion:        " << VK_VERSION_MAJOR(value.apiVersion)    << "." << VK_VERSION_MINOR(value.apiVersion)    << "." << VK_VERSION_PATCH(value.apiVersion)    << "\n";
+    out << "driverVersion:     " << VK_VERSION_MAJOR(value.driverVersion) << "." << VK_VERSION_MINOR(value.driverVersion) << "." << VK_VERSION_PATCH(value.driverVersion) << "\n";
     out << "vendorID:          " << value.vendorID          << "\n";
     out << "deviceID:          " << value.deviceID          << "\n";
     out << "deviceType:        " << value.deviceType        << "\n";
@@ -606,12 +683,81 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceSpa
 
 // ====================================================================================================================
 
-template <typename T, std::size_t N>
-/*static*/ std::ostream& operator << (std::ostream &out, T const (&values)[N])
+std::ostream& vku::iostream::operator << (std::ostream &out, VkQueueFamilyProperties const &value)
 {
-    for(T const &value : value)
+    out << "\n";
+    out << "queueFlags:                  " << to_string(type_tag<VkQueueFlagBits>(), value.queueFlags) << "\n";
+    out << "queueCount:                  " << value.queueCount << "\n";
+    out << "timestampValidBits:          " << value.timestampValidBits << "\n";
+    out << "minImageTransferGranularity: " << value.minImageTransferGranularity << "\n";
+    return out;
+}
+
+// ====================================================================================================================
+
+std::string vku::iostream::to_string(type_tag<VkQueueFlagBits>, VkQueueFlags const &value)
+{
+   std::string result;
+
+   if(value)
+   {
+      char const *prefix = "";
+      if(value & VK_QUEUE_GRAPHICS_BIT)
+      {
+         result += prefix;
+         result += "VK_QUEUE_GRAPHICS_BIT";
+         prefix = " | ";
+      }
+
+      if(value & VK_QUEUE_COMPUTE_BIT)
+      {
+         result += prefix;
+         result += "VK_QUEUE_COMPUTE_BIT";
+         prefix = " | ";
+      }
+
+      if(value & VK_QUEUE_TRANSFER_BIT)
+      {
+         result += prefix;
+         result += "VK_QUEUE_TRANSFER_BIT";
+         prefix = " | ";
+      }
+
+      if(value & VK_QUEUE_SPARSE_BINDING_BIT)
+      {
+         result += prefix;
+         result += "VK_QUEUE_SPARSE_BINDING_BIT";
+         prefix = " | ";
+      }
+   }
+   else
+   {
+      result = "0";
+   }
+
+   return result;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::operator << (std::ostream &out, VkExtent3D const &value)
+{
+    out << "\n";
+    out << "width:  " << value.width << "\n";
+    out << "height: " << value.height << "\n";
+    out << "depth:  " << value.depth << "\n";
+    return out;
+}
+
+// ====================================================================================================================
+
+template <std::size_t N>
+/*static*/ std::ostream& vku::iostream::operator << (std::ostream &out, uint32_t const (&values)[N])
+{
+    out << "\n";
+    for(uint32_t const &value : values)
     {
-        out << value << "\n";
+        out << "-\n" << value << "\n";
     }
 
     return out;
