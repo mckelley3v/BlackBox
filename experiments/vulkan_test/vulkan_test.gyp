@@ -11,7 +11,15 @@
             "sources":
             [
                 "include/vku.hpp",
+                "include/vku_instance.hpp",
+                "include/vku_device.hpp",
+                "include/vku_iostream.hpp",
                 "source/vku.cpp",
+                "source/vku_utility.hpp",
+                "source/vku_utility.cpp",
+                "source/vku_instance.cpp",
+                "source/vku_device.cpp",
+                "source/vku_iostream.cpp",
                 "test/main.cpp",
             ],
             "dependencies":

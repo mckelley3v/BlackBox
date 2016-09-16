@@ -1,10 +1,39 @@
 #include "m1/game_platform.hpp"
 #include "vku.hpp"
+#include "vku_iostream.hpp"
+#include <vector>
 #include <iostream>
 
 // ====================================================================================================================
 
+namespace vku
+{
+    class ApplicationInstance
+        : public Instance
+    {
+    public:
+        using Instance::Instance;
+        ApplicationInstance(Instance &&rhs);
+        ApplicationInstance& operator = (Instance &&rhs);
+
+        // members:
+        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceSupportKHR);
+        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceCapabilitiesKHR);
+        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceFormatsKHR);
+        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfacePresentModesKHR);
+        VKU_INSTANCE_PROC_MEMBER(GetSwapchainImagesKHR);
+
+    private:
+        ApplicationInstance(Instance const &rhs) = delete;
+        ApplicationInstance& operator = (Instance const &rhs) = delete;
+    };
+}
+
+// ====================================================================================================================
+
 vku::Instance make_vk_instance(m1::game_platform const &game_platform);
+
+// ====================================================================================================================
 
 int main()
 {
@@ -12,7 +41,7 @@ int main()
     {
         m1::game_platform g("vulkan_test");
 
-        vku::Instance const vk_inst = make_vk_instance(g);
+        vku::ApplicationInstance const vk_inst = make_vk_instance(g);
         std::vector<VkPhysicalDevice> const gpu_list = vku::EnumeratePhysicalDevices(vk_inst);
 
         std::cout << "VkPhysicalDevice[]:\n";
@@ -23,15 +52,32 @@ int main()
             VkPhysicalDeviceProperties gpu_properties = {};
             vkGetPhysicalDeviceProperties(gpu, &gpu_properties);
 
-            std::cout << "-\n" << gpu_properties << "\n";
+            VkPhysicalDeviceFeatures gpu_features = {};
+            vkGetPhysicalDeviceFeatures(gpu, &gpu_features);
 
-            std::cout << "PhysicalDeviceQueueFamilyProperties: \n";
             std::vector<VkQueueFamilyProperties> const gpu_queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(gpu);
+
+            std::cout << indent << "-\t";
+
+            std::cout << "\n";
+            std::cout << indent_push;
+            std::cout << indent << "Properties:    " << gpu_properties << "\n";
+            std::cout << indent << "Features:      " << gpu_features << "\n";
+            std::cout << indent << "QueueFamilies: ";
+            std::cout << "\n";
+            std::cout << indent_push;
             for(VkQueueFamilyProperties const &queue_family_properties : gpu_queue_families_properties)
             {
-               std::cout << "-\n" << queue_family_properties << "\n";
+               std::cout << indent << "-\t" << queue_family_properties << "\n";
             }
+            std::cout << "\n";
+            std::cout << indent_pop;
+            std::cout << indent_pop;
+            std::cout << "\n";
         }
+
+        vku::PhysicalDeviceQueueFamily const selected_device_queue_family = vku::FindPhysicalDeviceQueueFamily(gpu_list,
+                                                                                                               VK_QUEUE_GRAPHICS_BIT);
 
         return g.run();
     }
@@ -45,6 +91,21 @@ int main()
     }
 
     return 0;
+}
+
+// ====================================================================================================================
+
+vku::ApplicationInstance::ApplicationInstance(Instance &&rhs)
+    : Instance(std::move(rhs))
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::ApplicationInstance& vku::ApplicationInstance::operator = (Instance &&rhs)
+{
+    Instance::operator = (std::move(rhs));
+    return *this;
 }
 
 // ====================================================================================================================
