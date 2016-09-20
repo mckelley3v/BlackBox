@@ -6,13 +6,7 @@
 // ====================================================================================================================
 
 static std::vector<VkLayerProperties> enumerate_instance_layer_properties();
-
-// ====================================================================================================================
-
 static std::vector<VkExtensionProperties> enumerate_instance_layer_extension_properties(VkLayerProperties const &layer);
-
-// ====================================================================================================================
-
 static std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> enumerate_instance_all_layers_extension_properties();
 
 // ====================================================================================================================
@@ -70,7 +64,6 @@ vku::Instance::operator VkInstance() const
 
 VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
                                std::initializer_list<char const * const> const &requiredLayers,
-                               std::initializer_list<char const * const> const &allowedLayers,
                                std::initializer_list<char const * const> const &requiredExtensions,
                                std::initializer_list<char const * const> const &allowedExtensions)
 {
@@ -84,15 +77,10 @@ VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
         VkLayerProperties const &layer = layer_extensions_entry.first;
         std::vector<VkExtensionProperties> const &layer_extensions = layer_extensions_entry.second;
 
-        bool const allow_layer = contains(requiredLayers.begin(),
-                                          requiredLayers.end(),
-                                          c_str_compare_to(layer.layerName)) ||
-                                 contains(allowedLayers.begin(),
-                                          allowedLayers.end(),
-                                          name_compare_to(layer.layerName));
-        if(!allow_layer) continue;
+        bool use_layer = contains(requiredLayers.begin(),
+                                  requiredLayers.end(),
+                                  c_str_compare_to(layer.layerName));
 
-        bool use_layer = false;
         for(VkExtensionProperties const &extension : layer_extensions)
         {
             bool const allow_extension = contains(requiredExtensions.begin(),
@@ -162,7 +150,7 @@ VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
         extension_names.data(),                        // ppEnabledExtensionNames
     };
 
-    VkInstance instance = nullptr;
+    VkInstance instance = VK_NULL_HANDLE;
     switch(vkCreateInstance(&inst_create_info, // pCreateInfo
                             nullptr, // pAllocator
                             &instance)) // pInstance

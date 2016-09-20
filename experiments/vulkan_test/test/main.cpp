@@ -27,11 +27,32 @@ namespace vku
         ApplicationInstance(Instance const &rhs) = delete;
         ApplicationInstance& operator = (Instance const &rhs) = delete;
     };
+
+    class ApplicationDevice
+        : public Device
+    {
+    public:
+        using Device::Device;
+        ApplicationDevice(Device &&rhs);
+        ApplicationDevice& operator = (Device &&rhs);
+
+        // members:
+        VKU_DEVICE_PROC_MEMBER(CreateSwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(DestroySwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(GetSwapchainImagesKHR);
+        VKU_DEVICE_PROC_MEMBER(AcquireNextImageKHR);
+        VKU_DEVICE_PROC_MEMBER(QueuePresentKHR);
+
+    private:
+        ApplicationDevice(Device const &rhs) = delete;
+        ApplicationDevice& operator = (Device const &rhs) = delete;
+    };
 }
 
 // ====================================================================================================================
 
 vku::Instance make_vk_instance(m1::game_platform const &game_platform);
+vku::Device make_vk_device(VkInstance instance);
 
 // ====================================================================================================================
 
@@ -47,8 +68,7 @@ int main()
         using namespace vku::iostream;
         std::cout << "physicalDevices:" << gpu_list << "\n";
 
-        vku::PhysicalDeviceQueueFamily const selected_device_queue_family = vku::FindPhysicalDeviceQueueFamily(gpu_list,
-                                                                                                               VK_QUEUE_GRAPHICS_BIT);
+        vku::ApplicationDevice const vk_device = make_vk_device(vk_inst);
 
         return g.run();
     }
@@ -81,6 +101,21 @@ vku::ApplicationInstance& vku::ApplicationInstance::operator = (Instance &&rhs)
 
 // ====================================================================================================================
 
+vku::ApplicationDevice::ApplicationDevice(Device &&rhs)
+    : Device(std::move(rhs))
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::ApplicationDevice& vku::ApplicationDevice::operator = (Device &&rhs)
+{
+    Device::operator = (std::move(rhs));
+    return *this;
+}
+
+// ====================================================================================================================
+
 vku::Instance make_vk_instance(m1::game_platform const &game_platform)
 {
     vku::ApplicationInfo const app_info =
@@ -95,16 +130,26 @@ vku::Instance make_vk_instance(m1::game_platform const &game_platform)
     VkInstance instance = vku::CreateInstance(app_info,
                                               // requiredLayers
                                               {},
-                                              // allowedLayers
-                                              {"*"},
                                               // requiredExtensions
-                                              {},
-                                              // allowedExtensions
                                               {
                                                   VK_KHR_SURFACE_EXTENSION_NAME,
                                                   VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME,
-                                              });
+                                              },
+                                              // allowedExtensions
+                                              {});
     return vku::Instance(instance);
+}
+
+// ====================================================================================================================
+
+vku::Device make_vk_device(VkInstance const instance)
+{
+    VkDevice device = vku::CreateDevice(instance,
+                                        VK_QUEUE_GRAPHICS_BIT,
+                                        {}, // requiredLayers
+                                        {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, // requiredExtensions
+                                        {}); // allowedExtensions}
+    return vku::Device(device);
 }
 
 // ====================================================================================================================

@@ -75,7 +75,6 @@ namespace vku
 
     VkInstance CreateInstance(ApplicationInfo const &appInfo,
                               std::initializer_list<char const * const> const &requiredLayers,
-                              std::initializer_list<char const * const> const &allowedLayers,
                               std::initializer_list<char const * const> const &requiredExtensions,
                               std::initializer_list<char const * const> const &allowedExtensions);
 

@@ -2,6 +2,7 @@
 #define VKU_DEVICE_HPP
 
 #include <vulkan/vulkan.h>
+#include <vector>
 #include <initializer_list>
 
 // ====================================================================================================================
@@ -12,6 +13,28 @@
 
 namespace vku
 {
+    // ================================================================================================================
+
+    std::vector<VkPhysicalDevice> EnumeratePhysicalDevices(VkInstance instance);
+
+    // ================================================================================================================
+
+    std::vector<VkQueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
+
+    // ================================================================================================================
+
+    struct PhysicalDeviceQueueFamily
+    {
+       VkPhysicalDevice        physicalDevice;
+       uint32_t                familyIndex;
+       VkQueueFamilyProperties familyProperties;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    PhysicalDeviceQueueFamily FindPhysicalDeviceQueueFamily(std::vector<VkPhysicalDevice> const &physicalDevices,
+                                                            VkQueueFlags requiredFlags);
+
     // ================================================================================================================
 
     class Device
@@ -38,6 +61,7 @@ namespace vku
 
     VkDevice CreateDevice(VkInstance instance,
                           VkQueueFlags requiredFlags,
+                          std::initializer_list<char const * const> const &requiredLayers,
                           std::initializer_list<char const * const> const &requiredExtensions,
                           std::initializer_list<char const * const> const &allowedExtensions);
 
