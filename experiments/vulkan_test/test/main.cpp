@@ -44,37 +44,8 @@ int main()
         vku::ApplicationInstance const vk_inst = make_vk_instance(g);
         std::vector<VkPhysicalDevice> const gpu_list = vku::EnumeratePhysicalDevices(vk_inst);
 
-        std::cout << "VkPhysicalDevice[]:\n";
-        for(VkPhysicalDevice const &gpu : gpu_list)
-        {
-            using namespace vku::iostream;
-
-            VkPhysicalDeviceProperties gpu_properties = {};
-            vkGetPhysicalDeviceProperties(gpu, &gpu_properties);
-
-            VkPhysicalDeviceFeatures gpu_features = {};
-            vkGetPhysicalDeviceFeatures(gpu, &gpu_features);
-
-            std::vector<VkQueueFamilyProperties> const gpu_queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(gpu);
-
-            std::cout << indent << "-\t";
-
-            std::cout << "\n";
-            std::cout << indent_push;
-            std::cout << indent << "Properties:    " << gpu_properties << "\n";
-            std::cout << indent << "Features:      " << gpu_features << "\n";
-            std::cout << indent << "QueueFamilies: ";
-            std::cout << "\n";
-            std::cout << indent_push;
-            for(VkQueueFamilyProperties const &queue_family_properties : gpu_queue_families_properties)
-            {
-               std::cout << indent << "-\t" << queue_family_properties << "\n";
-            }
-            std::cout << "\n";
-            std::cout << indent_pop;
-            std::cout << indent_pop;
-            std::cout << "\n";
-        }
+        using namespace vku::iostream;
+        std::cout << "physicalDevices:" << gpu_list << "\n";
 
         vku::PhysicalDeviceQueueFamily const selected_device_queue_family = vku::FindPhysicalDeviceQueueFamily(gpu_list,
                                                                                                                VK_QUEUE_GRAPHICS_BIT);

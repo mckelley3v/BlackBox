@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.h>
 #include <string>
+#include <vector>
 #include <iosfwd>
 
 // ====================================================================================================================
@@ -12,6 +13,8 @@ namespace vku
 namespace iostream
 {
     // ================================================================================================================
+
+    constexpr char const indent_chars[] = "    ";
 
     int& indent_level();
     std::ostream& indent_push(std::ostream &out);
@@ -25,8 +28,9 @@ namespace iostream
 
     // ================================================================================================================
 
-    template <std::size_t N>
-    std::ostream& operator << (std::ostream &out, uint32_t const (&values)[N]);
+    template <typename T>
+    std::ostream& operator << (std::ostream &out, std::vector<T> const &values);
+    std::ostream& operator << (std::ostream &out, VkPhysicalDevice const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceProperties const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceType const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceLimits const &value);
@@ -41,14 +45,14 @@ namespace iostream
 
 // ====================================================================================================================
 
-template <std::size_t N>
-/*static*/ std::ostream& vku::iostream::operator << (std::ostream &out, uint32_t const (&values)[N])
+template <typename T>
+std::ostream& vku::iostream::operator << (std::ostream &out, std::vector<T> const &values)
 {
     out << "\n";
     out << indent_push;
-    for(uint32_t const &value : values)
+    for(T const &value : values)
     {
-        out << indent << "-\t" << value << "\n";
+        out << indent << "-" << indent_chars << value << "\n";
     }
     out << indent_pop;
 

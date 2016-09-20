@@ -1,5 +1,48 @@
 #include "vku_iostream.hpp"
+#include "vku.hpp"
 #include <ostream>
+
+// ====================================================================================================================
+
+namespace vku
+{
+namespace iostream
+{
+    // ================================================================================================================
+
+    template <std::size_t N>
+    static std::ostream& operator << (std::ostream &out, uint32_t const (&values)[N])
+    {
+        out << "\n";
+        out << indent_push;
+        for(uint32_t const &value : values)
+        {
+            out << indent << "-" << indent_chars << value << "\n";
+        }
+        out << indent_pop;
+
+        return out;
+    }
+
+    // ================================================================================================================
+
+    template <std::size_t N>
+    static std::ostream& operator << (std::ostream &out, float const (&values)[N])
+    {
+        out << "\n";
+        out << indent_push;
+        for(float const &value : values)
+        {
+            out << indent << "-" << indent_chars << value << "\n";
+        }
+        out << indent_pop;
+
+        return out;
+    }
+
+    // ================================================================================================================
+} // namespace vku
+} // namespace iostream
 
 // ====================================================================================================================
 // Implementation
@@ -34,7 +77,7 @@ std::ostream& vku::iostream::indent(std::ostream &out)
    int const n = indent_level();
    for(int i = 0; i < n; ++i)
    {
-      out.put('\t');
+      out << indent_chars;
    }
 
    return out;
@@ -107,6 +150,27 @@ std::string vku::iostream::queue_flags_to_string(VkQueueFlags const &value)
     }
 
     return result;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDevice const &value)
+{
+    VkPhysicalDeviceProperties properties = {};
+    vkGetPhysicalDeviceProperties(value, &properties);
+
+    VkPhysicalDeviceFeatures features = {};
+    vkGetPhysicalDeviceFeatures(value, &features);
+
+    std::vector<VkQueueFamilyProperties> const queue_families = vku::GetPhysicalDeviceQueueFamilyProperties(value);
+
+    out << "\n";
+    out << indent_push;
+    out << indent << "properties:    " << properties << "\n";
+    out << indent << "features:      " << features << "\n";
+    out << indent << "queueFamilies: " << queue_families << "\n";
+    out << indent_pop;
+    return out;
 }
 
 // ====================================================================================================================
