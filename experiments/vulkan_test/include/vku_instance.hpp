@@ -1,8 +1,10 @@
 #ifndef VKU_INSTANCE_HPP
 #define VKU_INSTANCE_HPP
 
+#include "vku_extension.hpp"
 #include <vulkan/vulkan.h>
-#include <initializer_list>
+#include <vector>
+#include <string>
 
 // ====================================================================================================================
 
@@ -40,6 +42,10 @@ namespace vku
 {
     // ================================================================================================================
 
+    std::vector<LayerExtensionProperties> EnumerateInstanceLayersExtensionProperties();
+
+    // ================================================================================================================
+
     struct ApplicationInfo
     {
         const char* pApplicationName;
@@ -74,9 +80,10 @@ namespace vku
     // ----------------------------------------------------------------------------------------------------------------
 
     VkInstance CreateInstance(ApplicationInfo const &appInfo,
-                              std::initializer_list<char const * const> const &requiredLayers,
-                              std::initializer_list<char const * const> const &requiredExtensions,
-                              std::initializer_list<char const * const> const &allowedExtensions);
+                              std::vector<std::string> const &requiredLayers,
+                              std::vector<std::string> const &allowedLayers,
+                              std::vector<std::string> const &requiredExtensions,
+                              std::vector<std::string> const &allowedExtensions);
 
     // ================================================================================================================
 

@@ -1,16 +1,28 @@
 #include "vku_instance.hpp"
 #include "vku_utility.hpp"
-#include <vector>
 #include <utility>
 
 // ====================================================================================================================
 
 static std::vector<VkLayerProperties> enumerate_instance_layer_properties();
 static std::vector<VkExtensionProperties> enumerate_instance_layer_extension_properties(VkLayerProperties const &layer);
-static std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> enumerate_instance_all_layers_extension_properties();
 
 // ====================================================================================================================
-// Implementation
+
+std::vector<vku::LayerExtensionProperties> vku::EnumerateInstanceLayersExtensionProperties()
+{
+    std::vector<LayerExtensionProperties> instance_layer_extensions;
+    std::vector<VkLayerProperties> const layers = enumerate_instance_layer_properties();
+    instance_layer_extensions.reserve(layers.size());
+
+    for(VkLayerProperties const &layer : layers)
+    {
+        instance_layer_extensions.push_back(LayerExtensionProperties{layer, enumerate_instance_layer_extension_properties(layer)});
+    }
+
+    return instance_layer_extensions;
+}
+
 // ====================================================================================================================
 
 vku::Instance::Instance(VkInstance const instance)
@@ -63,68 +75,29 @@ vku::Instance::operator VkInstance() const
 // ====================================================================================================================
 
 VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
-                               std::initializer_list<char const * const> const &requiredLayers,
-                               std::initializer_list<char const * const> const &requiredExtensions,
-                               std::initializer_list<char const * const> const &allowedExtensions)
+                               std::vector<std::string> const &requiredLayers,
+                               std::vector<std::string> const &allowedLayers,
+                               std::vector<std::string> const &requiredExtensions,
+                               std::vector<std::string> const &allowedExtensions)
 {
-    std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> const all_layers_extensions = enumerate_instance_all_layers_extension_properties();
+    std::vector<LayerExtensionProperties> const layer_extension_properties = EnumerateInstanceLayersExtensionProperties();
+    if(!HasRequiredLayersExtension(layer_extension_properties,
+                                   requiredLayers,
+                                   requiredExtensions))
+    {
+        throw std::runtime_error("vku::CreateInstance missing required layer/extension");
+    }
 
-    // gather layer/extension names, filter to required/allowed lists
     std::vector<char const*> layer_names;
     std::vector<char const*> extension_names;
-    for(auto const &layer_extensions_entry : all_layers_extensions)
-    {
-        VkLayerProperties const &layer = layer_extensions_entry.first;
-        std::vector<VkExtensionProperties> const &layer_extensions = layer_extensions_entry.second;
 
-        bool use_layer = contains(requiredLayers.begin(),
-                                  requiredLayers.end(),
-                                  c_str_compare_to(layer.layerName));
-
-        for(VkExtensionProperties const &extension : layer_extensions)
-        {
-            bool const allow_extension = contains(requiredExtensions.begin(),
-                                                  requiredExtensions.end(),
-                                                  c_str_compare_to(extension.extensionName)) ||
-                                         contains(allowedExtensions.begin(),
-                                                  allowedExtensions.end(),
-                                                  name_compare_to(extension.extensionName));
-            if(allow_extension)
-            {
-                use_layer = true;
-                extension_names.push_back(extension.extensionName);
-            }
-        }
-
-        if(use_layer && (layer.layerName[0] != '\0'))
-        {
-            layer_names.push_back(layer.layerName);
-        }
-    }
-
-    // enforce required layers
-    for(char const * const required_layer : requiredLayers)
-    {
-        bool const has_layer = contains(layer_names.begin(),
-                                        layer_names.end(),
-                                        c_str_compare_to(required_layer));
-        if(!has_layer)
-        {
-            throw std::runtime_error(make_string({"vku::CreateInstance missing required layer (\"", required_layer, "\")"}));
-        }
-    }
-
-    // enforce required extensions
-    for(char const * const required_extension : requiredExtensions)
-    {
-        bool const has_extension = contains(extension_names.begin(),
-                                            extension_names.end(),
-                                            c_str_compare_to(required_extension));
-        if(!has_extension)
-        {
-            throw std::runtime_error(make_string({"vku::CreateInstance missing required extension (\"", required_extension, "\")"}));
-        }
-    }
+    AccumulateAllowedLayersExtensionsNames(layer_names, // ref
+                                           extension_names, // ref
+                                           layer_extension_properties,
+                                           requiredLayers,
+                                           allowedLayers,
+                                           requiredExtensions,
+                                           allowedExtensions);
 
     // create instance:
     VkApplicationInfo const app_info =
@@ -191,7 +164,7 @@ vku::InstanceProcBase::InstanceProcBase(VkInstance const instance,
 {
     if(m_FuncPtr == nullptr)
     {
-        throw std::runtime_error(make_string({"error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"}));
+        throw std::runtime_error(make_string("error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"));
     }
 }
 
@@ -292,21 +265,6 @@ vku::InstanceProcBase::InstanceProcBase(VkInstance const instance,
     }
 
     return layer_extension_properties;
-}
-
-// ====================================================================================================================
-
-/*static*/ std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> enumerate_instance_all_layers_extension_properties()
-{
-    std::vector<std::pair<VkLayerProperties, std::vector<VkExtensionProperties>>> instance_layer_extensions;
-
-    std::vector<VkLayerProperties> const layers = enumerate_instance_layer_properties();
-    for(VkLayerProperties const &layer : layers)
-    {
-        instance_layer_extensions.push_back(std::make_pair(layer, enumerate_instance_layer_extension_properties(layer)));
-    }
-
-    return instance_layer_extensions;
 }
 
 // ====================================================================================================================

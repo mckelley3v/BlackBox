@@ -1,9 +1,9 @@
 #ifndef VKU_DEVICE_HPP
 #define VKU_DEVICE_HPP
 
+#include "vku_extension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
-#include <initializer_list>
 
 // ====================================================================================================================
 
@@ -23,47 +23,118 @@ namespace vku
 
     // ================================================================================================================
 
-    struct PhysicalDeviceQueueFamily
-    {
-       VkPhysicalDevice        physicalDevice;
-       uint32_t                familyIndex;
-       VkQueueFamilyProperties familyProperties;
-    };
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    PhysicalDeviceQueueFamily FindPhysicalDeviceQueueFamily(std::vector<VkPhysicalDevice> const &physicalDevices,
-                                                            VkQueueFlags requiredFlags);
+    std::vector<LayerExtensionProperties> EnumeratePhysicalDeviceLayersExtensionProperties(VkPhysicalDevice physicalDevice);
 
     // ================================================================================================================
 
-    class Device
+    // find queue families that:
+    //  -   have required graphics/compute flag
+    //  -   have required layers/extensions
+    // this implies physical device(s)
+    //  -   using multiple devices not supported by vulkan yet
+    //  -   for now just allow multiple queue families if they're part of the same physical device
+    // generate enabled layers/extensions
+    // choose queue counts
+    // build logical device
+
+    struct PhysicalDeviceQueueFamilyCreateInfo
     {
-    public:
-       Device() = default;
-       explicit Device(VkDevice device);
-       Device(Device &&rhs);
-       Device& operator = (Device &&rhs);
-       ~Device();
-
-       explicit operator bool() const;
-       operator VkDevice() const;
-
-    private:
-       Device(Device const &rhs) = delete;
-       Device& operator = (Device const &rhs) = delete;
-
-       // members:
-       VkDevice m_VkDevice = VK_NULL_HANDLE;
+        VkQueueFamilyProperties familyProperties;
+        uint32_t                familyIndex;
+        std::vector<float>      queuePriorities;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    VkDevice CreateDevice(VkInstance instance,
-                          VkQueueFlags requiredFlags,
-                          std::initializer_list<char const * const> const &requiredLayers,
-                          std::initializer_list<char const * const> const &requiredExtensions,
-                          std::initializer_list<char const * const> const &allowedExtensions);
+    struct LogicalDeviceCreateInfo
+    {
+        VkPhysicalDevice                                  physicalDevice;
+        std::vector<PhysicalDeviceQueueFamilyCreateInfo>  queueFamilies;
+        std::vector<LayerExtensionProperties>             layerExtensionProperties;
+        std::vector<char const*>                          enabledLayerNames;
+        std::vector<char const*>                          enabledExtensionNames;
+        VkPhysicalDeviceFeatures                          enabledFeatures;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    struct PhysicalDeviceRequestedQueueProperties
+    {
+        VkQueueFlags requiredQueueFlags;
+        VkQueueFlags allowedQueueFlags;
+        uint32_t     requiredEnableCount;
+        uint32_t     allowedEnableCount;
+        float        defaultPriority;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    LogicalDeviceCreateInfo CreateLogicalDeviceCreateInfo(std::vector<VkPhysicalDevice> const &physicalDevices,
+                                                          std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
+                                                          std::vector<std::string> const &requiredLayers,
+                                                          std::vector<std::string> const &allowedLayers,
+                                                          std::vector<std::string> const &requiredExtensions,
+                                                          std::vector<std::string> const &allowedExtensions);
+
+    // ================================================================================================================
+
+    class LogicalDevice
+    {
+    public:
+        LogicalDevice() = default;
+        explicit LogicalDevice(VkDevice device);
+        LogicalDevice(LogicalDevice &&rhs);
+        LogicalDevice& operator = (LogicalDevice &&rhs);
+        ~LogicalDevice();
+
+        explicit operator bool() const;
+        operator VkDevice() const;
+
+    private:
+        LogicalDevice(LogicalDevice const &rhs) = delete;
+        LogicalDevice& operator = (LogicalDevice const &rhs) = delete;
+
+        // members:
+        VkDevice m_VkDevice = VK_NULL_HANDLE;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkDevice CreateLogicalDevice(VkInstance instance,
+                                 std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
+                                 std::vector<std::string> const &requiredLayers,
+                                 std::vector<std::string> const &allowedLayers,
+                                 std::vector<std::string> const &requiredExtensions,
+                                 std::vector<std::string> const &allowedExtensions);
+
+    VkDevice CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo);
+
+    // ================================================================================================================
+
+    class Queue
+    {
+    public:
+        Queue() = default;
+        explicit Queue(VkQueue queue, uint32_t familyIndex, uint32_t queueIndex);
+        Queue(Queue &&rhs);
+        Queue& operator = (Queue &&rhs);
+        ~Queue();
+
+        explicit operator bool() const;
+        operator VkQueue() const;
+
+        uint32_t GetFamilyIndex() const;
+        uint32_t GetQueueIndex() const;
+
+    private:
+        Queue(Queue const &rhs) = delete;
+        Queue& operator = (Queue const &rhs) = delete;
+
+        // members:
+        VkQueue  m_VkQueue = VK_NULL_HANDLE;
+        uint32_t m_FamilyIndex = 0u;
+        uint32_t m_QueueIndex = 0u;
+    };
 
     // ================================================================================================================
 
@@ -91,9 +162,24 @@ namespace vku
     {
     public:
         using DeviceProcBase::DeviceProcBase;
+        using proc_type = R (VKAPI_PTR*)(Args...);
 
+        proc_type get() const;
         R operator () (Args...) const;
     };
+
+    // ================================================================================================================
+
+    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR const pfnGetPhysicalDeviceSurfaceFormatsKHR,
+                                                                       VkPhysicalDevice physicalDevice,
+                                                                       VkSurfaceKHR surface);
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    template <typename DeviceType>
+    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(DeviceType const &device,
+                                                                       VkPhysicalDevice physicalDevice,
+                                                                       VkSurfaceKHR surface);
 
     // ================================================================================================================
 } // namespace vku
@@ -101,9 +187,29 @@ namespace vku
 // ====================================================================================================================
 
 template <typename R, typename ...Args>
+typename vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::proc_type vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::get() const
+{
+    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+template <typename R, typename ...Args>
 R vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
 {
-    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr)(args...);
+    return get()(args...);
+}
+
+// ====================================================================================================================
+
+template <typename DeviceType>
+std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(DeviceType const &device,
+                                                                        VkPhysicalDevice physicalDevice,
+                                                                        VkSurfaceKHR surface)
+{
+    return GetPhysicalDeviceSurfaceFormatsKHR(device.GetPhysicalDeviceSurfaceFormatsKHR.get(),
+                                              physicalDevice,
+                                              surface);
 }
 
 // ====================================================================================================================

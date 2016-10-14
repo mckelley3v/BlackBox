@@ -1,6 +1,5 @@
 #include "m1/game_platform.hpp"
 #include "vku.hpp"
-#include "vku_iostream.hpp"
 #include <vector>
 #include <iostream>
 
@@ -8,6 +7,8 @@
 
 namespace vku
 {
+    // ================================================================================================================
+
     class ApplicationInstance
         : public Instance
     {
@@ -16,27 +17,28 @@ namespace vku
         ApplicationInstance(Instance &&rhs);
         ApplicationInstance& operator = (Instance &&rhs);
 
-        // members:
+        // procs:
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceSupportKHR);
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceCapabilitiesKHR);
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceFormatsKHR);
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfacePresentModesKHR);
-        VKU_INSTANCE_PROC_MEMBER(GetSwapchainImagesKHR);
 
     private:
         ApplicationInstance(Instance const &rhs) = delete;
         ApplicationInstance& operator = (Instance const &rhs) = delete;
     };
 
+    // ================================================================================================================
+
     class ApplicationDevice
-        : public Device
+        : public LogicalDevice
     {
     public:
-        using Device::Device;
-        ApplicationDevice(Device &&rhs);
-        ApplicationDevice& operator = (Device &&rhs);
+        using LogicalDevice::LogicalDevice;
+        ApplicationDevice(LogicalDevice &&rhs);
+        ApplicationDevice& operator = (LogicalDevice &&rhs);
 
-        // members:
+        // procs:
         VKU_DEVICE_PROC_MEMBER(CreateSwapchainKHR);
         VKU_DEVICE_PROC_MEMBER(DestroySwapchainKHR);
         VKU_DEVICE_PROC_MEMBER(GetSwapchainImagesKHR);
@@ -44,15 +46,17 @@ namespace vku
         VKU_DEVICE_PROC_MEMBER(QueuePresentKHR);
 
     private:
-        ApplicationDevice(Device const &rhs) = delete;
-        ApplicationDevice& operator = (Device const &rhs) = delete;
+        ApplicationDevice(LogicalDevice const &rhs) = delete;
+        ApplicationDevice& operator = (LogicalDevice const &rhs) = delete;
     };
+
+    // ================================================================================================================
 }
 
 // ====================================================================================================================
 
 vku::Instance make_vk_instance(m1::game_platform const &game_platform);
-vku::Device make_vk_device(VkInstance instance);
+vku::LogicalDevice make_vk_device(VkInstance instance);
 
 // ====================================================================================================================
 
@@ -63,11 +67,6 @@ int main()
         m1::game_platform g("vulkan_test");
 
         vku::ApplicationInstance const vk_inst = make_vk_instance(g);
-        std::vector<VkPhysicalDevice> const gpu_list = vku::EnumeratePhysicalDevices(vk_inst);
-
-        using namespace vku::iostream;
-        std::cout << "physicalDevices:" << gpu_list << "\n";
-
         vku::ApplicationDevice const vk_device = make_vk_device(vk_inst);
 
         return g.run();
@@ -101,16 +100,16 @@ vku::ApplicationInstance& vku::ApplicationInstance::operator = (Instance &&rhs)
 
 // ====================================================================================================================
 
-vku::ApplicationDevice::ApplicationDevice(Device &&rhs)
-    : Device(std::move(rhs))
+vku::ApplicationDevice::ApplicationDevice(LogicalDevice &&rhs)
+    : LogicalDevice(std::move(rhs))
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::ApplicationDevice& vku::ApplicationDevice::operator = (Device &&rhs)
+vku::ApplicationDevice& vku::ApplicationDevice::operator = (LogicalDevice &&rhs)
 {
-    Device::operator = (std::move(rhs));
+    LogicalDevice::operator = (std::move(rhs));
     return *this;
 }
 
@@ -128,8 +127,8 @@ vku::Instance make_vk_instance(m1::game_platform const &game_platform)
     };
 
     VkInstance instance = vku::CreateInstance(app_info,
-                                              // requiredLayers
-                                              {},
+                                              {}, // requiredLayers
+                                              {"VK_LAYER_LUNARG_standard_validation"}, // allowedLayers
                                               // requiredExtensions
                                               {
                                                   VK_KHR_SURFACE_EXTENSION_NAME,
@@ -142,14 +141,24 @@ vku::Instance make_vk_instance(m1::game_platform const &game_platform)
 
 // ====================================================================================================================
 
-vku::Device make_vk_device(VkInstance const instance)
+vku::LogicalDevice make_vk_device(VkInstance const instance)
 {
-    VkDevice device = vku::CreateDevice(instance,
-                                        VK_QUEUE_GRAPHICS_BIT,
-                                        {}, // requiredLayers
-                                        {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, // requiredExtensions
-                                        {}); // allowedExtensions}
-    return vku::Device(device);
+    VkDevice device = vku::CreateLogicalDevice(instance,
+                                               // requestedQueues
+                                               {
+                                                   {
+                                                       VK_QUEUE_GRAPHICS_BIT, // requiredQueueFlags
+                                                       0xFFFFFFFF, // allowedQueueFlags
+                                                       1, // requiredEnableCount
+                                                       1, // allowedEnableCount
+                                                       1.0f, // defaultPriority
+                                                   },
+                                               },
+                                               {}, // requiredLayers
+                                               {}, // allowedLayers
+                                               {VK_KHR_SWAPCHAIN_EXTENSION_NAME}, // requiredExtensions
+                                               {}); // allowedExtensions
+    return vku::LogicalDevice(device);
 }
 
 // ====================================================================================================================
