@@ -162,12 +162,15 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDevice co
     VkPhysicalDeviceFeatures features = {};
     vkGetPhysicalDeviceFeatures(value, &features);
 
+    std::vector<LayerExtensionProperties> const layer_extension_properties = EnumeratePhysicalDeviceLayersExtensionProperties(value);
+
     std::vector<VkQueueFamilyProperties> const queue_families = vku::GetPhysicalDeviceQueueFamilyProperties(value);
 
     out << "\n";
     out << indent_push;
     out << indent << "properties:    " << properties << "\n";
     out << indent << "features:      " << features << "\n";
+    out << indent << "layers:        " << layer_extension_properties << "\n";
     out << indent << "queueFamilies: " << queue_families << "\n";
     out << indent_pop;
     return out;
@@ -410,6 +413,44 @@ std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceFea
     out << indent << "sparseResidencyAliased:                  " << value.sparseResidencyAliased << "\n";
     out << indent << "variableMultisampleRate:                 " << value.variableMultisampleRate << "\n";
     out << indent << "inheritedQueries:                        " << value.inheritedQueries << "\n";
+    out << indent_pop;
+    return out;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::operator << (std::ostream &out, LayerExtensionProperties const &value)
+{
+    out << "\n";
+    out << indent_push;
+    out << indent << "layerProperties:     " << value.layerProperties << "\n";
+    out << indent << "extensionProperties: " << value.extensionProperties << "\n";
+    out << indent_pop;
+    return out;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::operator << (std::ostream &out, VkLayerProperties const &value)
+{
+    out << "\n";
+    out << indent_push;
+    out << indent << "layerName:             " << value.layerName << "\n";
+    out << indent << "specVersion:           " << VK_VERSION_MAJOR(value.specVersion) << "." << VK_VERSION_MINOR(value.specVersion) << "." << VK_VERSION_PATCH(value.specVersion) << "\n";
+    out << indent << "implementationVersion: " << value.implementationVersion << "\n";
+    out << indent << "description:           " << value.description << "\n";
+    out << indent_pop;
+    return out;
+}
+
+// ====================================================================================================================
+
+std::ostream& vku::iostream::operator << (std::ostream &out, VkExtensionProperties const &value)
+{
+    out << "\n";
+    out << indent_push;
+    out << indent << "extensionName: " << value.extensionName << "\n";
+    out << indent << "specVersion:   " << VK_VERSION_MAJOR(value.specVersion) << "." << VK_VERSION_MINOR(value.specVersion) << "." << VK_VERSION_PATCH(value.specVersion) << "\n";
     out << indent_pop;
     return out;
 }

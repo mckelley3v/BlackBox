@@ -10,6 +10,13 @@
 
 namespace vku
 {
+    struct LayerExtensionProperties;
+}
+
+// ====================================================================================================================
+
+namespace vku
+{
 namespace iostream
 {
     // ================================================================================================================
@@ -36,6 +43,9 @@ namespace iostream
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceLimits const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceSparseProperties const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceFeatures const &value);
+    std::ostream& operator << (std::ostream &out, LayerExtensionProperties const &value);
+    std::ostream& operator << (std::ostream &out, VkLayerProperties const &value);
+    std::ostream& operator << (std::ostream &out, VkExtensionProperties const &value);
     std::ostream& operator << (std::ostream &out, VkQueueFamilyProperties const &value);
     std::ostream& operator << (std::ostream &out, VkExtent3D const &value);
 

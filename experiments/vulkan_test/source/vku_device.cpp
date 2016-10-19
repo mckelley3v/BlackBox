@@ -157,8 +157,8 @@ vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(VkInstance const
                                       requiredLayers,
                                       requiredExtensions))
         {
-            std::vector<PhysicalDeviceQueueFamilyCreateInfo> const selected_queue_families = enumerate_selected_queue_families(physical_device,
-                                                                                                                               requestedQueues);
+            std::vector<PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families = enumerate_selected_queue_families(physical_device,
+                                                                                                                         requestedQueues);
             if(selected_queue_families.size() == requestedQueues.size())
             {
                 std::vector<char const*> layer_names;
