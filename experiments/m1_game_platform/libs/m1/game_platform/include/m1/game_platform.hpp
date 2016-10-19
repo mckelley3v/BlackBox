@@ -199,6 +199,18 @@ namespace m1
 {
     // ================================================================================================================
 
+    enum class game_platform_id
+    {
+        android,
+        mir,
+        wayland,
+        win32,
+        xcb,
+        xlib,
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
     class game_platform
     {
     public:
@@ -213,6 +225,7 @@ namespace m1
 
         // properties:
         std::string const& get_name() const;
+        game_platform_id get_platform_id() const;
 
         // impl:
         impl& platform_impl();

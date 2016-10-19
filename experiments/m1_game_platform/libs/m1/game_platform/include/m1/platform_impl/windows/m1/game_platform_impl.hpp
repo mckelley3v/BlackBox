@@ -5,7 +5,14 @@
 #error include "m1/game_platform.hpp" before including "m1/game_platform_impl.hpp"
 #endif
 
+#ifndef M1_GAME_PLATFORM_WINDOWS
+#error incorrect platform for this header file
+#endif
+
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <windows.h>
 #include <windowsx.h>
 

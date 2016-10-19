@@ -42,6 +42,13 @@ m1::game_platform::~game_platform()
 
 // --------------------------------------------------------------------------------------------------------------------
 
+m1::game_platform_id m1::game_platform::get_platform_id() const
+{
+    return game_platform_id::win32;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 m1::game_platform::impl& m1::game_platform::platform_impl()
 {
     return *m_ImplPtr;
