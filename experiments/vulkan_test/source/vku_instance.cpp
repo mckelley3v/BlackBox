@@ -25,6 +25,39 @@ std::vector<vku::LayerExtensionProperties> vku::EnumerateInstanceLayersExtension
 
 // ====================================================================================================================
 
+vku::InstanceCreateInfo vku::CreateInstanceCreateInfo(ApplicationInfo const &applicationInfo,
+                                                      std::vector<std::string> const &requiredLayers,
+                                                      std::vector<std::string> const &allowedLayers,
+                                                      std::vector<std::string> const &requiredExtensions,
+                                                      std::vector<std::string> const &allowedExtensions)
+{
+    std::vector<LayerExtensionProperties> layer_extension_properties = EnumerateInstanceLayersExtensionProperties();
+    if(!HasRequiredLayersExtension(layer_extension_properties,
+                                   requiredLayers,
+                                   requiredExtensions))
+    {
+        throw std::runtime_error("vku::CreateInstance missing required layer/extension");
+    }
+
+    std::vector<char const*> layer_names;
+    std::vector<char const*> extension_names;
+
+    AccumulateAllowedLayersExtensionsNames(layer_names, // ref
+                                           extension_names, // ref
+                                           layer_extension_properties,
+                                           requiredLayers,
+                                           allowedLayers,
+                                           requiredExtensions,
+                                           allowedExtensions);
+
+    return InstanceCreateInfo{applicationInfo,
+                              std::move(layer_extension_properties),
+                              std::move(layer_names),
+                              std::move(extension_names)};
+}
+
+// ====================================================================================================================
+
 vku::Instance::Instance(VkInstance const instance)
     : m_VkInstance(instance)
 {
@@ -74,53 +107,30 @@ vku::Instance::operator VkInstance() const
 
 // ====================================================================================================================
 
-VkInstance vku::CreateInstance(ApplicationInfo const &appInfo,
-                               std::vector<std::string> const &requiredLayers,
-                               std::vector<std::string> const &allowedLayers,
-                               std::vector<std::string> const &requiredExtensions,
-                               std::vector<std::string> const &allowedExtensions)
+VkInstance vku::CreateInstance(InstanceCreateInfo const &createInfo)
 {
-    std::vector<LayerExtensionProperties> const layer_extension_properties = EnumerateInstanceLayersExtensionProperties();
-    if(!HasRequiredLayersExtension(layer_extension_properties,
-                                   requiredLayers,
-                                   requiredExtensions))
-    {
-        throw std::runtime_error("vku::CreateInstance missing required layer/extension");
-    }
-
-    std::vector<char const*> layer_names;
-    std::vector<char const*> extension_names;
-
-    AccumulateAllowedLayersExtensionsNames(layer_names, // ref
-                                           extension_names, // ref
-                                           layer_extension_properties,
-                                           requiredLayers,
-                                           allowedLayers,
-                                           requiredExtensions,
-                                           allowedExtensions);
-
     // create instance:
     VkApplicationInfo const app_info =
     {
-        VK_STRUCTURE_TYPE_APPLICATION_INFO, // sType
-        nullptr,                            // pNext
-        appInfo.pApplicationName,           // pApplicationName
-        appInfo.applicationVersion,         // applicationVersion
-        appInfo.pEngineName,                // pEngineName
-        appInfo.engineVersion,              // engineVersion
-        appInfo.apiVersion,                 // apiVersion
+        VK_STRUCTURE_TYPE_APPLICATION_INFO,            // sType
+        nullptr,                                       // pNext
+        createInfo.applicationInfo.pApplicationName,   // pApplicationName
+        createInfo.applicationInfo.applicationVersion, // applicationVersion
+        createInfo.applicationInfo.pEngineName,        // pEngineName
+        createInfo.applicationInfo.engineVersion,      // engineVersion
+        createInfo.applicationInfo.apiVersion,         // apiVersion
     };
 
     VkInstanceCreateInfo const inst_create_info =
     {
-        VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,        // sType,
-        nullptr,                                       // pNext
-        0,                                             // flags
-        &app_info,                                     // pApplicationInfo
-        static_cast<uint32_t>(layer_names.size()),     // enabledLayerCount
-        layer_names.data(),                            // ppEnabledLayerNames
-        static_cast<uint32_t>(extension_names.size()), // enabledExtensionCount
-        extension_names.data(),                        // ppEnabledExtensionNames
+        VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,                         // sType,
+        nullptr,                                                        // pNext
+        0,                                                              // flags
+        &app_info,                                                      // pApplicationInfo
+        static_cast<uint32_t>(createInfo.enabledLayerNames.size()),     // enabledLayerCount
+        createInfo.enabledLayerNames.data(),                            // ppEnabledLayerNames
+        static_cast<uint32_t>(createInfo.enabledExtensionNames.size()), // enabledExtensionCount
+        createInfo.enabledExtensionNames.data(),                        // ppEnabledExtensionNames
     };
 
     VkInstance instance = VK_NULL_HANDLE;

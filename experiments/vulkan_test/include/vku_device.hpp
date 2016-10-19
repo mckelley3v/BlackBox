@@ -4,6 +4,7 @@
 #include "vku_extension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <functional>
 
 // ====================================================================================================================
 
@@ -58,13 +59,20 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
+    typedef std::function<bool(VkPhysicalDevice physicalDevice,
+                               uint32_t queueFamilyIndex,
+                               VkQueueFamilyProperties const &queueFamilyProperties)> QueuePredicateProc;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
     struct PhysicalDeviceRequestedQueueProperties
     {
-        VkQueueFlags requiredQueueFlags;
-        VkQueueFlags allowedQueueFlags;
-        uint32_t     requiredEnableCount;
-        uint32_t     allowedEnableCount;
-        float        defaultPriority;
+        VkQueueFlags       requiredQueueFlags;
+        VkQueueFlags       allowedQueueFlags;
+        QueuePredicateProc filterQueuePredicate;
+        uint32_t           requiredEnableCount;
+        uint32_t           allowedEnableCount;
+        float              defaultPriority;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -99,13 +107,6 @@ namespace vku
     };
 
     // ----------------------------------------------------------------------------------------------------------------
-
-    VkDevice CreateLogicalDevice(VkInstance instance,
-                                 std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
-                                 std::vector<std::string> const &requiredLayers,
-                                 std::vector<std::string> const &allowedLayers,
-                                 std::vector<std::string> const &requiredExtensions,
-                                 std::vector<std::string> const &allowedExtensions);
 
     VkDevice CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo);
 

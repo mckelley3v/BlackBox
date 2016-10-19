@@ -8,32 +8,6 @@
 
 // ====================================================================================================================
 
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
-#endif
-
-#ifdef VK_USE_PLATFORM_MIR_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_MIR_SURFACE_EXTENSION_NAME
-#endif
-
-#ifdef VK_USE_PLATFORM_WAYLAND_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME
-#endif
-
-#ifdef VK_USE_PLATFORM_WIN32_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_WIN32_SURFACE_EXTENSION_NAME
-#endif
-
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_XLIB_SURFACE_EXTENSION_NAME
-#endif
-
-#ifdef VK_USE_PLATFORM_XCB_KHR
-#define VKU_KHR_PLATFORM_SURFACE_EXTENSION_NAME VK_KHR_XCB_SURFACE_EXTENSION_NAME
-#endif
-
-// ====================================================================================================================
-
 #define VKU_INSTANCE_PROC_MEMBER(func_name) vku::InstanceProc<PFN_vk ## func_name> func_name {*this, "vk" ## #func_name}
 
 // ====================================================================================================================
@@ -48,12 +22,30 @@ namespace vku
 
     struct ApplicationInfo
     {
-        const char* pApplicationName;
+        const char *pApplicationName;
         uint32_t    applicationVersion;
-        const char* pEngineName;
+        const char *pEngineName;
         uint32_t    engineVersion;
         uint32_t    apiVersion;
     };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    struct InstanceCreateInfo
+    {
+        ApplicationInfo                       applicationInfo;
+        std::vector<LayerExtensionProperties> layerExtensionProperties;
+        std::vector<char const*>              enabledLayerNames;
+        std::vector<char const*>              enabledExtensionNames;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    InstanceCreateInfo CreateInstanceCreateInfo(ApplicationInfo const &applicationInfo,
+                                                std::vector<std::string> const &requiredLayers,
+                                                std::vector<std::string> const &allowedLayers,
+                                                std::vector<std::string> const &requiredExtensions,
+                                                std::vector<std::string> const &allowedExtensions);
 
     // ================================================================================================================
 
@@ -79,11 +71,7 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    VkInstance CreateInstance(ApplicationInfo const &appInfo,
-                              std::vector<std::string> const &requiredLayers,
-                              std::vector<std::string> const &allowedLayers,
-                              std::vector<std::string> const &requiredExtensions,
-                              std::vector<std::string> const &allowedExtensions);
+    VkInstance CreateInstance(InstanceCreateInfo const &createInfo);
 
     // ================================================================================================================
 
@@ -111,7 +99,9 @@ namespace vku
     {
     public:
         using InstanceProcBase::InstanceProcBase;
+        using proc_type = R (VKAPI_PTR*)(Args...);
 
+        proc_type get() const;
         R operator () (Args... args) const;
     };
 
@@ -119,6 +109,14 @@ namespace vku
 }
 
 // ====================================================================================================================
+
+template <typename R, typename ...Args>
+typename vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::proc_type vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::get() const
+{
+    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 
 template <typename R, typename ...Args>
 R vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
