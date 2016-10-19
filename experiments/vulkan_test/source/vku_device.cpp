@@ -11,6 +11,9 @@ static std::vector<VkLayerProperties> enumerate_device_layer_properties(VkPhysic
 static std::vector<VkExtensionProperties> enumerate_device_layer_extension_properties(VkPhysicalDevice physical_device,
                                                                                       VkLayerProperties const &layer);
 
+static std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(VkPhysicalDevice physicalDevice,
+                                                                                               std::vector<vku::PhysicalDeviceRequestedQueueProperties> const &requestedQueues);
+
 // ====================================================================================================================
 
 std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const instance)
@@ -137,63 +140,44 @@ uint32_t vku::SelectQueueWithFlags::operator () (VkPhysicalDevice const /*physic
 
 // ====================================================================================================================
 
-vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(std::vector<VkPhysicalDevice> const &physicalDevices,
+vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(VkInstance const instance,
                                                                 std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
                                                                 std::vector<std::string> const &requiredLayers,
                                                                 std::vector<std::string> const &allowedLayers,
                                                                 std::vector<std::string> const &requiredExtensions,
                                                                 std::vector<std::string> const &allowedExtensions)
 {
-    for(VkPhysicalDevice const &physical_device : physicalDevices)
+    assert(!requestedQueues.empty());
+
+    std::vector<VkPhysicalDevice> const physical_devices = EnumeratePhysicalDevices(instance);
+    for(VkPhysicalDevice const &physical_device : physical_devices)
     {
         std::vector<LayerExtensionProperties> layer_extension_properties = EnumeratePhysicalDeviceLayersExtensionProperties(physical_device);
         if(HasRequiredLayersExtension(layer_extension_properties,
                                       requiredLayers,
                                       requiredExtensions))
         {
-            std::vector<VkQueueFamilyProperties> const queue_families_properties = GetPhysicalDeviceQueueFamilyProperties(physical_device);
-            uint32_t const queue_family_count = static_cast<uint32_t>(queue_families_properties.size());
-
-            std::vector<PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families;
-            for(PhysicalDeviceRequestedQueueProperties const &requested_queue : requestedQueues)
+            std::vector<PhysicalDeviceQueueFamilyCreateInfo> const selected_queue_families = enumerate_selected_queue_families(physical_device,
+                                                                                                                               requestedQueues);
+            if(selected_queue_families.size() == requestedQueues.size())
             {
-                bool found_requested_queue = false;
+                std::vector<char const*> layer_names;
+                std::vector<char const*> extension_names;
 
-                for(uint32_t family_index = 0; family_index < queue_family_count; ++family_index)
-                {
-                    VkQueueFamilyProperties const &family_properties = queue_families_properties[family_index];
-                    uint32_t const selected_queue_count = requested_queue.selectQueueFunc(physical_device, family_index, family_properties);
-                    if(selected_queue_count > 0)
-                    {
-                        found_requested_queue = true;
-                        selected_queue_families.push_back(PhysicalDeviceQueueFamilyCreateInfo{family_properties,
-                                                                                              family_index,
-                                                                                              std::vector<float>(selected_queue_count, requested_queue.defaultPriority)});
-                    }
-                }
+                AccumulateAllowedLayersExtensionsNames(layer_names, // ref
+                                                       extension_names, // ref
+                                                       layer_extension_properties,
+                                                       requiredLayers,
+                                                       allowedLayers,
+                                                       requiredExtensions,
+                                                       allowedExtensions);
 
-                if(!found_requested_queue)
-                {
-                    throw std::runtime_error("error: vku::CreateLogicalDeviceCreateInfo unable to find requested queue");
-                }
+                return LogicalDeviceCreateInfo{physical_device,
+                                               std::move(selected_queue_families),
+                                               std::move(layer_extension_properties),
+                                               std::move(layer_names),
+                                               std::move(extension_names)};
             }
-
-            std::vector<char const*> layer_names;
-            std::vector<char const*> extension_names;
-
-            AccumulateAllowedLayersExtensionsNames(layer_names, // ref
-                                                   extension_names, // ref
-                                                   layer_extension_properties,
-                                                   requiredLayers,
-                                                   allowedLayers,
-                                                   requiredExtensions,
-                                                   allowedExtensions);
-
-            return LogicalDeviceCreateInfo{physical_device,
-                                           std::move(selected_queue_families),
-                                           std::move(layer_extension_properties),
-                                           std::move(layer_names),
-                                           std::move(extension_names)};
         }
     }
 
@@ -495,6 +479,43 @@ std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGe
     }
 
     return layer_extension_properties;
+}
+
+// ====================================================================================================================
+
+/*static*/ std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(VkPhysicalDevice const physicalDevice,
+                                                                                                   std::vector<vku::PhysicalDeviceRequestedQueueProperties> const &requestedQueues)
+{
+    std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families;
+
+    std::vector<VkQueueFamilyProperties> const queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(physicalDevice);
+    uint32_t const queue_family_count = static_cast<uint32_t>(queue_families_properties.size());
+
+    for(vku::PhysicalDeviceRequestedQueueProperties const &requested_queue : requestedQueues)
+    {
+        bool found_requested_queue = false;
+
+        for(uint32_t family_index = 0; family_index < queue_family_count; ++family_index)
+        {
+            VkQueueFamilyProperties const &family_properties = queue_families_properties[family_index];
+            uint32_t const selected_queue_count = requested_queue.selectQueueFunc(physicalDevice, family_index, family_properties);
+            if(selected_queue_count > 0)
+            {
+                found_requested_queue = true;
+                selected_queue_families.push_back(vku::PhysicalDeviceQueueFamilyCreateInfo{family_properties,
+                                                                                           family_index,
+                                                                                           std::vector<float>(selected_queue_count, requested_queue.defaultPriority)});
+                break;
+            }
+        }
+
+        if(!found_requested_queue)
+        {
+            return std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo>();
+        }
+    }
+
+    return selected_queue_families;
 }
 
 // ====================================================================================================================

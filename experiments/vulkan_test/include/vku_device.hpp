@@ -96,7 +96,7 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    LogicalDeviceCreateInfo CreateLogicalDeviceCreateInfo(std::vector<VkPhysicalDevice> const &physicalDevices,
+    LogicalDeviceCreateInfo CreateLogicalDeviceCreateInfo(VkInstance instance,
                                                           std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
                                                           std::vector<std::string> const &requiredLayers,
                                                           std::vector<std::string> const &allowedLayers,
