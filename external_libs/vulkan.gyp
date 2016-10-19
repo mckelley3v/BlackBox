@@ -46,6 +46,8 @@
                             "defines":
                             [
                                 "VK_USE_PLATFORM_WIN32_KHR",
+                                "WIN32_LEAN_AND_MEAN",
+                                "NOMINMAX",
                             ],
                         },
                         "link_settings":
