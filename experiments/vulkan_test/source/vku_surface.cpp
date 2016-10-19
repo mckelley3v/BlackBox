@@ -4,9 +4,9 @@
 
 // ====================================================================================================================
 
-vku::PhysicalDeviceSurfaceSupportKHR::PhysicalDeviceSurfaceSupportKHR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const procGetPhysicalDeviceSurfaceSupportKHR,
+vku::PhysicalDeviceSurfaceSupportKHR::PhysicalDeviceSurfaceSupportKHR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
                                                                       VkSurfaceKHR const surface)
-    : m_ProcGetPhysicalDeviceSurfaceSupportKHR(procGetPhysicalDeviceSurfaceSupportKHR)
+    : m_pfnGetPhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR)
     , m_SurfaceKHR(surface)
 {
 }
@@ -17,14 +17,14 @@ bool vku::PhysicalDeviceSurfaceSupportKHR::operator () (VkPhysicalDevice const p
                                                         uint32_t const queueFamilyIndex,
                                                         VkQueueFamilyProperties const &/*queueFamilyProperties*/) const
 {
-    assert(m_ProcGetPhysicalDeviceSurfaceSupportKHR != nullptr);
+    assert(m_pfnGetPhysicalDeviceSurfaceSupportKHR != nullptr);
     assert(m_SurfaceKHR != VK_NULL_HANDLE);
 
     VkBool32 surface_support = VK_FALSE;
-    switch(m_ProcGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
-                                                    queueFamilyIndex,
-                                                    m_SurfaceKHR,
-                                                    &surface_support))
+    switch(m_pfnGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
+                                                   queueFamilyIndex,
+                                                   m_SurfaceKHR,
+                                                   &surface_support))
     {
         case VK_SUCCESS:
             return (surface_support == VK_FALSE) ? false : true;
@@ -41,6 +41,52 @@ bool vku::PhysicalDeviceSurfaceSupportKHR::operator () (VkPhysicalDevice const p
         default:
             throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceSupportKHR returned unknown error");
     }
+}
+
+// ====================================================================================================================
+
+vku::SelectQueueWithFlagsAndSurfaceSupport::SelectQueueWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                                                                  VkSurfaceKHR const surface,
+                                                                                  VkQueueFlags const requiredQueueFlags)
+    : PhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                      surface)
+    , SelectQueueWithFlags(requiredQueueFlags)
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::SelectQueueWithFlagsAndSurfaceSupport::SelectQueueWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                                                                  VkSurfaceKHR const surface,
+                                                                                  VkQueueFlags const requiredQueueFlags,
+                                                                                  VkQueueFlags const allowedQueueFlags,
+                                                                                  uint32_t const requiredEnableCount,
+                                                                                  uint32_t const allowedEnableCount)
+    : PhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                      surface)
+    , SelectQueueWithFlags(requiredQueueFlags,
+                           allowedQueueFlags,
+                           requiredEnableCount,
+                           allowedEnableCount)
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+uint32_t vku::SelectQueueWithFlagsAndSurfaceSupport::operator () (VkPhysicalDevice const physicalDevice,
+                                                                  uint32_t const queueFamilyIndex,
+                                                                  VkQueueFamilyProperties const &queueFamilyProperties) const
+{
+    if(PhysicalDeviceSurfaceSupportKHR::operator()(physicalDevice,
+                                                   queueFamilyIndex,
+                                                   queueFamilyProperties))
+    {
+        return SelectQueueWithFlags::operator()(physicalDevice,
+                                                queueFamilyIndex,
+                                                queueFamilyProperties);
+    }
+
+    return 0u;
 }
 
 // ====================================================================================================================

@@ -59,20 +59,39 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    typedef std::function<bool(VkPhysicalDevice physicalDevice,
-                               uint32_t queueFamilyIndex,
-                               VkQueueFamilyProperties const &queueFamilyProperties)> QueuePredicateProc;
+    class SelectQueueWithFlags
+    {
+    public:
+        SelectQueueWithFlags(VkQueueFlags requiredQueueFlags);
+        SelectQueueWithFlags(VkQueueFlags requiredQueueFlags,
+                              VkQueueFlags allowedQueueFlags,
+                              uint32_t requiredEnableCount,
+                              uint32_t allowedEnableCount);
+
+        uint32_t operator () (VkPhysicalDevice physicalDevice,
+                              uint32_t queueFamilyIndex,
+                              VkQueueFamilyProperties const &queueFamilyProperties) const;
+
+    private:
+        // members:
+        VkQueueFlags m_RequiredQueueFlags  = 0u;
+        VkQueueFlags m_AllowedQueueFlags   = ~0u;
+        uint32_t     m_RequiredEnableCount = 1u;
+        uint32_t     m_AllowedEnableCount  = 1u;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    typedef std::function<uint32_t(VkPhysicalDevice physicalDevice,
+                                   uint32_t queueFamilyIndex,
+                                   VkQueueFamilyProperties const &queueFamilyProperties)> SelectQueueFunc;
 
     // ----------------------------------------------------------------------------------------------------------------
 
     struct PhysicalDeviceRequestedQueueProperties
     {
-        VkQueueFlags       requiredQueueFlags;
-        VkQueueFlags       allowedQueueFlags;
-        QueuePredicateProc filterQueuePredicate;
-        uint32_t           requiredEnableCount;
-        uint32_t           allowedEnableCount;
-        float              defaultPriority;
+        SelectQueueFunc selectQueueFunc;
+        float           defaultPriority;
     };
 
     // ----------------------------------------------------------------------------------------------------------------

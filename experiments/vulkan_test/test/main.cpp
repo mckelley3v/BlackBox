@@ -165,12 +165,10 @@ vku::ApplicationDevice vku::CreateApplicationDevice(ApplicationInstance const &i
                                                                                      // requestedQueues
                                                                                      {
                                                                                          {
-                                                                                             VK_QUEUE_GRAPHICS_BIT, // requiredQueueFlags
-                                                                                             0xFFFFFFFF, // allowedQueueFlags
-                                                                                             PhysicalDeviceSurfaceSupportKHR(instance.GetPhysicalDeviceSurfaceSupportKHR.get(),
-                                                                                                                             instance.GetSurfaceKHR()), // filterQueuePredicate
-                                                                                             1, // requiredEnableCount
-                                                                                             1, // allowedEnableCount
+                                                                                             // selectQueueFunc
+                                                                                             SelectQueueWithFlagsAndSurfaceSupport(instance.GetPhysicalDeviceSurfaceSupportKHR.get(),
+                                                                                                                                   instance.GetSurfaceKHR(),
+                                                                                                                                   VK_QUEUE_GRAPHICS_BIT),
                                                                                              1.0f, // defaultPriority
                                                                                          },
                                                                                      },
