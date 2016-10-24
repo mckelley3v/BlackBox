@@ -7,18 +7,22 @@
             "include_dirs":
             [
                 "include",
-                "<(workspace_dir)libs\m1\serialization\include",
-                "<(workspace_dir)experiments\m1_ustring\libs\m1\ustring\include",
+                "<(workspace_dir)libs/m1/serialization/include",
+                "<(workspace_dir)experiments/m1_ustring/libs/m1/ustring/include",
                 "source",
             ],
             "sources":
             [
-                "include/m1/string_builder_base.hpp",
+                "include/m1/crc32_builder.hpp",
+                "include/m1/json_input_archive.hpp",
                 "include/m1/string_builder.hpp",
-                "include/m1/serialization/json_input_archive.hpp",
-                "include/m1/input_archive.hpp",
+                "include/m1/string_builder_base.hpp",
+                "include/m1/ustring_builder.hpp",
+                "include/m1/verify.hpp",
+                "source/m1/crc32_builder.cpp",
+                "source/m1/json.cpp",
+                "source/m1/json_input_archive.cpp",
                 "source/m1/string_builder.cpp",
-                "source/m1/serialization/json_input_archive.cpp",
                 "m1_input_archive.gyp",
             ],
             "dependencies":
@@ -32,7 +36,8 @@
                 "include_dirs":
                 [
                     "include",
-                    "<(workspace_dir)libs\m1\serialization\include",
+                    "<(workspace_dir)libs/m1/serialization/include",
+                    "<(workspace_dir)experiments/m1_ustring/libs/m1/ustring/include",
                 ],
             },
         },

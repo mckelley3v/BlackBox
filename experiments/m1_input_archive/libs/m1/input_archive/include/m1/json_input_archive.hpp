@@ -52,26 +52,30 @@ namespace serialization
         bool read_int(int &value);
         bool read_float(float &value);
         bool read_string(string_builder_base &value);
+        template <typename ...Ts> bool read_object(object_t<Ts...> &&obj);
 
     private:
+        // types:
         json_input_archive() = delete;
         json_input_archive(json_input_archive const &rhs) = delete;
         json_input_archive& operator = (json_input_archive const &rhs) = delete;
 
-        json_input_error make_json_input_error(char const *message) const;
-        json_syntax_error make_json_syntax_error(char const *message) const;
+        bool begin_object();
+        bool end_object();
 
-        // types:
         struct location
         {
             int row;
             int col;
         };
 
-        typedef std::wbuffer_convert<std::codecvt_utf8<char32_t>, char32_t> streambuf;
+        json_input_error make_json_input_error(char const *message) const;
+        json_syntax_error make_json_syntax_error(char const *message) const;
+
+        typedef std::wbuffer_convert<std::codecvt_utf8<char32_t>, char32_t> ustreambuf;
 
         // members:
-        streambuf m_Buffer;
+        ustreambuf m_Buffer;
         location m_Location = {};
     };
 
@@ -94,6 +98,11 @@ namespace serialization
     bool operator >> (json_input_archive &in, std::u16string &value);
     bool operator >> (json_input_archive &in, std::u32string &value);
     bool operator >> (json_input_archive &in, ustring &value);
+
+    template <int N> bool operator >> (json_input_archive &in, char (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, wchar_t (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, char16_t (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, char32_t (&value)[N]);
 
     // array:
     template <typename OutputItr> bool operator >> (json_input_archive &in, array_t<OutputItr> &&value);
@@ -271,30 +280,43 @@ namespace m1
 // ====================================================================================================================
 // ====================================================================================================================
 
-template <typename ...Ts> bool m1::serialization::operator >> (json_input_archive &in, object_t<Ts...> &&obj)
+template <typename ...Ts> bool m1::serialization::json_input_archive::read_object(object_t<Ts...> &&obj)
 {
     bool result = true;
-
-    json_input_archive location = in.m_Location;
-    for(property_id const &id : in.get_property_ids())
+    if(begin_object())
     {
-        bool known = false;
-        tuple_visit(obj.properties,
-                    [&] (auto const &prop)
-                    {
-                        if(id == prop.id)
-                        {
-                            known = true;
-                            result &= in >> prop.ref;
-                        }
-                    });
-
-        if (!known)
+        while(!end_object())
         {
-            // unknown property id
-        }
+            property_id id;
 
-        location = in.m_Location;
+            // key:
+            if(!(*this >> id))
+            {
+                result = false;
+                M1_ERROR(throw make_json_input_error("error reading object key"));
+            }
+
+            // value:
+            bool id_known = false;
+            tuple_visit(obj.properties,
+                        [&] (auto const &prop)
+                        {
+                            if(id == prop.id)
+                            {
+                                id_known = true;
+                                if(!(*this >> prop.ref))
+                                {
+                                    result = false;
+                                    M1_ERROR(throw make_json_input_error("error reading object value"));
+                                }
+                            }
+                        });
+
+            if(!id_known)
+            {
+                // unknown property id
+            }
+        }
     }
 
     return result;

@@ -8,7 +8,7 @@
 
 // ====================================================================================================================
 
-char const json[] =
+char const json_file[] =
 R"json(
 {
     "Material": {
@@ -145,73 +145,17 @@ bool operator >> (s11n::json_input_archive &in, FeatureOption &value)
 
 bool operator >> (s11n::json_input_archive &in, FeatureUsage &value)
 {
-//    return in >> s11n::select(
-//        [&](crc32 crc)
-//        {
-//            switch(crc)
-//            {
-//                case "Static"_crc32:  value = FeatureUsage::Static;  return true;
-//                case "Dynamic"_crc32: value = FeatureUsage::Dynamic; return true;
-//                default:
-//                    // invalid enum string for FeatureUsage
-//                    return false;
-//            }
-//        });
-
-    m1::crc32 crc;
-    if(in >> crc)
-    {
-        switch(crc)
-        {
-            case "Static"_crc32:  value = FeatureUsage::Static;  return true;
-            case "Dynamic"_crc32: value = FeatureUsage::Dynamic; return true;
-            default:
-                // invalid enum string for FeatureUsage
-                return false;
-    }
-
-    return false;
-//    return in >> s11n::select(/*ref*/ value, s11n::option("Static"_crc32,  FeatureUsage::Static),
-//                                             s11n::option("Dynamic"_crc32, FeatureUsage::Dynamic));
+    return in >> s11n::select(/*ref*/ value, s11n::option("Static"_id,  FeatureUsage::Static),
+                                             s11n::option("Dynamic"_id, FeatureUsage::Dynamic));
 }
 
 bool operator >> (s11n::json_input_archive &in, Feature &value)
 {
-    return in >> s11n::object(
-        [&](property_id id)
-        {
-            // case "<<"_id: return in >> value; could be automatic for yaml
-            switch(id)
-            {
-                case "Type"_id:    return in >> value.type;
-                case "Name"_id:    return in >> value.name;
-                case "DataId"_id:  return in >> value.data_id;
-                case "Usage"_id:   return in >> value.usage;
-                case "Options"_id: return in >> value.options;
-                default:           return in >> nullptr; // unknown property id
-            }
-        });
-
-//    for(property_id id : in.get_property_ids())
-//    {
-//        switch(id)
-//        {
-//            case "Type"_id:    return in >> value.type;
-//            case "Name"_id:    return in >> value.name;
-//            case "DataId"_id:  return in >> value.data_id;
-//            case "Usage"_id:   return in >> value.usage;
-//            case "Options"_id: return in >> value.options;
-//            default:           return in >> nullptr; // unknown property id
-//        }
-//    )
-//
-//    return true;
-
-//    return in >> s11n::object(s11n::property("Type"_id,    /*ref*/ value.type),
-//                              s11n::property("Name"_id,    /*ref*/ value.name),
-//                              s11n::property("DataId"_id,  /*ref*/ value.data_id),
-//                              s11n::property("Usage"_id,   /*ref*/ value.usage),
-//                              s11n::property("Options"_id, /*ref*/ value.options));
+    return in >> s11n::object(s11n::property("Type"_id,    /*ref*/ value.type),
+                              s11n::property("Name"_id,    /*ref*/ value.name),
+                              s11n::property("DataId"_id,  /*ref*/ value.data_id),
+                              s11n::property("Usage"_id,   /*ref*/ value.usage),
+                              s11n::property("Options"_id, /*ref*/ value.options));
 }
 
 bool operator >> (s11n::json_input_archive &in, ShaderProgram &value)
@@ -237,6 +181,11 @@ bool operator >> (s11n::json_input_archive &in, Material &value)
 
 TEST_CASE("Test m1::json_input_archive", "[m1]")
 {
+    Material m;
+
+    std::istringstream in(json_file);
+    s11n::json_input_archive jin(in.rdbuf());
+    CHECK(jin >> m);
     //   m1::ustring s = m1::ustring::format("hello {name}", std::make_pair("name"_id, name),
     //                                                       std::make_pair("date"_id, date));
 }
