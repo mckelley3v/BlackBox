@@ -42,6 +42,27 @@ m1::serialization::json_input_archive::json_input_archive(std::streambuf *buffer
 
 // --------------------------------------------------------------------------------------------------------------------
 
+bool m1::serialization::json_input_archive::operator >> (bool &value)
+{
+    return read_bool(/*ref*/ value);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+bool m1::serialization::json_input_archive::operator >> (int &value)
+{
+    return read_int(/*ref*/ value);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+bool m1::serialization::json_input_archive::operator >> (float &value)
+{
+    return read_float(/*ref*/ value);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 void m1::serialization::json_input_archive::skip_space()
 {
     while(std::isspace(peek_char()))
@@ -478,6 +499,24 @@ bool m1::serialization::json_input_archive::read_string(string_builder_base &val
 
 // --------------------------------------------------------------------------------------------------------------------
 
+bool m1::serialization::json_input_archive::read_property_id(property_id &id)
+{
+    crc32_builder builder;
+    if(read_string(/*ref*/ builder))
+    {
+        skip_space();
+        if(read_char() == ':')
+        {
+            id = property_id(std::move(builder).crc());
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 m1::serialization::json_input_error m1::serialization::json_input_archive::make_json_input_error(char const *message) const
 {
     return json_input_error(m_Location.row,
@@ -496,49 +535,10 @@ m1::serialization::json_syntax_error m1::serialization::json_input_archive::make
 
 // ====================================================================================================================
 
-bool m1::serialization::operator >> (json_input_archive &in, property_id &id)
-{
-    crc32_builder builder;
-    if(in.read_string(/*ref*/ builder))
-    {
-        in.skip_space();
-        if(in.read_char() == ':')
-        {
-            id = property_id(std::move(builder).crc());
-            return true;
-        }
-    }
-
-    return false;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-bool m1::serialization::operator >> (json_input_archive &in, bool &value)
-{
-    return in.read_bool(/*ref*/ value);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-bool m1::serialization::operator >> (json_input_archive &in, int &value)
-{
-    return in.read_int(/*ref*/ value);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-bool m1::serialization::operator >> (json_input_archive &in, float &value)
-{
-    return in.read_float(/*ref*/ value);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
 bool m1::serialization::operator >> (json_input_archive &in, crc32 &value)
 {
     crc32_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).crc();
         return true;
@@ -552,7 +552,7 @@ bool m1::serialization::operator >> (json_input_archive &in, crc32 &value)
 bool m1::serialization::operator >> (json_input_archive &in, std::string &value)
 {
     u8string_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).str();
         return true;
@@ -566,7 +566,7 @@ bool m1::serialization::operator >> (json_input_archive &in, std::string &value)
 bool m1::serialization::operator >> (json_input_archive &in, std::wstring &value)
 {
     wstring_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).str();
         return true;
@@ -580,7 +580,7 @@ bool m1::serialization::operator >> (json_input_archive &in, std::wstring &value
 bool m1::serialization::operator >> (json_input_archive &in, std::u16string &value)
 {
     u16string_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).str();
         return true;
@@ -594,7 +594,7 @@ bool m1::serialization::operator >> (json_input_archive &in, std::u16string &val
 bool m1::serialization::operator >> (json_input_archive &in, std::u32string &value)
 {
     u32string_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).str();
         return true;
@@ -608,7 +608,7 @@ bool m1::serialization::operator >> (json_input_archive &in, std::u32string &val
 bool m1::serialization::operator >> (json_input_archive &in, ustring &value)
 {
     ustring_builder builder;
-    if(in.read_string(/*ref*/ builder))
+    if(in >> builder)
     {
         value = std::move(builder).str();
         return true;

@@ -2,6 +2,7 @@
 #define M1_SERIALIZATION_JSON_INPUT_ARCHIVE_HPP
 
 #include "m1/property_id.hpp"
+#include "m1/verify.hpp"
 #include <vector>
 #include <tuple>
 #include <locale>
@@ -44,35 +45,74 @@ namespace serialization
         json_input_archive& operator = (json_input_archive &&rhs) = default;
         ~json_input_archive() = default;
 
-        void skip_space();
-        char32_t peek_char();
-        char32_t read_char();
+        // bool:
+        bool operator >> (bool &value);
 
-        bool read_bool(bool &value);
-        bool read_int(int &value);
-        bool read_float(float &value);
-        bool read_string(string_builder_base &value);
-        template <typename ...Ts> bool read_object(object_t<Ts...> &&obj);
+        // number:
+        bool operator >> (int &value);
+        bool operator >> (float &value);
 
+        // string:
+        bool operator >> (string_builder_base &value);
+
+        // array:
+        template <typename OutputItr> bool operator >> (array_t<OutputItr> &&value);
+
+        // enum:
+        template <typename T, typename ...Options> bool operator >> (select_t<T, Options...> &&value);
+
+        // object:
+        template <typename ...Ts> bool operator >> (object_t<Ts...> &&obj);
     private:
-        // types:
         json_input_archive() = delete;
         json_input_archive(json_input_archive const &rhs) = delete;
         json_input_archive& operator = (json_input_archive const &rhs) = delete;
 
+        void skip_space();
+        char32_t peek_char();
+        char32_t read_char();
+
+        // value:
+        bool read_bool(bool &value);
+        bool read_int(int &value);
+        bool read_float(float &value);
+        bool read_string(string_builder_base &value);
+
+        // object:
         bool begin_object();
+        bool read_property_id(property_id &value);
+
+        template <typename Tuple,
+                  std::size_t Index,
+                  std::size_t End>
+        bool read_object_property(property_id const &id,
+                                  Tuple const &object_properties_tuple,
+                                  std::integral_constant<std::size_t, Index> const &/*index*/,
+                                  std::integral_constant<std::size_t, End> const &/*end*/);
+
+        template <typename Tuple,
+                  std::size_t End>
+        bool read_object_property(property_id const &/*id*/,
+                                  Tuple const &/*object_properties_tuple*/,
+                                  std::integral_constant<std::size_t, End> const &/*end*/,
+                                  std::integral_constant<std::size_t, End> const &/*end*/);
+
+        template <typename ...Ts> bool read_object(object_t<Ts...> &&obj);
+
+        bool skip_property();
         bool end_object();
+
+        json_input_error make_json_input_error(char const *message) const;
+        json_syntax_error make_json_syntax_error(char const *message) const;
+
+        // types:
+        typedef std::wbuffer_convert<std::codecvt_utf8<char32_t>, char32_t> ustreambuf;
 
         struct location
         {
             int row;
             int col;
         };
-
-        json_input_error make_json_input_error(char const *message) const;
-        json_syntax_error make_json_syntax_error(char const *message) const;
-
-        typedef std::wbuffer_convert<std::codecvt_utf8<char32_t>, char32_t> ustreambuf;
 
         // members:
         ustreambuf m_Buffer;
@@ -81,17 +121,12 @@ namespace serialization
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // id:
-    bool operator >> (json_input_archive &in, property_id &id);
-
-    // bool:
-    bool operator >> (json_input_archive &in, bool &value);
-
-    // number:
-    bool operator >> (json_input_archive &in, int &value);
-    bool operator >> (json_input_archive &in, float &value);
-
     // string:
+    template <int N> bool operator >> (json_input_archive &in, char (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, wchar_t (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, char16_t (&value)[N]);
+    template <int N> bool operator >> (json_input_archive &in, char32_t (&value)[N]);
+
     bool operator >> (json_input_archive &in, crc32 &value);
     bool operator >> (json_input_archive &in, std::string &value);
     bool operator >> (json_input_archive &in, std::wstring &value);
@@ -99,20 +134,9 @@ namespace serialization
     bool operator >> (json_input_archive &in, std::u32string &value);
     bool operator >> (json_input_archive &in, ustring &value);
 
-    template <int N> bool operator >> (json_input_archive &in, char (&value)[N]);
-    template <int N> bool operator >> (json_input_archive &in, wchar_t (&value)[N]);
-    template <int N> bool operator >> (json_input_archive &in, char16_t (&value)[N]);
-    template <int N> bool operator >> (json_input_archive &in, char32_t (&value)[N]);
-
     // array:
-    template <typename OutputItr> bool operator >> (json_input_archive &in, array_t<OutputItr> &&value);
-
-    // enum:
-    template <typename T, typename ...Options> bool operator >> (json_input_archive &in, select_t<T, Options...> &&value);
-
-    // object:
-    template <typename ...Ts> bool operator >> (json_input_archive &in, object_t<Ts...> &&obj);
-
+    template <typename T, int N> bool operator >> (json_input_archive &in, T (&value)[N]);
+    template <typename T> bool operator >> (json_input_archive &in, std::vector<T> &value);
 
     // ================================================================================================================
 } // namespace serialization
@@ -242,45 +266,67 @@ namespace serialization
 } // namespace m1
 
 // ====================================================================================================================
+// Implementation
+// ====================================================================================================================
 
-namespace m1
+//template <typename OutputItr>
+//bool m1::serialization::json_input_archive::operator >> (array_t<OutputItr> &&value);
+
+// ====================================================================================================================
+
+//template <typename T,
+//          typename ...Options>
+//bool m1::serialization::json_input_archive::operator >> (select_t<T, Options...> &&value);
+
+// ====================================================================================================================
+
+template <typename ...Ts>
+bool m1::serialization::json_input_archive::operator >> (object_t<Ts...> &&obj)
 {
-    // ================================================================================================================
+    return read_object(std::move(obj));
+}
 
-    template <typename Tuple,
-              typename Func>
-    void tuple_visit(Tuple const &tuple,
-                     Func func)
+// ====================================================================================================================
+
+template <typename Tuple,
+          std::size_t Index,
+          std::size_t End>
+bool m1::serialization::json_input_archive::read_object_property(property_id const &id,
+                                                                 Tuple const &object_properties_tuple,
+                                                                 std::integral_constant<std::size_t, Index> const &/*index*/,
+                                                                 std::integral_constant<std::size_t, End> const &end)
+{
+    auto const &object_property = std::get<Index>(object_properties_tuple);
+    if(object_property.id == id)
     {
-        impl::tuple_visit_impl(tuple, func, std::make_index_sequence<std::tuple_size_v<Tuple>>());
+        return *this >> object_property.ref;
     }
-
-    // ================================================================================================================
-
-    namespace impl
+    else
     {
-        // ============================================================================================================
-
-        template <typename Tuple,
-                  typename Func,
-                  std::size_t ...Indices>
-        void tuple_visit_impl(Tuple const &tuple,
-                              Func func,
-                              std::index_sequence<Indices...> const &/*indices*/)
-        {
-            auto expand = {(func(std::get<Indices>(tuple)), 0)...};
-        }
-
-        // ============================================================================================================
-    } // namespace impl
-
-    // ================================================================================================================
-} // namespace m1
+        return read_object_property(id,
+                                    object_properties_tuple,
+                                    std::integral_constant<std::size_t, Index + 1>(),
+                                    end);
+    }
+}
 
 // ====================================================================================================================
+
+template <typename Tuple,
+          std::size_t End>
+bool m1::serialization::json_input_archive::read_object_property(property_id const &/*id*/,
+                                                                 Tuple const &/*object_properties_tuple*/,
+                                                                 std::integral_constant<std::size_t, End> const &/*end*/,
+                                                                 std::integral_constant<std::size_t, End> const &/*end*/)
+{
+    // unknown id
+    return skip_property();
+}
+
 // ====================================================================================================================
 
-template <typename ...Ts> bool m1::serialization::json_input_archive::read_object(object_t<Ts...> &&obj)
+template <typename ...Ts>
+bool m1::serialization::json_input_archive::read_object(object_t<Ts...> &&obj)
 {
     bool result = true;
     if(begin_object())
@@ -290,32 +336,17 @@ template <typename ...Ts> bool m1::serialization::json_input_archive::read_objec
             property_id id;
 
             // key:
-            if(!(*this >> id))
+            if(!read_property_id(id))
             {
                 result = false;
                 M1_ERROR(throw make_json_input_error("error reading object key"));
             }
 
             // value:
-            bool id_known = false;
-            tuple_visit(obj.properties,
-                        [&] (auto const &prop)
-                        {
-                            if(id == prop.id)
-                            {
-                                id_known = true;
-                                if(!(*this >> prop.ref))
-                                {
-                                    result = false;
-                                    M1_ERROR(throw make_json_input_error("error reading object value"));
-                                }
-                            }
-                        });
-
-            if(!id_known)
-            {
-                // unknown property id
-            }
+            result &= read_object_property(id,
+                                           obj.properties,
+                                           std::integral_constant<std::size_t, 0>(),
+                                           std::tuple_size<decltype(obj.properties)>());
         }
     }
 

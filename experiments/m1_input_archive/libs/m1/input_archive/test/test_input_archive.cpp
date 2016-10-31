@@ -126,65 +126,83 @@ struct Material
     std::string export_filter;
 };
 
-namespace s11n = m1::serialization;
-using namespace m1::literals;
 
-
-bool operator >> (s11n::json_input_archive &in, VariableBinding &value)
+bool operator >> (m1::serialization::json_input_archive &in, VariableBinding &value)
 {
-    return in >> s11n::object(s11n::property("Semantic"_id, /*ref*/ value.semantic),
-                              s11n::property("Variable"_id, /*ref*/ value.variable));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> object(property("Semantic"_id, /*ref*/ value.semantic),
+                        property("Variable"_id, /*ref*/ value.variable));
 }
 
-bool operator >> (s11n::json_input_archive &in, FeatureOption &value)
+bool operator >> (m1::serialization::json_input_archive &in, FeatureOption &value)
 {
-    return in >> s11n::object(s11n::property("Name"_id,     /*ref*/ value.name),
-                              s11n::property("Defines"_id,  /*ref*/ value.defines),
-                              s11n::property("Bindings"_id, /*ref*/ value.bindings));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> object(property("Name"_id,     /*ref*/ value.name),
+                        property("Defines"_id,  /*ref*/ value.defines),
+                        property("Bindings"_id, /*ref*/ value.bindings));
 }
 
-bool operator >> (s11n::json_input_archive &in, FeatureUsage &value)
+bool operator >> (m1::serialization::json_input_archive &in, FeatureUsage &value)
 {
-    return in >> s11n::select(/*ref*/ value, s11n::option("Static"_id,  FeatureUsage::Static),
-                                             s11n::option("Dynamic"_id, FeatureUsage::Dynamic));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> select(/*ref*/ value, option("Static"_id,  FeatureUsage::Static),
+                                       option("Dynamic"_id, FeatureUsage::Dynamic));
 }
 
-bool operator >> (s11n::json_input_archive &in, Feature &value)
+bool operator >> (m1::serialization::json_input_archive &in, Feature &value)
 {
-    return in >> s11n::object(s11n::property("Type"_id,    /*ref*/ value.type),
-                              s11n::property("Name"_id,    /*ref*/ value.name),
-                              s11n::property("DataId"_id,  /*ref*/ value.data_id),
-                              s11n::property("Usage"_id,   /*ref*/ value.usage),
-                              s11n::property("Options"_id, /*ref*/ value.options));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> object(property("Type"_id,    /*ref*/ value.type),
+                        property("Name"_id,    /*ref*/ value.name),
+                        property("DataId"_id,  /*ref*/ value.data_id),
+                        property("Usage"_id,   /*ref*/ value.usage),
+                        property("Options"_id, /*ref*/ value.options));
 }
 
-bool operator >> (s11n::json_input_archive &in, ShaderProgram &value)
+bool operator >> (m1::serialization::json_input_archive &in, ShaderProgram &value)
 {
-    return in >> s11n::object(s11n::property("Vertex"_id,   /*ref*/ value.vertex_stage_path),
-                              s11n::property("Geometry"_id, /*ref*/ value.geometry_stage_path),
-                              s11n::property("Fragment"_id, /*ref*/ value.fragment_stage_path),
-                              s11n::property("TessHull"_id, /*ref*/ value.tess_hull_stage_path),
-                              s11n::property("TessEval"_id, /*ref*/ value.tess_eval_stage_path),
-                              s11n::property("Compute"_id,  /*ref*/ value.compute_stage_path));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> object(property("Vertex"_id,   /*ref*/ value.vertex_stage_path),
+                        property("Geometry"_id, /*ref*/ value.geometry_stage_path),
+                        property("Fragment"_id, /*ref*/ value.fragment_stage_path),
+                        property("TessHull"_id, /*ref*/ value.tess_hull_stage_path),
+                        property("TessEval"_id, /*ref*/ value.tess_eval_stage_path),
+                        property("Compute"_id,  /*ref*/ value.compute_stage_path));
 }
 
-bool operator >> (s11n::json_input_archive &in, Material &value)
+bool operator >> (m1::serialization::json_input_archive &in, Material &value)
 {
-    return in >> s11n::object(s11n::property("Type"_id,         /*ref*/ value.type),
-                              s11n::property("Name"_id,         /*ref*/ value.name),
-                              s11n::property("Defines"_id,      /*ref*/ value.defines),
-                              s11n::property("Features"_id,     /*ref*/ value.features),
-                              s11n::property("ExportFilter"_id, /*ref*/ value.export_filter));
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
+    return in >> object(property("Type"_id,         /*ref*/ value.type),
+                        property("Name"_id,         /*ref*/ value.name),
+                        property("Defines"_id,      /*ref*/ value.defines),
+                        property("Features"_id,     /*ref*/ value.features),
+                        property("ExportFilter"_id, /*ref*/ value.export_filter));
 }
 
 // ====================================================================================================================
 
-TEST_CASE("Test m1::json_input_archive", "[m1]")
+TEST_CASE("Test m1::serialization::json_input_archive", "[m1]")
 {
+    using namespace m1::literals;
+    using namespace m1::serialization;
+
     Material m;
 
     std::istringstream in(json_file);
-    s11n::json_input_archive jin(in.rdbuf());
+    json_input_archive jin(in.rdbuf());
     CHECK(jin >> m);
     //   m1::ustring s = m1::ustring::format("hello {name}", std::make_pair("name"_id, name),
     //                                                       std::make_pair("date"_id, date));

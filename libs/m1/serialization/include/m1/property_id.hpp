@@ -14,12 +14,12 @@ namespace serialization
     {
     public:
         using crc32::crc32;
-
-        property_id(property_id &&rhs) = default;
-        property_id(property_id const &rhs) = default;
-        property_id& operator = (property_id &&rhs) = default;
-        property_id& operator = (property_id const &rhs) = default;
-        ~property_id() = default;
+        constexpr property_id() noexcept = default;
+        property_id(property_id &&rhs) noexcept = default;
+        property_id(property_id const &rhs) noexcept = default;
+        property_id& operator = (property_id &&rhs) noexcept = default;
+        property_id& operator = (property_id const &rhs) noexcept = default;
+        ~property_id() noexcept = default;
 
         using crc32::operator std::uint32_t;
     };
