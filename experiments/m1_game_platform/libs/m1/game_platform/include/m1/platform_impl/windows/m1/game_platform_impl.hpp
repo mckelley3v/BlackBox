@@ -30,10 +30,10 @@ namespace m1
                                         LPARAM lParam);
 
         // members:
-        bool is_exiting = false;
-        int exit_code = 0;
+        bool      is_exiting     = false;
+        int       exit_code      = 0;
         HINSTANCE program_handle = 0;
-        HWND window_handle = 0;
+        HWND      window_handle  = 0;
     };
 
     // ================================================================================================================

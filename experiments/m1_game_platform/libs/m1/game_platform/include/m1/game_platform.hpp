@@ -226,6 +226,8 @@ namespace m1
         // properties:
         std::string const& get_name() const;
         game_platform_id get_platform_id() const;
+        int get_surface_width() const;
+        int get_surface_height() const;
 
         // impl:
         impl& platform_impl();
@@ -282,8 +284,10 @@ namespace m1
         game_platform& operator = (game_platform const &rhs) = delete;
 
         // members:
-        std::string m_Name;
-        std::unique_ptr<impl> m_ImplPtr;
+        std::string           m_Name          = "";
+        int                   m_SurfaceWidth  = 0;
+        int                   m_SurfaceHeight = 0;
+        std::unique_ptr<impl> m_ImplPtr       = nullptr;
     };
 
     // ================================================================================================================

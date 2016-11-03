@@ -9,6 +9,20 @@ std::string const& m1::game_platform::get_name() const
 
 // --------------------------------------------------------------------------------------------------------------------
 
+int m1::game_platform::get_surface_width() const
+{
+    return m_SurfaceWidth;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+int m1::game_platform::get_surface_height() const
+{
+    return m_SurfaceHeight;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
 /*virtual*/ void m1::game_platform::on_idle()
 {
     event_idle.emit();
@@ -61,6 +75,10 @@ std::string const& m1::game_platform::get_name() const
 /*virtual*/ void m1::game_platform::on_resize(int width, int height)
 {
     event_resize.emit(width, height);
+
+    // update members after event so listeners can compare before/after values
+    m_SurfaceWidth = width;
+    m_SurfaceHeight = height;
 }
 
 // ====================================================================================================================

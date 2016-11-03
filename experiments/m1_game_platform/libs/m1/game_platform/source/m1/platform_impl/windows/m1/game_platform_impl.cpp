@@ -16,6 +16,14 @@ static HWND CreateWND(HINSTANCE hInstance,
     m_ImplPtr->program_handle = GetModuleHandleW(nullptr);
     m_ImplPtr->window_handle = CreateWND(m_ImplPtr->program_handle, m_Name);
     SetWindowLongPtrW(m_ImplPtr->window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms633503(v=vs.85).aspx
+    // right member contains width
+    // bottom member contains height
+    RECT window_rect = {};
+    GetClientRect(m_ImplPtr->window_handle, &window_rect);
+    m_SurfaceWidth = window_rect.right;
+    m_SurfaceHeight = window_rect.bottom;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
