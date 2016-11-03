@@ -26,27 +26,116 @@ namespace vku
         VkSurfaceKHR m_SurfaceKHR = VK_NULL_HANDLE;
     };
 
-    // ----------------------------------------------------------------------------------------------------------------
+    // ================================================================================================================
 
-    class SelectQueueWithFlagsAndSurfaceSupport
+    class SelectQueueFamilyWithFlagsAndSurfaceSupport
         : private PhysicalDeviceSurfaceSupportKHR
-        , private SelectQueueWithFlags
+        , private SelectQueueFamilyWithFlags
     {
     public:
-        SelectQueueWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
-                                              VkSurfaceKHR surface,
-                                              VkQueueFlags requiredQueueFlags);
-        SelectQueueWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
-                                              VkSurfaceKHR surface,
-                                              VkQueueFlags requiredQueueFlags,
-                                              VkQueueFlags allowedQueueFlags,
-                                              uint32_t requiredEnableCount,
-                                              uint32_t allowedEnableCount);
+        SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                                    VkSurfaceKHR surface,
+                                                    VkQueueFlags requiredQueueFlags);
+        SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
+                                                    VkSurfaceKHR surface,
+                                                    VkQueueFlags requiredQueueFlags,
+                                                    VkQueueFlags allowedQueueFlags);
 
-        uint32_t operator () (VkPhysicalDevice physicalDevice,
-                              uint32_t queueFamilyIndex,
-                              VkQueueFamilyProperties const &queueFamilyProperties) const;
+        bool operator () (VkPhysicalDevice physicalDevice,
+                          uint32_t queueFamilyIndex,
+                          VkQueueFamilyProperties const &queueFamilyProperties) const;
     };
+
+    // ================================================================================================================
+
+    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfnGetPhysicalDeviceSurfaceFormatsKHR,
+                                                                       VkPhysicalDevice physicalDevice,
+                                                                       VkSurfaceKHR surface);
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkSurfaceFormatKHR SelectSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &surfaceFormats,
+                                           VkFormat preferredFormat = VK_FORMAT_B8G8R8A8_SRGB);
+
+    // ================================================================================================================
+
+    std::vector<VkPresentModeKHR> GetPhysicalDeviceSurfacePresentModesKHR(PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfnGetPhysicalDeviceSurfacePresentModesKHR,
+                                                                          VkPhysicalDevice physicalDevice,
+                                                                          VkSurfaceKHR surface);
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkPresentModeKHR SelectPresentMode(std::vector<VkPresentModeKHR> const &presentModes,
+                                       std::vector<VkPresentModeKHR> const &preferredModes);
+
+    // ================================================================================================================
+
+    struct SwapchainCreateInfo
+    {
+        PFN_vkCreateSwapchainKHR      pfnCreateSwapchainKHR;
+        VkDevice                      device;
+        VkSurfaceKHR                  surface;
+        uint32_t                      minImageCount;
+        VkFormat                      imageFormat;
+        VkColorSpaceKHR               imageColorSpace;
+        VkExtent2D                    imageExtent;
+        uint32_t                      imageArrayLayers;
+        VkImageUsageFlags             imageUsage;
+        VkSharingMode                 imageSharingMode;
+        uint32_t                      queueFamilyIndexCount;
+        const uint32_t*               pQueueFamilyIndices;
+        VkSurfaceTransformFlagBitsKHR preTransform;
+        VkCompositeAlphaFlagBitsKHR   compositeAlpha;
+        VkPresentModeKHR              presentMode;
+        VkBool32                      clipped;
+        VkSwapchainKHR                oldSwapchain;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    SwapchainCreateInfo CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfnGetPhysicalDeviceSurfaceFormatsKHR,
+                                                  PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR pfnGetPhysicalDeviceSurfaceCapabilitiesKHR,
+                                                  PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfnGetPhysicalDeviceSurfacePresentModesKHR,
+                                                  PFN_vkCreateSwapchainKHR pfnCreateSwapchainKHR,
+                                                  VkDevice device,
+                                                  VkPhysicalDevice physicalDevice,
+                                                  VkSurfaceKHR surface,
+                                                  uint32_t requestedImageCount,
+                                                  VkExtent2D defaultImageExtent,
+                                                  std::vector<VkPresentModeKHR> const &preferredPresentModes,
+                                                  VkSwapchainKHR oldSwapchain);
+
+    // ================================================================================================================
+
+    class Swapchain
+    {
+    public:
+        Swapchain() = default;
+        explicit Swapchain(VkDevice device,
+                           VkSwapchainKHR swapchain,
+                           PFN_vkDestroySwapchainKHR pfnDestroySwapchainKHR);
+        Swapchain(Swapchain &&rhs);
+        Swapchain& operator = (Swapchain &&rhs);
+        ~Swapchain();
+
+        explicit operator bool() const;
+        operator VkSwapchainKHR() const;
+
+    private:
+        Swapchain(Swapchain const &rhs) = delete;
+        Swapchain& operator = (Swapchain const &rhs) = delete;
+
+        void Reset();
+
+        // members:
+        VkDevice                  m_VkDevice               = VK_NULL_HANDLE;
+        VkSwapchainKHR            m_VkSwapchainKHR         = VK_NULL_HANDLE;
+        PFN_vkDestroySwapchainKHR m_pfnDestroySwapchainKHR = nullptr;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkSwapchainKHR CreateSwapchain(SwapchainCreateInfo const &createInfo);
 
     // ================================================================================================================
 } // namespace vku

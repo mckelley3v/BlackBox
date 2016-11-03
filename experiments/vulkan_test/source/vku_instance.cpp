@@ -75,6 +75,7 @@ vku::Instance::Instance(Instance &&rhs)
 
 vku::Instance& vku::Instance::operator = (Instance &&rhs)
 {
+    Reset();
     m_VkInstance = rhs.m_VkInstance;
     rhs.m_VkInstance = VK_NULL_HANDLE;
     return *this;
@@ -84,11 +85,7 @@ vku::Instance& vku::Instance::operator = (Instance &&rhs)
 
 vku::Instance::~Instance()
 {
-    if(m_VkInstance != VK_NULL_HANDLE)
-    {
-        vkDestroyInstance(m_VkInstance, // pInstance
-                          nullptr); // pAllocator
-    }
+    Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -103,6 +100,18 @@ vku::Instance::~Instance()
 vku::Instance::operator VkInstance() const
 {
     return m_VkInstance;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Instance::Reset()
+{
+    if(m_VkInstance != VK_NULL_HANDLE)
+    {
+        vkDestroyInstance(m_VkInstance, // pInstance
+                          nullptr); // pAllocator
+        m_VkInstance = VK_NULL_HANDLE;
+    }
 }
 
 // ====================================================================================================================

@@ -59,39 +59,37 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    class SelectQueueWithFlags
+    class SelectQueueFamilyWithFlags
     {
     public:
-        SelectQueueWithFlags(VkQueueFlags requiredQueueFlags);
-        SelectQueueWithFlags(VkQueueFlags requiredQueueFlags,
-                              VkQueueFlags allowedQueueFlags,
-                              uint32_t requiredEnableCount,
-                              uint32_t allowedEnableCount);
+        SelectQueueFamilyWithFlags(VkQueueFlags requiredQueueFlags);
+        SelectQueueFamilyWithFlags(VkQueueFlags requiredQueueFlags,
+                                   VkQueueFlags allowedQueueFlags);
 
-        uint32_t operator () (VkPhysicalDevice physicalDevice,
-                              uint32_t queueFamilyIndex,
-                              VkQueueFamilyProperties const &queueFamilyProperties) const;
+        bool operator () (VkPhysicalDevice physicalDevice,
+                          uint32_t queueFamilyIndex,
+                          VkQueueFamilyProperties const &queueFamilyProperties) const;
 
     private:
         // members:
-        VkQueueFlags m_RequiredQueueFlags  = 0u;
-        VkQueueFlags m_AllowedQueueFlags   = ~0u;
-        uint32_t     m_RequiredEnableCount = 1u;
-        uint32_t     m_AllowedEnableCount  = 1u;
+        VkQueueFlags m_RequiredQueueFlags = 0u;
+        VkQueueFlags m_AllowedQueueFlags  = ~0u;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    typedef std::function<uint32_t(VkPhysicalDevice physicalDevice,
-                                   uint32_t queueFamilyIndex,
-                                   VkQueueFamilyProperties const &queueFamilyProperties)> SelectQueueFunc;
+    typedef std::function<bool(VkPhysicalDevice physicalDevice,
+                               uint32_t queueFamilyIndex,
+                               VkQueueFamilyProperties const &queueFamilyProperties)> SelectQueueFamilyFunc;
 
     // ----------------------------------------------------------------------------------------------------------------
 
     struct PhysicalDeviceRequestedQueueProperties
     {
-        SelectQueueFunc selectQueueFunc;
-        float           defaultPriority;
+        SelectQueueFamilyFunc selectQueueFamilyFunc;
+        float                 defaultPriority;
+        uint32_t              requiredEnableCount;
+        uint32_t              allowedEnableCount;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -120,6 +118,8 @@ namespace vku
     private:
         LogicalDevice(LogicalDevice const &rhs) = delete;
         LogicalDevice& operator = (LogicalDevice const &rhs) = delete;
+
+        void Reset();
 
         // members:
         VkDevice m_VkDevice = VK_NULL_HANDLE;
@@ -189,19 +189,6 @@ namespace vku
     };
 
     // ================================================================================================================
-
-    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR const pfnGetPhysicalDeviceSurfaceFormatsKHR,
-                                                                       VkPhysicalDevice physicalDevice,
-                                                                       VkSurfaceKHR surface);
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    template <typename DeviceType>
-    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(DeviceType const &device,
-                                                                       VkPhysicalDevice physicalDevice,
-                                                                       VkSurfaceKHR surface);
-
-    // ================================================================================================================
 } // namespace vku
 
 // ====================================================================================================================
@@ -218,18 +205,6 @@ template <typename R, typename ...Args>
 R vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
 {
     return get()(args...);
-}
-
-// ====================================================================================================================
-
-template <typename DeviceType>
-std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(DeviceType const &device,
-                                                                        VkPhysicalDevice physicalDevice,
-                                                                        VkSurfaceKHR surface)
-{
-    return GetPhysicalDeviceSurfaceFormatsKHR(device.GetPhysicalDeviceSurfaceFormatsKHR.get(),
-                                              physicalDevice,
-                                              surface);
 }
 
 // ====================================================================================================================

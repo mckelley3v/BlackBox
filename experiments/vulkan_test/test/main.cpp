@@ -20,8 +20,8 @@ namespace vku
 
         // procs:
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceSupportKHR);
-        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceCapabilitiesKHR);
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceFormatsKHR);
+        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceCapabilitiesKHR);
         VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfacePresentModesKHR);
 
         // properties:
@@ -59,17 +59,22 @@ namespace vku
         // properties:
         VkQueue GetGraphicsQueue() const;
 
+        void SetSwapchain(Swapchain &&swapchain);
+        Swapchain const& GetSwapchain() const;
+
     private:
         ApplicationDevice(LogicalDevice const &rhs) = delete;
         ApplicationDevice& operator = (LogicalDevice const &rhs) = delete;
 
         // members:
-        VkQueue m_GraphicsQueue = VK_NULL_HANDLE;
+        VkQueue   m_GraphicsQueue = VK_NULL_HANDLE;
+        Swapchain m_Swapchain;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    ApplicationDevice CreateApplicationDevice(ApplicationInstance const &instance);
+    ApplicationDevice CreateApplicationDevice(m1::game_platform const &gamePlatform,
+                                              ApplicationInstance const &instance);
 
     // ================================================================================================================
 }
@@ -83,7 +88,7 @@ int main()
         m1::game_platform game_platform("vulkan_test");
 
         vku::ApplicationInstance const vk_inst = vku::CreateApplicationInstance(game_platform);
-        vku::ApplicationDevice const vk_device = vku::CreateApplicationDevice(vk_inst);
+        vku::ApplicationDevice const vk_device = vku::CreateApplicationDevice(game_platform, vk_inst);
 
         return game_platform.run();
     }
@@ -124,6 +129,27 @@ vku::ApplicationDevice::ApplicationDevice(VkDevice const device,
 {
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+
+VkQueue vku::ApplicationDevice::GetGraphicsQueue() const
+{
+    return m_GraphicsQueue;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::ApplicationDevice::SetSwapchain(Swapchain &&swapchain)
+{
+    m_Swapchain = std::move(swapchain);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Swapchain const& vku::ApplicationDevice::GetSwapchain() const
+{
+    return m_Swapchain;
+}
+
 // ====================================================================================================================
 
 vku::ApplicationInstance vku::CreateApplicationInstance(m1::game_platform const &gamePlatform)
@@ -149,8 +175,8 @@ vku::ApplicationInstance vku::CreateApplicationInstance(m1::game_platform const 
                                       // allowedExtensions
                                       {});
 
-    VkInstance instance = CreateInstance(instance_create_info);
-    VkSurfaceKHR surface = CreateSurfaceKHR(instance, gamePlatform);
+    VkInstance const instance = CreateInstance(instance_create_info);
+    VkSurfaceKHR const surface = CreateSurfaceKHR(instance, gamePlatform);
 
     return ApplicationInstance(instance,
                                surface);
@@ -158,18 +184,34 @@ vku::ApplicationInstance vku::CreateApplicationInstance(m1::game_platform const 
 
 // ====================================================================================================================
 
-vku::ApplicationDevice vku::CreateApplicationDevice(ApplicationInstance const &instance)
+vku::ApplicationDevice vku::CreateApplicationDevice(m1::game_platform const &gamePlatform,
+                                                    ApplicationInstance const &instance)
 {
+    // consider how to support something like:
+    // 1) 1 queue with (VK_QUEUE_GRAPHICS_BIT && SurfaceSupport),
+    //      else: 1 queue with VK_QUEUE_GRAPHICS_BIT, 1 queue with SurfaceSupport
+    // 2) 1 queue with ((VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT) && SurfaceSupport)
+    //      else if: 1 queue with (VK_QUEUE_GRAPHICS_BIT && SurfaceSupport), 1 queue with VK_QUEUE_COMPUTE_BIT
+    //      else if: 1 queue with (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT), 1 queue with SurfaceSupport
+    //      else if: 1 queue with (VK_QUEUE_COMPUTE_BIT && SurfaceSupport), 1 queue with VK_QUEUE_GRAPHICS_BIT
+    //      else: 1 queue with VK_QUEUE_GRAPHICS_BIT, 1 queue with VK_QUEUE_COMPUTE_BIT, 1 queue with SurfaceSupport
+    // perhaps have std::vector<std::vector<PhysicalDeviceRequestedQueueProperties>> requestedQueues, and a multi-pass queue algorithm to find
+    // best group of queues (for each requestedQueues group, ...), so we'll prefer the first group over the second
+
+    // **don't forget to update the swapchain's queue family index and image sharing mode if the graphics queue and present queues are different**
+
     LogicalDeviceCreateInfo const device_create_info =
         CreateLogicalDeviceCreateInfo(instance,
                                       // requestedQueues
                                       {
                                           {
-                                              // selectQueueFunc
-                                              SelectQueueWithFlagsAndSurfaceSupport(instance.GetPhysicalDeviceSurfaceSupportKHR.get(),
-                                                                                    instance.GetSurfaceKHR(),
-                                                                                    VK_QUEUE_GRAPHICS_BIT),
+                                              // selectQueueFamilyFunc
+                                              SelectQueueFamilyWithFlagsAndSurfaceSupport(instance.GetPhysicalDeviceSurfaceSupportKHR.get(),
+                                                                                          instance.GetSurfaceKHR(),
+                                                                                          VK_QUEUE_GRAPHICS_BIT),
                                               1.0f, // defaultPriority
+                                              1u, // requiredEnableCount
+                                              1u, // allowedEnableCount
                                           },
                                       },
                                       // requiredLayers
@@ -181,15 +223,35 @@ vku::ApplicationDevice vku::CreateApplicationDevice(ApplicationInstance const &i
                                       // allowedExtensions
                                       {});
 
-    VkDevice device = CreateLogicalDevice(device_create_info);
+    VkDevice const device = CreateLogicalDevice(device_create_info);
     VkQueue graphics_queue = VK_NULL_HANDLE;
     vkGetDeviceQueue(device,
                      device_create_info.queueFamilies[0].familyIndex,
                      0,
                      &graphics_queue);
 
-    return ApplicationDevice(device,
-                             graphics_queue);
+    ApplicationDevice application_device(device,
+                                         graphics_queue);
+
+    vku::SwapchainCreateInfo const swapchain_create_info = vku::CreateSwapchainCreateInfo(instance.GetPhysicalDeviceSurfaceFormatsKHR.get(),
+                                                                                          instance.GetPhysicalDeviceSurfaceCapabilitiesKHR.get(),
+                                                                                          instance.GetPhysicalDeviceSurfacePresentModesKHR.get(),
+                                                                                          application_device.CreateSwapchainKHR.get(),
+                                                                                          device,
+                                                                                          device_create_info.physicalDevice,
+                                                                                          instance.GetSurfaceKHR(),
+                                                                                          2, // requestedImageCount,
+                                                                                          VkExtent2D{static_cast<uint32_t>(gamePlatform.get_surface_width()),
+                                                                                                     static_cast<uint32_t>(gamePlatform.get_surface_height())}, // defaultImageExtent
+                                                                                          {/*preferred*/ VK_PRESENT_MODE_MAILBOX_KHR, /*backup*/ VK_PRESENT_MODE_IMMEDIATE_KHR}, // preferredPresentModes
+                                                                                          VK_NULL_HANDLE);
+    vku::Swapchain application_swapchain(device,
+                                         vku::CreateSwapchain(swapchain_create_info),
+                                         application_device.DestroySwapchainKHR.get());
+
+    application_device.SetSwapchain(std::move(application_swapchain));
+
+    return application_device;
 }
 
 // ====================================================================================================================

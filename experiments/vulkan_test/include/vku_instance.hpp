@@ -65,6 +65,8 @@ namespace vku
         Instance(Instance const &rhs) = delete;
         Instance& operator = (Instance const &rhs) = delete;
 
+        void Reset();
+
         // members:
         VkInstance m_VkInstance = VK_NULL_HANDLE;
     };

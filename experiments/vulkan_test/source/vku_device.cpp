@@ -40,7 +40,7 @@ std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const ins
             throw std::runtime_error("error: vkEnumeratePhysicalDevices returned unknown error");
     }
 
-    std::vector<VkPhysicalDevice> devices(device_count);
+    std::vector<VkPhysicalDevice> devices(device_count, VK_NULL_HANDLE);
     switch(vkEnumeratePhysicalDevices(instance,
                                       &device_count,
                                       devices.data()))
@@ -102,40 +102,29 @@ std::vector<vku::LayerExtensionProperties> vku::EnumeratePhysicalDeviceLayersExt
 
 // ====================================================================================================================
 
-vku::SelectQueueWithFlags::SelectQueueWithFlags(VkQueueFlags const requiredQueueFlags)
+vku::SelectQueueFamilyWithFlags::SelectQueueFamilyWithFlags(VkQueueFlags const requiredQueueFlags)
     : m_RequiredQueueFlags(requiredQueueFlags)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::SelectQueueWithFlags::SelectQueueWithFlags(VkQueueFlags const requiredQueueFlags,
-                                                  VkQueueFlags const allowedQueueFlags,
-                                                  uint32_t const requiredEnableCount,
-                                                  uint32_t const allowedEnableCount)
+vku::SelectQueueFamilyWithFlags::SelectQueueFamilyWithFlags(VkQueueFlags const requiredQueueFlags,
+                                                            VkQueueFlags const allowedQueueFlags)
     : m_RequiredQueueFlags(requiredQueueFlags)
     , m_AllowedQueueFlags(allowedQueueFlags)
-    , m_RequiredEnableCount(requiredEnableCount)
-    , m_AllowedEnableCount(allowedEnableCount)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-uint32_t vku::SelectQueueWithFlags::operator () (VkPhysicalDevice const /*physicalDevice*/,
-                                                 uint32_t const /*queueFamilyIndex*/,
-                                                 VkQueueFamilyProperties const &queueFamilyProperties) const
+bool vku::SelectQueueFamilyWithFlags::operator () (VkPhysicalDevice const /*physicalDevice*/,
+                                                   uint32_t const /*queueFamilyIndex*/,
+                                                   VkQueueFamilyProperties const &queueFamilyProperties) const
 {
     bool const has_required_queue_flags = (queueFamilyProperties.queueFlags & m_RequiredQueueFlags) ? true : false;
     bool const has_forbidden_queue_flags = (queueFamilyProperties.queueFlags & ~(m_AllowedQueueFlags | m_RequiredQueueFlags)) ? true : false;
-    bool const has_enough_queues = queueFamilyProperties.queueCount >= m_RequiredEnableCount;
-    if(has_required_queue_flags && !has_forbidden_queue_flags && has_enough_queues)
-    {
-        uint32_t const requested_queue_count = std::min(queueFamilyProperties.queueCount, m_AllowedEnableCount);
-        return requested_queue_count;
-    }
-
-    return 0u;
+    return has_required_queue_flags && !has_forbidden_queue_flags;
 }
 
 // ====================================================================================================================
@@ -159,7 +148,7 @@ vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(VkInstance const
         {
             std::vector<PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families = enumerate_selected_queue_families(physical_device,
                                                                                                                          requestedQueues);
-            if(selected_queue_families.size() == requestedQueues.size())
+            if(!selected_queue_families.empty())
             {
                 std::vector<char const*> layer_names;
                 std::vector<char const*> extension_names;
@@ -203,6 +192,7 @@ vku::LogicalDevice::LogicalDevice(LogicalDevice &&rhs)
 
 vku::LogicalDevice& vku::LogicalDevice::operator = (LogicalDevice &&rhs)
 {
+    Reset();
     m_VkDevice = rhs.m_VkDevice;
     rhs.m_VkDevice = VK_NULL_HANDLE;
     return *this;
@@ -212,11 +202,7 @@ vku::LogicalDevice& vku::LogicalDevice::operator = (LogicalDevice &&rhs)
 
 vku::LogicalDevice::~LogicalDevice()
 {
-    if(m_VkDevice != VK_NULL_HANDLE)
-    {
-        vkDestroyDevice(m_VkDevice, // pDevice
-                        nullptr); // pAllocator
-    }
+    Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -231,6 +217,18 @@ vku::LogicalDevice::~LogicalDevice()
 vku::LogicalDevice::operator VkDevice() const
 {
     return m_VkDevice;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::LogicalDevice::Reset()
+{
+    if(m_VkDevice != VK_NULL_HANDLE)
+    {
+        vkDestroyDevice(m_VkDevice, // pDevice
+                        nullptr); // pAllocator
+        m_VkDevice = VK_NULL_HANDLE;
+    }
 }
 
 // ====================================================================================================================
@@ -314,65 +312,6 @@ vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
     {
         throw std::runtime_error(make_string("error: vkGetDeviceProcAddr(\"", func_name, "\") returned nullptr"));
     }
-}
-
-// ====================================================================================================================
-
-std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR const pfnGetPhysicalDeviceSurfaceFormatsKHR,
-                                                                        VkPhysicalDevice physicalDevice,
-                                                                        VkSurfaceKHR surface)
-{
-    assert(pfnGetPhysicalDeviceSurfaceFormatsKHR != nullptr);
-
-    uint32_t surface_format_count = 0;
-    switch(pfnGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
-                                                 surface,
-                                                 &surface_format_count,
-                                                 nullptr))
-    {
-        case VK_SUCCESS:
-        case VK_INCOMPLETE:
-            break;
-
-        case VK_ERROR_OUT_OF_HOST_MEMORY:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_OUT_OF_HOST_MEMORY");
-
-        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_OUT_OF_DEVICE_MEMORY");
-
-        case VK_ERROR_SURFACE_LOST_KHR:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_SURFACE_LOST_KHR");
-
-        default:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned unknown error");
-    }
-
-    std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count, VkSurfaceFormatKHR());
-    switch(pfnGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
-                                                 surface,
-                                                 &surface_format_count,
-                                                 surface_formats.data()))
-    {
-        case VK_SUCCESS:
-            break;
-
-        case VK_INCOMPLETE:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_INCOMPLETE");
-
-        case VK_ERROR_OUT_OF_HOST_MEMORY:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_OUT_OF_HOST_MEMORY");
-
-        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_OUT_OF_DEVICE_MEMORY");
-
-        case VK_ERROR_SURFACE_LOST_KHR:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned VK_ERROR_SURFACE_LOST_KHR");
-
-        default:
-            throw std::runtime_error("error: vkGetPhysicalDeviceSurfaceFormatsKHR returned unknown error");
-    }
-
-    return surface_formats;
 }
 
 // ====================================================================================================================
@@ -493,23 +432,29 @@ std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGe
 
     for(vku::PhysicalDeviceRequestedQueueProperties const &requested_queue : requestedQueues)
     {
-        bool found_requested_queue = false;
+        bool const is_required_queue = (requested_queue.requiredEnableCount > 0);
 
+        bool found_requested_queue = false;
         for(uint32_t family_index = 0; family_index < queue_family_count; ++family_index)
         {
             VkQueueFamilyProperties const &family_properties = queue_families_properties[family_index];
-            uint32_t const selected_queue_count = requested_queue.selectQueueFunc(physicalDevice, family_index, family_properties);
-            if(selected_queue_count > 0)
+            bool const has_enough_queues = family_properties.queueCount >= requested_queue.requiredEnableCount;
+            if(has_enough_queues)
             {
-                found_requested_queue = true;
-                selected_queue_families.push_back(vku::PhysicalDeviceQueueFamilyCreateInfo{family_properties,
-                                                                                           family_index,
-                                                                                           std::vector<float>(selected_queue_count, requested_queue.defaultPriority)});
-                break;
+                if(requested_queue.selectQueueFamilyFunc(physicalDevice, family_index, family_properties))
+                {
+                    uint32_t const selected_queue_count = std::min(family_properties.queueCount, requested_queue.allowedEnableCount);
+
+                    found_requested_queue = true;
+                    selected_queue_families.push_back(vku::PhysicalDeviceQueueFamilyCreateInfo{family_properties,
+                                                                                               family_index,
+                                                                                               std::vector<float>(selected_queue_count, requested_queue.defaultPriority)});
+                    break;
+                }
             }
         }
 
-        if(!found_requested_queue)
+        if(is_required_queue && !found_requested_queue)
         {
             return std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo>();
         }
