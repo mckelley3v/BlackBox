@@ -1,6 +1,6 @@
 #include "m1/game_platform.hpp"
 #include "vku.hpp"
-#include "vku_surface_m1.hpp"
+#include "vku_Surface_m1.hpp"
 #include <vector>
 #include <iostream>
 
@@ -19,10 +19,10 @@ namespace vku
                                      VkSurfaceKHR surface);
 
         // procs:
-        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceSupportKHR);
-        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceFormatsKHR);
-        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfaceCapabilitiesKHR);
-        VKU_INSTANCE_PROC_MEMBER(GetPhysicalDeviceSurfacePresentModesKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceSupportKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceFormatsKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceCapabilitiesKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfacePresentModesKHR);
 
         // properties:
         VkSurfaceKHR GetSurfaceKHR() const;
@@ -32,7 +32,7 @@ namespace vku
         ApplicationInstance& operator = (Instance const &rhs) = delete;
 
         // members:
-        VkSurfaceKHR m_SurfaceKHR = VK_NULL_HANDLE;
+        SurfaceKHR m_SurfaceKHR;
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -50,11 +50,11 @@ namespace vku
                                    VkQueue graphicsQueue);
 
         // procs:
-        VKU_DEVICE_PROC_MEMBER(CreateSwapchainKHR);
-        VKU_DEVICE_PROC_MEMBER(DestroySwapchainKHR);
-        VKU_DEVICE_PROC_MEMBER(GetSwapchainImagesKHR);
-        VKU_DEVICE_PROC_MEMBER(AcquireNextImageKHR);
-        VKU_DEVICE_PROC_MEMBER(QueuePresentKHR);
+        VKU_DEVICE_PROC_MEMBER(vkCreateSwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(vkDestroySwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(vkGetSwapchainImagesKHR);
+        VKU_DEVICE_PROC_MEMBER(vkAcquireNextImageKHR);
+        VKU_DEVICE_PROC_MEMBER(vkQueuePresentKHR);
 
         // properties:
         VkQueue GetGraphicsQueue() const;
@@ -109,7 +109,7 @@ int main()
 vku::ApplicationInstance::ApplicationInstance(VkInstance const instance,
                                               VkSurfaceKHR const surface)
     : Instance(instance)
-    , m_SurfaceKHR(surface)
+    , m_SurfaceKHR(instance, surface)
 {
 }
 
@@ -206,7 +206,7 @@ vku::ApplicationDevice vku::CreateApplicationDevice(m1::game_platform const &gam
                                       {
                                           {
                                               // selectQueueFamilyFunc
-                                              SelectQueueFamilyWithFlagsAndSurfaceSupport(instance.GetPhysicalDeviceSurfaceSupportKHR.get(),
+                                              SelectQueueFamilyWithFlagsAndSurfaceSupport(instance.vkGetPhysicalDeviceSurfaceSupportKHR.get(),
                                                                                           instance.GetSurfaceKHR(),
                                                                                           VK_QUEUE_GRAPHICS_BIT),
                                               1.0f, // defaultPriority
@@ -233,10 +233,10 @@ vku::ApplicationDevice vku::CreateApplicationDevice(m1::game_platform const &gam
     ApplicationDevice application_device(device,
                                          graphics_queue);
 
-    vku::SwapchainCreateInfo const swapchain_create_info = vku::CreateSwapchainCreateInfo(instance.GetPhysicalDeviceSurfaceFormatsKHR.get(),
-                                                                                          instance.GetPhysicalDeviceSurfaceCapabilitiesKHR.get(),
-                                                                                          instance.GetPhysicalDeviceSurfacePresentModesKHR.get(),
-                                                                                          application_device.CreateSwapchainKHR.get(),
+    vku::SwapchainCreateInfo const swapchain_create_info = vku::CreateSwapchainCreateInfo(instance.vkGetPhysicalDeviceSurfaceFormatsKHR.get(),
+                                                                                          instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR.get(),
+                                                                                          instance.vkGetPhysicalDeviceSurfacePresentModesKHR.get(),
+                                                                                          application_device.vkCreateSwapchainKHR.get(),
                                                                                           device,
                                                                                           device_create_info.physicalDevice,
                                                                                           instance.GetSurfaceKHR(),
@@ -245,8 +245,8 @@ vku::ApplicationDevice vku::CreateApplicationDevice(m1::game_platform const &gam
                                                                                                      static_cast<uint32_t>(gamePlatform.get_surface_height())}, // defaultImageExtent
                                                                                           {/*preferred*/ VK_PRESENT_MODE_MAILBOX_KHR, /*backup*/ VK_PRESENT_MODE_IMMEDIATE_KHR}, // preferredPresentModes
                                                                                           VK_NULL_HANDLE);
-    vku::Swapchain application_swapchain(application_device.GetSwapchainImagesKHR.get(),
-                                         application_device.DestroySwapchainKHR.get(),
+    vku::Swapchain application_swapchain(application_device.vkGetSwapchainImagesKHR.get(),
+                                         application_device.vkDestroySwapchainKHR.get(),
                                          swapchain_create_info);
 
     application_device.SetSwapchain(std::move(application_swapchain));

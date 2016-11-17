@@ -1,9 +1,9 @@
 #ifndef VKU_HPP
 #define VKU_HPP
 
-#include "vku_instance.hpp"
-#include "vku_device.hpp"
-#include "vku_surface.hpp"
+#include "vku_Instance.hpp"
+#include "vku_Device.hpp"
+#include "vku_Surface.hpp"
 
 // ====================================================================================================================
 
