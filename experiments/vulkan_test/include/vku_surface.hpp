@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.h>
 #include "vku_device.hpp"
+#include "vku_image.hpp"
 
 // ====================================================================================================================
 
@@ -111,9 +112,9 @@ namespace vku
     {
     public:
         Swapchain() = default;
-        explicit Swapchain(VkDevice device,
-                           VkSwapchainKHR swapchain,
-                           PFN_vkDestroySwapchainKHR pfnDestroySwapchainKHR);
+        explicit Swapchain(PFN_vkGetSwapchainImagesKHR pfnGetSwapchainImagesKHR,
+                           PFN_vkDestroySwapchainKHR pfnDestroySwapchainKHR,
+                           SwapchainCreateInfo const &createInfo);
         Swapchain(Swapchain &&rhs);
         Swapchain& operator = (Swapchain &&rhs);
         ~Swapchain();
@@ -127,15 +128,29 @@ namespace vku
 
         void Reset();
 
+        // types:
+        struct ImageEntry
+        {
+            VkImage     image;
+            ImageView   imageView;
+        };
+
         // members:
+        PFN_vkDestroySwapchainKHR m_pfnDestroySwapchainKHR = nullptr;
         VkDevice                  m_VkDevice               = VK_NULL_HANDLE;
         VkSwapchainKHR            m_VkSwapchainKHR         = VK_NULL_HANDLE;
-        PFN_vkDestroySwapchainKHR m_pfnDestroySwapchainKHR = nullptr;
+        std::vector<ImageEntry>   m_Images                 = {};
     };
 
     // ----------------------------------------------------------------------------------------------------------------
 
     VkSwapchainKHR CreateSwapchain(SwapchainCreateInfo const &createInfo);
+
+    // ================================================================================================================
+
+    std::vector<VkImage> GetSwapchainImages(PFN_vkGetSwapchainImagesKHR pfnGetSwapchainImagesKHR,
+                                            VkDevice device,
+                                            VkSwapchainKHR swapchain);
 
     // ================================================================================================================
 } // namespace vku

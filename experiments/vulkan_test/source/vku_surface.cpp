@@ -340,25 +340,78 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
 
 // ====================================================================================================================
 
-/*explicit*/ vku::Swapchain::Swapchain(VkDevice device,
-                                       VkSwapchainKHR const swapchain,
-                                       PFN_vkDestroySwapchainKHR const pfnDestroySwapchainKHR)
-    : m_VkDevice(device)
-    , m_VkSwapchainKHR(swapchain)
-    , m_pfnDestroySwapchainKHR(pfnDestroySwapchainKHR)
+/*explicit*/ vku::Swapchain::Swapchain(PFN_vkGetSwapchainImagesKHR const pfnGetSwapchainImagesKHR,
+                                       PFN_vkDestroySwapchainKHR const pfnDestroySwapchainKHR,
+                                       SwapchainCreateInfo const &createInfo)
+    : m_pfnDestroySwapchainKHR(pfnDestroySwapchainKHR)
+    , m_VkDevice(createInfo.device)
+    , m_VkSwapchainKHR(CreateSwapchain(createInfo))
 {
+    std::vector<VkImage> const swapchainImages = GetSwapchainImages(pfnGetSwapchainImagesKHR,
+                                                                    m_VkDevice,
+                                                                    m_VkSwapchainKHR);
+    m_Images.reserve(swapchainImages.size());
+    for(VkImage const image : swapchainImages)
+    {
+        VkImageViewCreateInfo const image_view_create_info =
+        {
+            VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, // sType
+            nullptr,                                  // pNext
+            0,                                        // flags
+            image,                                    // image
+            VK_IMAGE_VIEW_TYPE_2D,                    // viewType
+            createInfo.imageFormat,                   // format
+            // components
+            {
+                VK_COMPONENT_SWIZZLE_R,
+                VK_COMPONENT_SWIZZLE_G,
+                VK_COMPONENT_SWIZZLE_B,
+                VK_COMPONENT_SWIZZLE_A,
+            },
+            // subresourceRange
+            {
+                VK_IMAGE_ASPECT_COLOR_BIT, // aspectMask
+                0,                         // baseMipLevel
+                1,                         // levelCount
+                0,                         // baseArrayLayer
+                1,                         // layerCount
+            },
+        };
+
+        VkImageView image_view = VK_NULL_HANDLE;
+        switch(vkCreateImageView(m_VkDevice,
+                                 &image_view_create_info,
+                                 nullptr, // pAllocator
+                                 &image_view))
+        {
+            case VK_SUCCESS:
+                break;
+
+            case VK_ERROR_OUT_OF_HOST_MEMORY:
+                throw std::runtime_error("error: vkCreateImageView returned VK_ERROR_OUT_OF_HOST_MEMORY");
+
+            case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+                throw std::runtime_error("error: vkCreateImageView returned VK_ERROR_OUT_OF_DEVICE_MEMORY");
+
+            default:
+                throw std::runtime_error("error: vkCreateImageView returned unknown error");
+        }
+
+        m_Images.push_back(ImageEntry{image,
+                                      ImageView(m_VkDevice, image_view)});
+    }
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::Swapchain::Swapchain(Swapchain &&rhs)
-    : m_VkDevice(rhs.m_VkDevice)
+    : m_pfnDestroySwapchainKHR(rhs.m_pfnDestroySwapchainKHR)
+    , m_VkDevice(rhs.m_VkDevice)
     , m_VkSwapchainKHR(rhs.m_VkSwapchainKHR)
-    , m_pfnDestroySwapchainKHR(rhs.m_pfnDestroySwapchainKHR)
 {
+    rhs.m_pfnDestroySwapchainKHR = nullptr;
     rhs.m_VkDevice = VK_NULL_HANDLE;
     rhs.m_VkSwapchainKHR = VK_NULL_HANDLE;
-    rhs.m_pfnDestroySwapchainKHR = nullptr;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -367,14 +420,14 @@ vku::Swapchain& vku::Swapchain::operator = (Swapchain &&rhs)
 {
     Reset();
 
+    m_pfnDestroySwapchainKHR = rhs.m_pfnDestroySwapchainKHR;
     m_VkDevice = rhs.m_VkDevice;
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-
     m_VkSwapchainKHR = rhs.m_VkSwapchainKHR;
+
+    rhs.m_pfnDestroySwapchainKHR = nullptr;
+    rhs.m_VkDevice = VK_NULL_HANDLE;
     rhs.m_VkSwapchainKHR = VK_NULL_HANDLE;
 
-    m_pfnDestroySwapchainKHR = rhs.m_pfnDestroySwapchainKHR;
-    rhs.m_pfnDestroySwapchainKHR = nullptr;
     return *this;
 }
 
@@ -403,17 +456,17 @@ vku::Swapchain::operator VkSwapchainKHR() const
 
 void vku::Swapchain::Reset()
 {
-    if((m_VkDevice != VK_NULL_HANDLE) &&
-       (m_VkSwapchainKHR != VK_NULL_HANDLE) &&
-       (m_pfnDestroySwapchainKHR != nullptr))
+    if((m_pfnDestroySwapchainKHR != nullptr) &&
+       (m_VkDevice != VK_NULL_HANDLE) &&
+       (m_VkSwapchainKHR != VK_NULL_HANDLE))
     {
         m_pfnDestroySwapchainKHR(m_VkDevice,
                                  m_VkSwapchainKHR,
                                  nullptr); // pAllocator
 
+        m_pfnDestroySwapchainKHR = VK_NULL_HANDLE;
         m_VkDevice = VK_NULL_HANDLE;
         m_VkSwapchainKHR = VK_NULL_HANDLE;
-        m_pfnDestroySwapchainKHR = VK_NULL_HANDLE;
     }
 }
 
@@ -473,6 +526,62 @@ VkSwapchainKHR vku::CreateSwapchain(SwapchainCreateInfo const &createInfo)
     }
 
     return swapchain;
+}
+
+// ====================================================================================================================
+
+std::vector<VkImage> vku::GetSwapchainImages(PFN_vkGetSwapchainImagesKHR const pfnGetSwapchainImagesKHR,
+                                             VkDevice const device,
+                                             VkSwapchainKHR const swapchain)
+{
+    assert(pfnGetSwapchainImagesKHR != nullptr);
+    assert(device != VK_NULL_HANDLE);
+    assert(swapchain != VK_NULL_HANDLE);
+
+    uint32_t swapchainImageCount = 0;
+    switch(pfnGetSwapchainImagesKHR(device,
+                                    swapchain,
+                                    &swapchainImageCount,
+                                    nullptr))
+    {
+        case VK_SUCCESS:
+        case VK_INCOMPLETE:
+            break;
+
+        case VK_ERROR_OUT_OF_HOST_MEMORY:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned VK_ERROR_OUT_OF_HOST_MEMORY");
+
+        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned VK_ERROR_OUT_OF_DEVICE_MEMORY");
+
+        default:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned unknown error");
+    }
+
+    std::vector<VkImage> swapchainImages(swapchainImageCount, VkImage());
+    switch(pfnGetSwapchainImagesKHR(device,
+                                    swapchain,
+                                    &swapchainImageCount,
+                                    swapchainImages.data()))
+    {
+        case VK_SUCCESS:
+            break;
+
+        case VK_INCOMPLETE:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned VK_INCOMPLETE");
+            break;
+
+        case VK_ERROR_OUT_OF_HOST_MEMORY:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned VK_ERROR_OUT_OF_HOST_MEMORY");
+
+        case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned VK_ERROR_OUT_OF_DEVICE_MEMORY");
+
+        default:
+            throw std::runtime_error("error: vkGetSwapchainImagesKHR returned unknown error");
+    }
+
+    return swapchainImages;
 }
 
 // ====================================================================================================================

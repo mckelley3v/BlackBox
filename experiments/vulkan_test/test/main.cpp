@@ -245,9 +245,9 @@ vku::ApplicationDevice vku::CreateApplicationDevice(m1::game_platform const &gam
                                                                                                      static_cast<uint32_t>(gamePlatform.get_surface_height())}, // defaultImageExtent
                                                                                           {/*preferred*/ VK_PRESENT_MODE_MAILBOX_KHR, /*backup*/ VK_PRESENT_MODE_IMMEDIATE_KHR}, // preferredPresentModes
                                                                                           VK_NULL_HANDLE);
-    vku::Swapchain application_swapchain(device,
-                                         vku::CreateSwapchain(swapchain_create_info),
-                                         application_device.DestroySwapchainKHR.get());
+    vku::Swapchain application_swapchain(application_device.GetSwapchainImagesKHR.get(),
+                                         application_device.DestroySwapchainKHR.get(),
+                                         swapchain_create_info);
 
     application_device.SetSwapchain(std::move(application_swapchain));
 
