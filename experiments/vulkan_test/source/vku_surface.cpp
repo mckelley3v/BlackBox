@@ -1,5 +1,5 @@
-#include "vku_surface.hpp"
-#include "vku_utility.hpp"
+#include "vku_Surface.hpp"
+#include "vku_Utility.hpp"
 #include "vku.hpp"
 #include <algorithm>
 #include <stdexcept>
@@ -7,10 +7,79 @@
 
 // ====================================================================================================================
 
+/*explicit*/ vku::SurfaceKHR::SurfaceKHR(VkInstance const instance,
+                                         VkSurfaceKHR const surface)
+    : m_VkInstance(instance)
+    , m_VkSurfaceKHR(surface)
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::SurfaceKHR::SurfaceKHR(SurfaceKHR &&rhs)
+    : m_VkInstance(rhs.m_VkInstance)
+    , m_VkSurfaceKHR(rhs.m_VkSurfaceKHR)
+{
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::SurfaceKHR& vku::SurfaceKHR::operator = (SurfaceKHR &&rhs)
+{
+    Reset();
+
+    m_VkInstance = rhs.m_VkInstance;
+    m_VkSurfaceKHR = rhs.m_VkSurfaceKHR;
+
+    rhs.m_VkInstance = VK_NULL_HANDLE;
+    rhs.m_VkSurfaceKHR = VK_NULL_HANDLE;
+
+    return *this;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::SurfaceKHR::~SurfaceKHR()
+{
+    Reset();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+/*explicit*/ vku::SurfaceKHR::operator bool() const
+{
+    return m_VkSurfaceKHR != VK_NULL_HANDLE;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::SurfaceKHR::operator VkSurfaceKHR() const
+{
+    return m_VkSurfaceKHR;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::SurfaceKHR::Reset()
+{
+    if((m_VkInstance != VK_NULL_HANDLE) &&
+       (m_VkSurfaceKHR != VK_NULL_HANDLE))
+    {
+        vkDestroySurfaceKHR(m_VkInstance,
+                            m_VkSurfaceKHR,
+                            nullptr); // pAllocator
+
+        m_VkInstance = VK_NULL_HANDLE;
+        m_VkSurfaceKHR = VK_NULL_HANDLE;
+    }
+}
+
+// ====================================================================================================================
+
 vku::PhysicalDeviceSurfaceSupportKHR::PhysicalDeviceSurfaceSupportKHR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
                                                                       VkSurfaceKHR const surface)
     : m_pfnGetPhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR)
-    , m_SurfaceKHR(surface)
+    , m_VkSurfaceKHR(surface)
 {
 }
 
@@ -22,12 +91,12 @@ bool vku::PhysicalDeviceSurfaceSupportKHR::operator () (VkPhysicalDevice const p
 {
     assert(m_pfnGetPhysicalDeviceSurfaceSupportKHR != nullptr);
     assert(physicalDevice != VK_NULL_HANDLE);
-    assert(m_SurfaceKHR != VK_NULL_HANDLE);
+    assert(m_VkSurfaceKHR != VK_NULL_HANDLE);
 
     VkBool32 surface_support = VK_FALSE;
     switch(m_pfnGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
                                                    queueFamilyIndex,
-                                                   m_SurfaceKHR,
+                                                   m_VkSurfaceKHR,
                                                    &surface_support))
     {
         case VK_SUCCESS:

@@ -1,5 +1,5 @@
 #include "vku_iostream.hpp"
-#include "vku_device.hpp"
+#include "vku_Device.hpp"
 #include <ostream>
 
 // ====================================================================================================================

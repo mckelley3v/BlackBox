@@ -1,5 +1,5 @@
-#include "vku_instance.hpp"
-#include "vku_utility.hpp"
+#include "vku_Instance.hpp"
+#include "vku_Utility.hpp"
 #include <utility>
 
 // ====================================================================================================================
@@ -54,6 +54,18 @@ vku::InstanceCreateInfo vku::CreateInstanceCreateInfo(ApplicationInfo const &app
                               std::move(layer_extension_properties),
                               std::move(layer_names),
                               std::move(extension_names)};
+}
+
+// ====================================================================================================================
+
+vku::InstanceProcBase::InstanceProcBase(VkInstance const instance,
+                                        char const * const func_name)
+    : m_FuncPtr(vkGetInstanceProcAddr(instance, func_name))
+{
+    if(m_FuncPtr == nullptr)
+    {
+        throw std::runtime_error(make_string("error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"));
+    }
 }
 
 // ====================================================================================================================
@@ -173,18 +185,6 @@ VkInstance vku::CreateInstance(InstanceCreateInfo const &createInfo)
     };
 
     return instance;
-}
-
-// ====================================================================================================================
-
-vku::InstanceProcBase::InstanceProcBase(VkInstance const instance,
-                                        char const * const func_name)
-    : m_FuncPtr(vkGetInstanceProcAddr(instance, func_name))
-{
-    if(m_FuncPtr == nullptr)
-    {
-        throw std::runtime_error(make_string("error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"));
-    }
 }
 
 // ====================================================================================================================

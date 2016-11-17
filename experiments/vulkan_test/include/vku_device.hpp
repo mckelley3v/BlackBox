@@ -1,14 +1,15 @@
 #ifndef VKU_DEVICE_HPP
 #define VKU_DEVICE_HPP
 
-#include "vku_extension.hpp"
+#include "vku_Extension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <functional>
 
 // ====================================================================================================================
 
-#define VKU_DEVICE_PROC_MEMBER(func_name) vku::DeviceProc<PFN_vk ## func_name> func_name {*this, "vk" ## #func_name}
+#define VKU_DEVICE_PROC(device, func_name) vku::DeviceProc<PFN_ ## func_name> func_name {*this, #func_name}
+#define VKU_DEVICE_PROC_MEMBER(func_name)  VKU_DEVICE_PROC(*this, func_name)
 
 // ====================================================================================================================
 

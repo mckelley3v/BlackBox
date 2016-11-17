@@ -2,13 +2,39 @@
 #define VKU_SURFACE_HPP
 
 #include <vulkan/vulkan.h>
-#include "vku_device.hpp"
-#include "vku_image.hpp"
+#include "vku_Device.hpp"
+#include "vku_Image.hpp"
 
 // ====================================================================================================================
 
 namespace vku
 {
+    // ================================================================================================================
+
+    class SurfaceKHR
+    {
+    public:
+        SurfaceKHR() = default;
+        explicit SurfaceKHR(VkInstance instance,
+                            VkSurfaceKHR surface);
+        SurfaceKHR(SurfaceKHR &&rhs);
+        SurfaceKHR& operator = (SurfaceKHR &&rhs);
+        ~SurfaceKHR();
+
+        explicit operator bool() const;
+        operator VkSurfaceKHR() const;
+
+    private:
+        SurfaceKHR(SurfaceKHR const &rhs) = delete;
+        SurfaceKHR& operator = (SurfaceKHR const &rhs) = delete;
+
+        void Reset();
+
+        // members:
+        VkInstance   m_VkInstance   = VK_NULL_HANDLE;
+        VkSurfaceKHR m_VkSurfaceKHR = VK_NULL_HANDLE;
+    };
+
     // ================================================================================================================
 
     class PhysicalDeviceSurfaceSupportKHR
@@ -24,7 +50,7 @@ namespace vku
     private:
         // members:
         PFN_vkGetPhysicalDeviceSurfaceSupportKHR m_pfnGetPhysicalDeviceSurfaceSupportKHR = nullptr;
-        VkSurfaceKHR m_SurfaceKHR = VK_NULL_HANDLE;
+        VkSurfaceKHR m_VkSurfaceKHR = VK_NULL_HANDLE;
     };
 
     // ================================================================================================================

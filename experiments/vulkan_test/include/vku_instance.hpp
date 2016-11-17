@@ -1,14 +1,15 @@
 #ifndef VKU_INSTANCE_HPP
 #define VKU_INSTANCE_HPP
 
-#include "vku_extension.hpp"
+#include "vku_Extension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <string>
 
 // ====================================================================================================================
 
-#define VKU_INSTANCE_PROC_MEMBER(func_name) vku::InstanceProc<PFN_vk ## func_name> func_name {*this, "vk" ## #func_name}
+#define VKU_INSTANCE_PROC(instance, func_name) vku::InstanceProc<PFN_ ## func_name> func_name {instance, #func_name}
+#define VKU_INSTANCE_PROC_MEMBER(func_name)    VKU_INSTANCE_PROC(*this, func_name)
 
 // ====================================================================================================================
 
@@ -49,34 +50,6 @@ namespace vku
 
     // ================================================================================================================
 
-    class Instance
-    {
-    public:
-        Instance() = default;
-        explicit Instance(VkInstance instance);
-        Instance(Instance &&rhs);
-        Instance& operator = (Instance &&rhs);
-        ~Instance();
-
-        explicit operator bool() const;
-        operator VkInstance() const;
-
-    private:
-        Instance(Instance const &rhs) = delete;
-        Instance& operator = (Instance const &rhs) = delete;
-
-        void Reset();
-
-        // members:
-        VkInstance m_VkInstance = VK_NULL_HANDLE;
-    };
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    VkInstance CreateInstance(InstanceCreateInfo const &createInfo);
-
-    // ================================================================================================================
-
     class InstanceProcBase
     {
     public:
@@ -106,6 +79,34 @@ namespace vku
         proc_type get() const;
         R operator () (Args... args) const;
     };
+
+    // ================================================================================================================
+
+    class Instance
+    {
+    public:
+        Instance() = default;
+        explicit Instance(VkInstance instance);
+        Instance(Instance &&rhs);
+        Instance& operator = (Instance &&rhs);
+        ~Instance();
+
+        explicit operator bool() const;
+        operator VkInstance() const;
+
+    private:
+        Instance(Instance const &rhs) = delete;
+        Instance& operator = (Instance const &rhs) = delete;
+
+        void Reset();
+
+        // members:
+        VkInstance m_VkInstance = VK_NULL_HANDLE;
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    VkInstance CreateInstance(InstanceCreateInfo const &createInfo);
 
     // ================================================================================================================
 }
