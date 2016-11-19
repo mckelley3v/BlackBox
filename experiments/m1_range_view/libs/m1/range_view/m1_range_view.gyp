@@ -1,0 +1,51 @@
+{
+    "targets":
+    [
+        {
+            "target_name": "m1_range_view",
+            "type": "static_library",
+            "include_dirs":
+            [
+                "include",
+                "source",
+            ],
+            "sources":
+            [
+                "include/m1/range_view.hpp",
+                "source/m1/range_view.cpp",
+                "m1_range_view.gyp",
+            ],
+            "dependencies":
+            [
+            ],
+            "export_dependent_settings":
+            [
+            ],
+            "direct_dependent_settings":
+            {
+                "include_dirs":
+                [
+                    "include",
+                ],
+            },
+        },
+        {
+            "target_name": "m1_range_view_test",
+            "type": "executable",
+            "include_dirs":
+            [
+                "test",
+            ],
+            "sources":
+            [
+                "test/test_main.cpp",
+                "test/test_range_view.cpp",
+            ],
+            "dependencies":
+            [
+                "<(catch_gyp_file):catch",
+                "m1_range_view",
+            ],
+        },
+    ],
+}
