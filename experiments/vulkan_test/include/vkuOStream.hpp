@@ -1,5 +1,5 @@
-#ifndef VKU_IOSTREAM_HPP
-#define VKU_IOSTREAM_HPP
+#ifndef VKU_OSTREAM_HPP
+#define VKU_OSTREAM_HPP
 
 #include <vulkan/vulkan.h>
 #include <string>
@@ -71,4 +71,4 @@ std::ostream& vku::iostream::operator << (std::ostream &out, std::vector<T> cons
 
 // ====================================================================================================================
 
-#endif // VKU_IOSTREAM_HPP
+#endif // VKU_OSTREAM_HPP
