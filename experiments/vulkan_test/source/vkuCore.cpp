@@ -1,5 +1,5 @@
-#include "vku_vulkan.hpp"
-#include "vku_Utility.hpp"
+#include "vkuCore.hpp"
+#include "vkuUtility.hpp"
 #include <stdexcept>
 
 // ====================================================================================================================

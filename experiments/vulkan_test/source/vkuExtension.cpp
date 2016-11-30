@@ -1,5 +1,5 @@
-#include "vku_Extension.hpp"
-#include "vku_Utility.hpp"
+#include "vkuExtension.hpp"
+#include "vkuUtility.hpp"
 #include <cstring>
 
 // ====================================================================================================================

@@ -2,8 +2,8 @@
 #define VKU_SURFACE_HPP
 
 #include <vulkan/vulkan.h>
-#include "vku_Device.hpp"
-#include "vku_Image.hpp"
+#include "vkuDevice.hpp"
+#include "vkuImage.hpp"
 
 // ====================================================================================================================
 

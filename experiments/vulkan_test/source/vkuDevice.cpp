@@ -1,5 +1,5 @@
-#include "vku_Device.hpp"
-#include "vku_Utility.hpp"
+#include "vkuDevice.hpp"
+#include "vkuUtility.hpp"
 #include <utility>
 #include <cassert>
 

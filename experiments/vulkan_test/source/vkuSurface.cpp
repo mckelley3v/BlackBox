@@ -1,5 +1,5 @@
-#include "vku_Surface.hpp"
-#include "vku_Utility.hpp"
+#include "vkuSurface.hpp"
+#include "vkuUtility.hpp"
 #include "vku.hpp"
 #include <algorithm>
 #include <stdexcept>

@@ -1,7 +1,7 @@
 #ifndef VKU_INSTANCE_HPP
 #define VKU_INSTANCE_HPP
 
-#include "vku_Extension.hpp"
+#include "vkuExtension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <string>

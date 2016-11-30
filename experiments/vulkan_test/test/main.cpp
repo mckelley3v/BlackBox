@@ -1,6 +1,6 @@
 #include "m1/game_platform.hpp"
 #include "vku.hpp"
-#include "vku_Surface_m1.hpp"
+#include "vkuSurface_m1.hpp"
 #include <vector>
 #include <iostream>
 

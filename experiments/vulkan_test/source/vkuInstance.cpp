@@ -1,6 +1,6 @@
-#include "vku_Instance.hpp"
-#include "vku_Utility.hpp"
-#include "vku_vulkan.hpp"
+#include "vkuInstance.hpp"
+#include "vkuUtility.hpp"
+#include "vkuCore.hpp"
 #include <utility>
 
 // ====================================================================================================================

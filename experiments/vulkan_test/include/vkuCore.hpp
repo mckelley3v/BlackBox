@@ -1,5 +1,5 @@
-#ifndef VKU_VULKAN_HPP
-#define VKU_VULKAN_HPP
+#ifndef VKU_CORE_HPP
+#define VKU_CORE_HPP
 
 #include <vulkan/vulkan.h>
 
@@ -70,4 +70,5 @@ R vku::VkProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
 }
 
 // ====================================================================================================================
-#endif // VKU_VULKAN_HPP
+
+#endif // VKU_CORE_HPP

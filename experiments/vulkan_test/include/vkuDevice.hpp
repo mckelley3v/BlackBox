@@ -1,7 +1,7 @@
 #ifndef VKU_DEVICE_HPP
 #define VKU_DEVICE_HPP
 
-#include "vku_Extension.hpp"
+#include "vkuExtension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <functional>
