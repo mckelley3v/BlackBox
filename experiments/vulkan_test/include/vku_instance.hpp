@@ -94,6 +94,9 @@ namespace vku
         explicit operator bool() const;
         operator VkInstance() const;
 
+        // core procs:
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyInstance);
+
     private:
         Instance(Instance const &rhs) = delete;
         Instance& operator = (Instance const &rhs) = delete;

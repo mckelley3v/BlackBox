@@ -20,6 +20,7 @@
                 "include/vku_iostream.hpp",
                 "include/vku_Surface.hpp",
                 "include/vku_Surface_m1.hpp",
+                "include/vku_vulkan.hpp",
                 "source/platform_impl/windows/vku_Surface_m1_impl.cpp",
                 "source/vku.cpp",
                 "source/vku_CommandBuffers.cpp",
@@ -33,6 +34,7 @@
                 "source/vku_Surface_m1.cpp",
                 "source/vku_Utility.cpp",
                 "source/vku_Utility.hpp",
+                "source/vku_vulkan.cpp",
                 "test/main.cpp",
             ],
             "dependencies":
