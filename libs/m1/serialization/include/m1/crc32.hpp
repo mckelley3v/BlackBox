@@ -33,7 +33,8 @@ namespace m1
 
     namespace literals
     {
-        constexpr crc32 operator "" _crc32(char const *str, std::size_t len) noexcept;
+        constexpr crc32 operator "" _crc32(char const *str,
+                                           std::size_t len) noexcept;
     }
 
     // ================================================================================================================
@@ -191,35 +192,33 @@ constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
 // --------------------------------------------------------------------------------------------------------------------
 
 constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
-                                      char const *str) noexcept
+                                      char const * const str) noexcept
 {
-    crc32 result = crc;
-    for(char const *p = str; *p; ++p)
-    {
-        result = crc32_combine(result, *p);
-    }
-
-    return result;
+    return *str ? crc32_combine(crc32_combine(crc, *str),
+                                str + 1)
+                : crc;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 constexpr m1::crc32 m1::crc32_combine(crc32 const &crc,
-                                      char const *str,
-                                      char const *end) noexcept
+                                      char const * const str,
+                                      char const * const end) noexcept
 {
-    crc32 result = crc;
-    for(char const *p = str; p != end; ++p)
-    {
-        result = crc32_combine(result, *p);
-    }
+    return (str != end) ? crc32_combine(crc32_combine(crc, *str),
+                                        str + 1,
+                                        end)
+                        : crc;
 }
 
 // ====================================================================================================================
 
-constexpr m1::crc32 m1::literals::operator "" _crc32(char const *str, std::size_t const len) noexcept
+constexpr m1::crc32 m1::literals::operator "" _crc32(char const * const str,
+                                                     std::size_t const len) noexcept
 {
-    return crc32_combine(crc32(), str, str + len);
+    return crc32_combine(crc32(),
+                         str,
+                         str + len);
 }
 
 // ====================================================================================================================

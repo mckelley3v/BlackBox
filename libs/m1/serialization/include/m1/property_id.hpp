@@ -34,7 +34,8 @@ namespace literals
 {
     // ================================================================================================================
 
-    constexpr serialization::property_id operator "" _id(char const *str, std::size_t len);
+    constexpr serialization::property_id operator "" _id(char const *str,
+                                                         std::size_t len);
 
     // ================================================================================================================
 } // namespace literals
@@ -43,7 +44,8 @@ namespace literals
 // ====================================================================================================================
 // ====================================================================================================================
 
-constexpr m1::serialization::property_id m1::literals::operator "" _id(char const *str, std::size_t const len)
+constexpr m1::serialization::property_id m1::literals::operator "" _id(char const * const str,
+                                                                       std::size_t const len)
 {
     return serialization::property_id(str, str + len);
 }
