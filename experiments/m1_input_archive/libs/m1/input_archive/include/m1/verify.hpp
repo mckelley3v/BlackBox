@@ -3,7 +3,9 @@
 
 // ====================================================================================================================
 
+#ifndef M1_USE_EXCEPTIONS
 #define M1_USE_EXCEPTIONS() 0
+#endif M1_USE_EXCEPTIONS
 
 #if M1_USE_EXCEPTIONS()
 

@@ -63,6 +63,7 @@ namespace serialization
 
         // object:
         template <typename ...Ts> bool operator >> (object_t<Ts...> &&obj);
+
     private:
         json_input_archive() = delete;
         json_input_archive(json_input_archive const &rhs) = delete;
