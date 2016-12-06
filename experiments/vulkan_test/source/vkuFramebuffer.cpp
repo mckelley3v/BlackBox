@@ -1,10 +1,13 @@
 #include "vkuFramebuffer.hpp"
+#include "vkuInstance.hpp"
 
 // ====================================================================================================================
 
-/*explicit*/ vku::Framebuffer::Framebuffer(VkDevice const device,
+/*explicit*/ vku::Framebuffer::Framebuffer(Instance const &instance,
+                                           VkDevice const device,
                                            VkFramebuffer const framebuffer)
-    : m_VkDevice(device)
+    : m_pfnDestroyFramebuffer(instance.vkDestroyFramebuffer.get())
+    , m_VkDevice(device)
     , m_VkFramebuffer(framebuffer)
 {
 }
@@ -12,24 +15,24 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::Framebuffer::Framebuffer(Framebuffer &&rhs)
-    : m_VkDevice(rhs.m_VkDevice)
+    : m_pfnDestroyFramebuffer(rhs.m_pfnDestroyFramebuffer)
+    , m_VkDevice(rhs.m_VkDevice)
     , m_VkFramebuffer(rhs.m_VkFramebuffer)
 {
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkFramebuffer = VK_NULL_HANDLE;
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::Framebuffer& vku::Framebuffer::operator = (Framebuffer &&rhs)
 {
-    Reset();
+    Release();
 
+    m_pfnDestroyFramebuffer = rhs.m_pfnDestroyFramebuffer;
     m_VkDevice = rhs.m_VkDevice;
     m_VkFramebuffer = rhs.m_VkFramebuffer;
 
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkFramebuffer = VK_NULL_HANDLE;
+    rhs.Reset();
 
     return *this;
 }
@@ -38,7 +41,7 @@ vku::Framebuffer& vku::Framebuffer::operator = (Framebuffer &&rhs)
 
 vku::Framebuffer::~Framebuffer()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -57,18 +60,27 @@ vku::Framebuffer::operator VkFramebuffer() const
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::Framebuffer::Reset()
+void vku::Framebuffer::Release()
 {
-    if((m_VkDevice != VK_NULL_HANDLE) &&
+    if((m_pfnDestroyFramebuffer != nullptr) &&
+       (m_VkDevice != VK_NULL_HANDLE) &&
        (m_VkFramebuffer != VK_NULL_HANDLE))
     {
-        vkDestroyFramebuffer(m_VkDevice,
-                             m_VkFramebuffer,
-                             nullptr); // pAllocator
+        m_pfnDestroyFramebuffer(m_VkDevice,
+                                m_VkFramebuffer,
+                                nullptr); // pAllocator
 
-        m_VkDevice = VK_NULL_HANDLE;
-        m_VkFramebuffer = VK_NULL_HANDLE;
+        Reset();
     }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Framebuffer::Reset()
+{
+    m_pfnDestroyFramebuffer = nullptr;
+    m_VkDevice = VK_NULL_HANDLE;
+    m_VkFramebuffer = VK_NULL_HANDLE;
 }
 
 // ====================================================================================================================

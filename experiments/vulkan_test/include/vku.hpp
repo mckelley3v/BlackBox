@@ -1,8 +1,13 @@
 #ifndef VKU_HPP
 #define VKU_HPP
 
-#include "vkuInstance.hpp"
+#include "vkuCommandBuffers.hpp"
+#include "vkuCore.hpp"
 #include "vkuDevice.hpp"
+#include "vkuExtension.hpp"
+#include "vkuFramebuffer.hpp"
+#include "vkuImage.hpp"
+#include "vkuInstance.hpp"
 #include "vkuSurface.hpp"
 
 // ====================================================================================================================

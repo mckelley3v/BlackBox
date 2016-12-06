@@ -7,9 +7,10 @@
 
 // ====================================================================================================================
 
-/*explicit*/ vku::SurfaceKHR::SurfaceKHR(VkInstance const instance,
+/*explicit*/ vku::SurfaceKHR::SurfaceKHR(WsiInstance const &instance,
                                          VkSurfaceKHR const surface)
-    : m_VkInstance(instance)
+    : m_pfnDestroySurfaceKHR(instance.vkDestroySurfaceKHR.get())
+    , m_VkInstance(instance)
     , m_VkSurfaceKHR(surface)
 {
 }
@@ -17,22 +18,24 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::SurfaceKHR::SurfaceKHR(SurfaceKHR &&rhs)
-    : m_VkInstance(rhs.m_VkInstance)
+    : m_pfnDestroySurfaceKHR(rhs.m_pfnDestroySurfaceKHR)
+    , m_VkInstance(rhs.m_VkInstance)
     , m_VkSurfaceKHR(rhs.m_VkSurfaceKHR)
 {
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::SurfaceKHR& vku::SurfaceKHR::operator = (SurfaceKHR &&rhs)
 {
-    Reset();
+    Release();
 
+    m_pfnDestroySurfaceKHR = rhs.m_pfnDestroySurfaceKHR;
     m_VkInstance = rhs.m_VkInstance;
     m_VkSurfaceKHR = rhs.m_VkSurfaceKHR;
 
-    rhs.m_VkInstance = VK_NULL_HANDLE;
-    rhs.m_VkSurfaceKHR = VK_NULL_HANDLE;
+    rhs.Reset();
 
     return *this;
 }
@@ -41,7 +44,7 @@ vku::SurfaceKHR& vku::SurfaceKHR::operator = (SurfaceKHR &&rhs)
 
 vku::SurfaceKHR::~SurfaceKHR()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -60,25 +63,34 @@ vku::SurfaceKHR::operator VkSurfaceKHR() const
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::SurfaceKHR::Reset()
+void vku::SurfaceKHR::Release()
 {
-    if((m_VkInstance != VK_NULL_HANDLE) &&
+    if((m_pfnDestroySurfaceKHR != nullptr) &&
+       (m_VkInstance != VK_NULL_HANDLE) &&
        (m_VkSurfaceKHR != VK_NULL_HANDLE))
     {
-        vkDestroySurfaceKHR(m_VkInstance,
-                            m_VkSurfaceKHR,
-                            nullptr); // pAllocator
+        m_pfnDestroySurfaceKHR(m_VkInstance,
+                               m_VkSurfaceKHR,
+                               nullptr); // pAllocator
 
-        m_VkInstance = VK_NULL_HANDLE;
-        m_VkSurfaceKHR = VK_NULL_HANDLE;
+        Reset();
     }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::SurfaceKHR::Reset()
+{
+    m_pfnDestroySurfaceKHR = nullptr;
+    m_VkInstance = VK_NULL_HANDLE;
+    m_VkSurfaceKHR = VK_NULL_HANDLE;
 }
 
 // ====================================================================================================================
 
-vku::PhysicalDeviceSurfaceSupportKHR::PhysicalDeviceSurfaceSupportKHR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
+vku::PhysicalDeviceSurfaceSupportKHR::PhysicalDeviceSurfaceSupportKHR(WsiInstance const &instance,
                                                                       VkSurfaceKHR const surface)
-    : m_pfnGetPhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR)
+    : m_InstancePtr(&instance)
     , m_VkSurfaceKHR(surface)
 {
 }
@@ -89,15 +101,15 @@ bool vku::PhysicalDeviceSurfaceSupportKHR::operator () (VkPhysicalDevice const p
                                                         uint32_t const queueFamilyIndex,
                                                         VkQueueFamilyProperties const &/*queueFamilyProperties*/) const
 {
-    assert(m_pfnGetPhysicalDeviceSurfaceSupportKHR != nullptr);
-    assert(physicalDevice != VK_NULL_HANDLE);
+    assert(m_InstancePtr != nullptr);
     assert(m_VkSurfaceKHR != VK_NULL_HANDLE);
+    assert(physicalDevice != VK_NULL_HANDLE);
 
     VkBool32 surface_support = VK_FALSE;
-    switch(m_pfnGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
-                                                   queueFamilyIndex,
-                                                   m_VkSurfaceKHR,
-                                                   &surface_support))
+    switch(m_InstancePtr->vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
+                                                               queueFamilyIndex,
+                                                               m_VkSurfaceKHR,
+                                                               &surface_support))
     {
         case VK_SUCCESS:
             return (surface_support == VK_FALSE) ? false : true;
@@ -118,10 +130,10 @@ bool vku::PhysicalDeviceSurfaceSupportKHR::operator () (VkPhysicalDevice const p
 
 // ====================================================================================================================
 
-vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
+vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::SelectQueueFamilyWithFlagsAndSurfaceSupport(WsiInstance const &instance,
                                                                                               VkSurfaceKHR const surface,
                                                                                               VkQueueFlags const requiredQueueFlags)
-    : PhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR,
+    : PhysicalDeviceSurfaceSupportKHR(instance,
                                       surface)
     , SelectQueueFamilyWithFlags(requiredQueueFlags)
 {
@@ -129,11 +141,11 @@ vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::SelectQueueFamilyWithFlagsAndS
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR const pfnGetPhysicalDeviceSurfaceSupportKHR,
+vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::SelectQueueFamilyWithFlagsAndSurfaceSupport(WsiInstance const &instance,
                                                                                               VkSurfaceKHR const surface,
                                                                                               VkQueueFlags const requiredQueueFlags,
                                                                                               VkQueueFlags const allowedQueueFlags)
-    : PhysicalDeviceSurfaceSupportKHR(pfnGetPhysicalDeviceSurfaceSupportKHR,
+    : PhysicalDeviceSurfaceSupportKHR(instance,
                                       surface)
     , SelectQueueFamilyWithFlags(requiredQueueFlags,
                                  allowedQueueFlags)
@@ -152,19 +164,18 @@ bool vku::SelectQueueFamilyWithFlagsAndSurfaceSupport::operator () (VkPhysicalDe
 
 // ====================================================================================================================
 
-std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR const pfnGetPhysicalDeviceSurfaceFormatsKHR,
+std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(WsiInstance const &instance,
                                                                         VkPhysicalDevice const physicalDevice,
                                                                         VkSurfaceKHR const surface)
 {
-    assert(pfnGetPhysicalDeviceSurfaceFormatsKHR != nullptr);
     assert(physicalDevice != VK_NULL_HANDLE);
     assert(surface != VK_NULL_HANDLE);
 
     uint32_t surface_format_count = 0u;
-    switch(pfnGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
-                                                 surface,
-                                                 &surface_format_count,
-                                                 nullptr))
+    switch(instance.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
+                                                         surface,
+                                                         &surface_format_count,
+                                                         nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -184,10 +195,10 @@ std::vector<VkSurfaceFormatKHR> vku::GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGe
     }
 
     std::vector<VkSurfaceFormatKHR> surface_formats(surface_format_count, VkSurfaceFormatKHR());
-    switch(pfnGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
-                                                 surface,
-                                                 &surface_format_count,
-                                                 surface_formats.data()))
+    switch(instance.vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
+                                                         surface,
+                                                         &surface_format_count,
+                                                         surface_formats.data()))
     {
         case VK_SUCCESS:
             break;
@@ -243,19 +254,18 @@ VkSurfaceFormatKHR vku::SelectSurfaceFormat(std::vector<VkSurfaceFormatKHR> cons
 
 // ====================================================================================================================
 
-std::vector<VkPresentModeKHR> vku::GetPhysicalDeviceSurfacePresentModesKHR(PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfnGetPhysicalDeviceSurfacePresentModesKHR,
+std::vector<VkPresentModeKHR> vku::GetPhysicalDeviceSurfacePresentModesKHR(WsiInstance const &instance,
                                                                            VkPhysicalDevice physicalDevice,
                                                                            VkSurfaceKHR surface)
 {
-    assert(pfnGetPhysicalDeviceSurfacePresentModesKHR != nullptr);
     assert(physicalDevice != VK_NULL_HANDLE);
     assert(surface != VK_NULL_HANDLE);
 
     uint32_t present_mode_count = 0u;
-    switch(pfnGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
-                                                      surface,
-                                                      &present_mode_count,
-                                                      nullptr))
+    switch(instance.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
+                                                              surface,
+                                                              &present_mode_count,
+                                                              nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -275,10 +285,10 @@ std::vector<VkPresentModeKHR> vku::GetPhysicalDeviceSurfacePresentModesKHR(PFN_v
     }
 
     std::vector<VkPresentModeKHR> present_modes(present_mode_count, VkPresentModeKHR());
-    switch(pfnGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
-                                                      surface,
-                                                      &present_mode_count,
-                                                      present_modes.data()))
+    switch(instance.vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
+                                                              surface,
+                                                              &present_mode_count,
+                                                              present_modes.data()))
     {
         case VK_SUCCESS:
             break;
@@ -322,11 +332,7 @@ VkPresentModeKHR vku::SelectPresentMode(std::vector<VkPresentModeKHR> const &pre
 
 // ====================================================================================================================
 
-vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR const pfnGetPhysicalDeviceSurfaceFormatsKHR,
-                                                        PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR const pfnGetPhysicalDeviceSurfaceCapabilitiesKHR,
-                                                        PFN_vkGetPhysicalDeviceSurfacePresentModesKHR const pfnGetPhysicalDeviceSurfacePresentModesKHR,
-                                                        PFN_vkCreateSwapchainKHR const pfnCreateSwapchainKHR,
-                                                        VkDevice const device,
+vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(WsiInstance const &instance,
                                                         VkPhysicalDevice const physicalDevice,
                                                         VkSurfaceKHR const surface,
                                                         uint32_t const requestedImageCount,
@@ -334,21 +340,17 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
                                                         std::vector<VkPresentModeKHR> const &preferredPresentModes,
                                                         VkSwapchainKHR oldSwapchain)
 {
-    assert(pfnGetPhysicalDeviceSurfaceFormatsKHR != nullptr);
-    assert(pfnGetPhysicalDeviceSurfaceCapabilitiesKHR != nullptr);
-    assert(pfnGetPhysicalDeviceSurfacePresentModesKHR != nullptr);
-    assert(pfnCreateSwapchainKHR != nullptr);
     assert(physicalDevice != VK_NULL_HANDLE);
     assert(surface != VK_NULL_HANDLE);
 
-    std::vector<VkSurfaceFormatKHR> const surface_formats = GetPhysicalDeviceSurfaceFormatsKHR(pfnGetPhysicalDeviceSurfaceFormatsKHR,
+    std::vector<VkSurfaceFormatKHR> const surface_formats = GetPhysicalDeviceSurfaceFormatsKHR(instance,
                                                                                                physicalDevice,
                                                                                                surface);
 
     VkSurfaceCapabilitiesKHR surface_capabilities = {};
-    switch(pfnGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice,
-                                                      surface,
-                                                      &surface_capabilities))
+    switch(instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice,
+                                                              surface,
+                                                              &surface_capabilities))
     {
         case VK_SUCCESS:
             break;
@@ -377,7 +379,7 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
     VkSurfaceTransformFlagBitsKHR const swapchain_transform_flag_bits = (surface_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) ? VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
                                                                                                                                                            : surface_capabilities.currentTransform;
 
-    std::vector<VkPresentModeKHR> const swapchain_present_modes = GetPhysicalDeviceSurfacePresentModesKHR(pfnGetPhysicalDeviceSurfacePresentModesKHR,
+    std::vector<VkPresentModeKHR> const swapchain_present_modes = GetPhysicalDeviceSurfacePresentModesKHR(instance,
                                                                                                           physicalDevice,
                                                                                                           surface);
     VkPresentModeKHR const swapchain_present_mode = SelectPresentMode(swapchain_present_modes,
@@ -385,8 +387,6 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
 
     SwapchainCreateInfo const swapchain_create_info =
     {
-        pfnCreateSwapchainKHR,                       // pfnCreateSwapchainKHR
-        device,                                      // device
         surface,                                     // surface
         swapchain_image_count,                       // minImageCount
         surface_format.format,                       // imageFormat
@@ -409,17 +409,102 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
 
 // ====================================================================================================================
 
-/*explicit*/ vku::Swapchain::Swapchain(PFN_vkGetSwapchainImagesKHR const pfnGetSwapchainImagesKHR,
-                                       PFN_vkDestroySwapchainKHR const pfnDestroySwapchainKHR,
+/*explicit*/ vku::Swapchain::Swapchain(WsiInstance const &instance,
+                                       WsiDevice const &device,
                                        SwapchainCreateInfo const &createInfo)
-    : m_pfnDestroySwapchainKHR(pfnDestroySwapchainKHR)
-    , m_VkDevice(createInfo.device)
-    , m_VkSwapchainKHR(CreateSwapchain(createInfo))
+    : m_pfnDestroySwapchainKHR(device.vkDestroySwapchainKHR.get())
+    , m_VkDevice(device)
+    , m_VkSwapchainKHR(CreateSwapchain(device, createInfo))
+    , m_Images(CreateSwapchainImageEntries(instance, device, m_VkSwapchainKHR, createInfo))
 {
-    std::vector<VkImage> const swapchainImages = GetSwapchainImages(pfnGetSwapchainImagesKHR,
-                                                                    m_VkDevice,
-                                                                    m_VkSwapchainKHR);
-    m_Images.reserve(swapchainImages.size());
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Swapchain::Swapchain(Swapchain &&rhs)
+    : m_pfnDestroySwapchainKHR(rhs.m_pfnDestroySwapchainKHR)
+    , m_VkDevice(rhs.m_VkDevice)
+    , m_VkSwapchainKHR(rhs.m_VkSwapchainKHR)
+    , m_Images(std::move(rhs.m_Images))
+{
+    rhs.Reset();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Swapchain& vku::Swapchain::operator = (Swapchain &&rhs)
+{
+    Release();
+
+    m_pfnDestroySwapchainKHR = rhs.m_pfnDestroySwapchainKHR;
+    m_VkDevice = rhs.m_VkDevice;
+    m_VkSwapchainKHR = rhs.m_VkSwapchainKHR;
+    m_Images = std::move(rhs.m_Images);
+
+    rhs.Reset();
+
+    return *this;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Swapchain::~Swapchain()
+{
+    Release();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+/*explicit*/ vku::Swapchain::operator bool() const
+{
+    return m_VkSwapchainKHR != VK_NULL_HANDLE;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+vku::Swapchain::operator VkSwapchainKHR() const
+{
+    return m_VkSwapchainKHR;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Swapchain::Release()
+{
+    if((m_pfnDestroySwapchainKHR != nullptr) &&
+       (m_VkDevice != nullptr) &&
+       (m_VkSwapchainKHR != VK_NULL_HANDLE))
+    {
+        m_Images.clear();
+        m_pfnDestroySwapchainKHR(m_VkDevice,
+                                 m_VkSwapchainKHR,
+                                 nullptr); // pAllocator
+
+        Reset();
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Swapchain::Reset()
+{
+    m_pfnDestroySwapchainKHR = nullptr;
+    m_VkDevice = VK_NULL_HANDLE;
+    m_VkSwapchainKHR = VK_NULL_HANDLE;
+    m_Images.clear();
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+/*static*/ std::vector<vku::Swapchain::ImageEntry> vku::Swapchain::CreateSwapchainImageEntries(WsiInstance const &instance,
+                                                                                               WsiDevice const &device,
+                                                                                               VkSwapchainKHR const swapchain,
+                                                                                               SwapchainCreateInfo const &createInfo)
+{
+    std::vector<ImageEntry> result;
+    std::vector<VkImage> const swapchainImages = GetSwapchainImages(device,
+                                                                    swapchain);
+    result.reserve(swapchainImages.size());
     for(VkImage const image : swapchainImages)
     {
         VkImageViewCreateInfo const image_view_create_info =
@@ -448,10 +533,10 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
         };
 
         VkImageView image_view = VK_NULL_HANDLE;
-        switch(vkCreateImageView(m_VkDevice,
-                                 &image_view_create_info,
-                                 nullptr, // pAllocator
-                                 &image_view))
+        switch(instance.vkCreateImageView(device,
+                                          &image_view_create_info,
+                                          nullptr, // pAllocator
+                                          &image_view))
         {
             case VK_SUCCESS:
                 break;
@@ -466,82 +551,19 @@ vku::SwapchainCreateInfo vku::CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceS
                 throw std::runtime_error("error: vkCreateImageView returned unknown error");
         }
 
-        m_Images.push_back(ImageEntry{image,
-                                      ImageView(m_VkDevice, image_view)});
+        result.push_back(ImageEntry{image,
+                                      ImageView(instance,
+                                                device,
+                                                image_view)});
     }
-}
 
-// --------------------------------------------------------------------------------------------------------------------
-
-vku::Swapchain::Swapchain(Swapchain &&rhs)
-    : m_pfnDestroySwapchainKHR(rhs.m_pfnDestroySwapchainKHR)
-    , m_VkDevice(rhs.m_VkDevice)
-    , m_VkSwapchainKHR(rhs.m_VkSwapchainKHR)
-{
-    rhs.m_pfnDestroySwapchainKHR = nullptr;
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkSwapchainKHR = VK_NULL_HANDLE;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-vku::Swapchain& vku::Swapchain::operator = (Swapchain &&rhs)
-{
-    Reset();
-
-    m_pfnDestroySwapchainKHR = rhs.m_pfnDestroySwapchainKHR;
-    m_VkDevice = rhs.m_VkDevice;
-    m_VkSwapchainKHR = rhs.m_VkSwapchainKHR;
-
-    rhs.m_pfnDestroySwapchainKHR = nullptr;
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkSwapchainKHR = VK_NULL_HANDLE;
-
-    return *this;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-vku::Swapchain::~Swapchain()
-{
-    Reset();
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-/*explicit*/ vku::Swapchain::operator bool() const
-{
-    return m_VkSwapchainKHR != VK_NULL_HANDLE;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-vku::Swapchain::operator VkSwapchainKHR() const
-{
-    return m_VkSwapchainKHR;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-void vku::Swapchain::Reset()
-{
-    if((m_pfnDestroySwapchainKHR != nullptr) &&
-       (m_VkDevice != VK_NULL_HANDLE) &&
-       (m_VkSwapchainKHR != VK_NULL_HANDLE))
-    {
-        m_pfnDestroySwapchainKHR(m_VkDevice,
-                                 m_VkSwapchainKHR,
-                                 nullptr); // pAllocator
-
-        m_pfnDestroySwapchainKHR = VK_NULL_HANDLE;
-        m_VkDevice = VK_NULL_HANDLE;
-        m_VkSwapchainKHR = VK_NULL_HANDLE;
-    }
+    return result;
 }
 
 // ====================================================================================================================
 
-VkSwapchainKHR vku::CreateSwapchain(SwapchainCreateInfo const &createInfo)
+VkSwapchainKHR vku::CreateSwapchain(WsiDevice const &device,
+                                    SwapchainCreateInfo const &createInfo)
 {
 
     VkSwapchainCreateInfoKHR const swapchain_create_info =
@@ -567,10 +589,10 @@ VkSwapchainKHR vku::CreateSwapchain(SwapchainCreateInfo const &createInfo)
     };
 
     VkSwapchainKHR swapchain = VK_NULL_HANDLE;
-    switch(createInfo.pfnCreateSwapchainKHR(createInfo.device,
-                                            &swapchain_create_info,
-                                            nullptr, // pAllocator
-                                            &swapchain))
+    switch(device.vkCreateSwapchainKHR(device,
+                                       &swapchain_create_info,
+                                       nullptr, // pAllocator
+                                       &swapchain))
     {
        case VK_SUCCESS:
             break;
@@ -599,19 +621,16 @@ VkSwapchainKHR vku::CreateSwapchain(SwapchainCreateInfo const &createInfo)
 
 // ====================================================================================================================
 
-std::vector<VkImage> vku::GetSwapchainImages(PFN_vkGetSwapchainImagesKHR const pfnGetSwapchainImagesKHR,
-                                             VkDevice const device,
+std::vector<VkImage> vku::GetSwapchainImages(WsiDevice const &device,
                                              VkSwapchainKHR const swapchain)
 {
-    assert(pfnGetSwapchainImagesKHR != nullptr);
-    assert(device != VK_NULL_HANDLE);
     assert(swapchain != VK_NULL_HANDLE);
 
     uint32_t swapchainImageCount = 0;
-    switch(pfnGetSwapchainImagesKHR(device,
-                                    swapchain,
-                                    &swapchainImageCount,
-                                    nullptr))
+    switch(device.vkGetSwapchainImagesKHR(device,
+                                          swapchain,
+                                          &swapchainImageCount,
+                                          nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -628,10 +647,10 @@ std::vector<VkImage> vku::GetSwapchainImages(PFN_vkGetSwapchainImagesKHR const p
     }
 
     std::vector<VkImage> swapchainImages(swapchainImageCount, VkImage());
-    switch(pfnGetSwapchainImagesKHR(device,
-                                    swapchain,
-                                    &swapchainImageCount,
-                                    swapchainImages.data()))
+    switch(device.vkGetSwapchainImagesKHR(device,
+                                          swapchain,
+                                          &swapchainImageCount,
+                                          swapchainImages.data()))
     {
         case VK_SUCCESS:
             break;

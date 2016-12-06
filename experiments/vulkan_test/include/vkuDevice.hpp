@@ -1,6 +1,7 @@
 #ifndef VKU_DEVICE_HPP
 #define VKU_DEVICE_HPP
 
+#include "vkuCore.hpp"
 #include "vkuExtension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -8,8 +9,7 @@
 
 // ====================================================================================================================
 
-#define VKU_DEVICE_PROC(device, func_name) vku::DeviceProc<PFN_ ## func_name> func_name {*this, #func_name}
-#define VKU_DEVICE_PROC_MEMBER(func_name)  VKU_DEVICE_PROC(*this, func_name)
+#define VKU_DEVICE_PROC_MEMBER(func_name)  vku::VkProc<PFN_ ## func_name> func_name {GetDeviceProcAddr(#func_name)}
 
 // ====================================================================================================================
 
@@ -17,15 +17,21 @@ namespace vku
 {
     // ================================================================================================================
 
-    std::vector<VkPhysicalDevice> EnumeratePhysicalDevices(VkInstance instance);
+    class Instance;
 
     // ================================================================================================================
 
-    std::vector<VkQueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice physicalDevice);
+    std::vector<VkPhysicalDevice> EnumeratePhysicalDevices(Instance const &instance);
 
     // ================================================================================================================
 
-    std::vector<LayerExtensionProperties> EnumeratePhysicalDeviceLayersExtensionProperties(VkPhysicalDevice physicalDevice);
+    std::vector<VkQueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(Instance const &instance,
+                                                                                VkPhysicalDevice physicalDevice);
+
+    // ================================================================================================================
+
+    std::vector<LayerExtensionProperties> EnumeratePhysicalDeviceLayersExtensionProperties(Instance const &instance,
+                                                                                           VkPhysicalDevice physicalDevice);
 
     // ================================================================================================================
 
@@ -48,7 +54,7 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    struct LogicalDeviceCreateInfo
+    struct DeviceCreateInfo
     {
         VkPhysicalDevice                                  physicalDevice;
         std::vector<PhysicalDeviceQueueFamilyCreateInfo>  queueFamilies;
@@ -95,40 +101,51 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    LogicalDeviceCreateInfo CreateLogicalDeviceCreateInfo(VkInstance instance,
-                                                          std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
-                                                          std::vector<std::string> const &requiredLayers,
-                                                          std::vector<std::string> const &allowedLayers,
-                                                          std::vector<std::string> const &requiredExtensions,
-                                                          std::vector<std::string> const &allowedExtensions);
+    DeviceCreateInfo CreateDeviceCreateInfo(Instance const &instance,
+                                            std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
+                                            std::vector<std::string> const &requiredLayers,
+                                            std::vector<std::string> const &allowedLayers,
+                                            std::vector<std::string> const &requiredExtensions,
+                                            std::vector<std::string> const &allowedExtensions);
 
     // ================================================================================================================
 
-    class LogicalDevice
+    class Device
     {
     public:
-        LogicalDevice() = default;
-        explicit LogicalDevice(VkDevice device);
-        LogicalDevice(LogicalDevice &&rhs);
-        LogicalDevice& operator = (LogicalDevice &&rhs);
-        ~LogicalDevice();
+        Device() = default;
+        explicit Device(Instance const &instance,
+                        VkDevice device);
+        Device(Device &&rhs);
+        Device& operator = (Device &&rhs);
+        ~Device();
 
         explicit operator bool() const;
         operator VkDevice() const;
 
-    private:
-        LogicalDevice(LogicalDevice const &rhs) = delete;
-        LogicalDevice& operator = (LogicalDevice const &rhs) = delete;
+        PFN_vkVoidFunction GetDeviceProcAddr(char const *func_name) const;
 
+    private:
+        Device(Device const &rhs) = delete;
+        Device& operator = (Device const &rhs) = delete;
+
+        void Release();
         void Reset();
 
         // members:
-        VkDevice m_VkDevice = VK_NULL_HANDLE;
+        PFN_vkDestroyDevice     m_pfnDestroyDevice     = nullptr;
+        PFN_vkGetDeviceProcAddr m_pfnGetDeviceProcAddr = nullptr;
+        VkDevice                m_VkDevice             = VK_NULL_HANDLE;
+
+    public:
+        // core procs:
+        VKU_DEVICE_PROC_MEMBER(vkGetDeviceQueue);
     };
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    VkDevice CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo);
+    VkDevice CreateDevice(Instance const &instance,
+                          DeviceCreateInfo const &createInfo);
 
     // ================================================================================================================
 
@@ -158,55 +175,7 @@ namespace vku
     };
 
     // ================================================================================================================
-
-    class DeviceProcBase
-    {
-    public:
-        DeviceProcBase() = default;
-        explicit DeviceProcBase(VkDevice device,
-                                char const *func_name);
-
-    protected:
-        // members:
-        PFN_vkVoidFunction m_FuncPtr = nullptr;
-    };
-
-    // ================================================================================================================
-
-    template <typename F>
-    struct DeviceProc;
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    template <typename R, typename ...Args>
-    class DeviceProc<R (VKAPI_PTR*)(Args...)> : public DeviceProcBase
-    {
-    public:
-        using DeviceProcBase::DeviceProcBase;
-        using proc_type = R (VKAPI_PTR*)(Args...);
-
-        proc_type get() const;
-        R operator () (Args...) const;
-    };
-
-    // ================================================================================================================
 } // namespace vku
-
-// ====================================================================================================================
-
-template <typename R, typename ...Args>
-typename vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::proc_type vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::get() const
-{
-    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-template <typename R, typename ...Args>
-R vku::DeviceProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
-{
-    return get()(args...);
-}
 
 // ====================================================================================================================
 

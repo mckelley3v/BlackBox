@@ -1,6 +1,7 @@
 #ifndef VKU_INSTANCE_HPP
 #define VKU_INSTANCE_HPP
 
+#include "vkuCore.hpp"
 #include "vkuExtension.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
@@ -8,8 +9,7 @@
 
 // ====================================================================================================================
 
-#define VKU_INSTANCE_PROC(instance, func_name) vku::InstanceProc<PFN_ ## func_name> func_name {instance, #func_name}
-#define VKU_INSTANCE_PROC_MEMBER(func_name)    VKU_INSTANCE_PROC(*this, func_name)
+#define VKU_INSTANCE_PROC_MEMBER(func_name)    vku::VkProc<PFN_ ## func_name> func_name {GetInstanceProcAddr(#func_name)}
 
 // ====================================================================================================================
 
@@ -50,61 +50,52 @@ namespace vku
 
     // ================================================================================================================
 
-    class InstanceProcBase
+    class InstanceBase
     {
     public:
-        InstanceProcBase() = default;
-        explicit InstanceProcBase(VkInstance instance,
-                                  char const *func_name);
-
-    protected:
-        // members:
-        PFN_vkVoidFunction m_FuncPtr = nullptr;
-    };
-
-    // ================================================================================================================
-
-    template <typename F>
-    struct InstanceProc;
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    template <typename R, typename ...Args>
-    class InstanceProc<R (VKAPI_PTR*)(Args...)> : public InstanceProcBase
-    {
-    public:
-        using InstanceProcBase::InstanceProcBase;
-        using proc_type = R (VKAPI_PTR*)(Args...);
-
-        proc_type get() const;
-        R operator () (Args... args) const;
-    };
-
-    // ================================================================================================================
-
-    class Instance
-    {
-    public:
-        Instance() = default;
-        explicit Instance(VkInstance instance);
-        Instance(Instance &&rhs);
-        Instance& operator = (Instance &&rhs);
-        ~Instance();
+        InstanceBase() = default;
+        explicit InstanceBase(VkInstance instance);
+        InstanceBase(InstanceBase &&rhs);
+        InstanceBase& operator = (InstanceBase &&rhs);
+        ~InstanceBase();
 
         explicit operator bool() const;
         operator VkInstance() const;
 
-        // core procs:
-        VKU_INSTANCE_PROC_MEMBER(vkDestroyInstance);
+        PFN_vkVoidFunction GetInstanceProcAddr(char const *func_name) const;
 
     private:
-        Instance(Instance const &rhs) = delete;
-        Instance& operator = (Instance const &rhs) = delete;
+        InstanceBase(InstanceBase const &rhs) = delete;
+        InstanceBase& operator = (InstanceBase const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // members:
         VkInstance m_VkInstance = VK_NULL_HANDLE;
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyInstance);
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    class Instance
+        : public InstanceBase
+    {
+    public:
+        using InstanceBase::InstanceBase;
+
+        // core procs:
+        VKU_INSTANCE_PROC_MEMBER(vkEnumeratePhysicalDevices);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceQueueFamilyProperties);
+        VKU_INSTANCE_PROC_MEMBER(vkEnumerateDeviceLayerProperties);
+        VKU_INSTANCE_PROC_MEMBER(vkEnumerateDeviceExtensionProperties);
+        VKU_INSTANCE_PROC_MEMBER(vkCreateDevice);
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyDevice);
+        VKU_INSTANCE_PROC_MEMBER(vkGetDeviceProcAddr);
+        VKU_INSTANCE_PROC_MEMBER(vkFreeCommandBuffers);
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyFramebuffer);
+        VKU_INSTANCE_PROC_MEMBER(vkCreateImageView);
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyImageView);
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -112,22 +103,6 @@ namespace vku
     VkInstance CreateInstance(InstanceCreateInfo const &createInfo);
 
     // ================================================================================================================
-}
-
-// ====================================================================================================================
-
-template <typename R, typename ...Args>
-typename vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::proc_type vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::get() const
-{
-    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-template <typename R, typename ...Args>
-R vku::InstanceProc<R (VKAPI_PTR*)(Args...)>::operator () (Args... args) const
-{
-    return reinterpret_cast<R (VKAPI_PTR*)(Args...)>(m_FuncPtr)(args...);
 }
 
 // ====================================================================================================================

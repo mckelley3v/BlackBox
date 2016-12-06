@@ -1,7 +1,12 @@
 #include "vkuSurface_m1.hpp"
+#include "vkuCore.hpp"
 #include "m1/game_platform.hpp"
 #include "m1/game_platform_impl.hpp"
 #include <stdexcept>
+
+// ====================================================================================================================
+
+#define VKU_INSTANCE_PROC(instance, func_name) vku::VkProc<PFN_ ## func_name> const func_name {vkGetInstanceProcAddr(instance, #func_name)}
 
 // ====================================================================================================================
 
@@ -29,6 +34,12 @@ VkSurfaceKHR vku::CreateSurfaceKHR(VkInstance const instance,
 /*static*/ VkSurfaceKHR create_surface_khr(VkInstance const instance,
                                            m1::game_platform::impl const &gamePlatformImpl)
 {
+    VKU_INSTANCE_PROC(instance, vkCreateWin32SurfaceKHR);
+    if(vkCreateWin32SurfaceKHR.get() == nullptr)
+    {
+        throw std::runtime_error("error: vkCreateWin32SurfaceKHR is nullptr");
+    }
+
     VkWin32SurfaceCreateInfoKHR const create_info =
     {
         VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, // sType

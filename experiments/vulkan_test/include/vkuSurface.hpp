@@ -2,6 +2,7 @@
 #define VKU_SURFACE_HPP
 
 #include <vulkan/vulkan.h>
+#include "vkuInstance.hpp"
 #include "vkuDevice.hpp"
 #include "vkuImage.hpp"
 
@@ -11,11 +12,53 @@ namespace vku
 {
     // ================================================================================================================
 
+    class WsiInstance
+        : public Instance
+    {
+    public:
+        using Instance::Instance;
+
+        // procs:
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceSupportKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceFormatsKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfaceCapabilitiesKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceSurfacePresentModesKHR);
+        VKU_INSTANCE_PROC_MEMBER(vkDestroySurfaceKHR);
+
+    private:
+        // prevent slicing:
+        WsiInstance(Instance const &rhs) = delete;
+        WsiInstance& operator = (Instance const &rhs) = delete;
+    };
+
+    // ================================================================================================================
+
+    class WsiDevice
+        : public Device
+    {
+    public:
+        using Device::Device;
+
+        // procs:
+        VKU_DEVICE_PROC_MEMBER(vkCreateSwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(vkDestroySwapchainKHR);
+        VKU_DEVICE_PROC_MEMBER(vkGetSwapchainImagesKHR);
+        VKU_DEVICE_PROC_MEMBER(vkAcquireNextImageKHR);
+        VKU_DEVICE_PROC_MEMBER(vkQueuePresentKHR);
+
+    private:
+        // prevent slicing:
+        WsiDevice(Device const &rhs) = delete;
+        WsiDevice& operator = (Device const &rhs) = delete;
+    };
+
+    // ================================================================================================================
+
     class SurfaceKHR
     {
     public:
         SurfaceKHR() = default;
-        explicit SurfaceKHR(VkInstance instance,
+        explicit SurfaceKHR(WsiInstance const &instance,
                             VkSurfaceKHR surface);
         SurfaceKHR(SurfaceKHR &&rhs);
         SurfaceKHR& operator = (SurfaceKHR &&rhs);
@@ -28,11 +71,13 @@ namespace vku
         SurfaceKHR(SurfaceKHR const &rhs) = delete;
         SurfaceKHR& operator = (SurfaceKHR const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // members:
-        VkInstance   m_VkInstance   = VK_NULL_HANDLE;
-        VkSurfaceKHR m_VkSurfaceKHR = VK_NULL_HANDLE;
+        PFN_vkDestroySurfaceKHR m_pfnDestroySurfaceKHR = nullptr;
+        VkInstance              m_VkInstance           = VK_NULL_HANDLE;
+        VkSurfaceKHR            m_VkSurfaceKHR         = VK_NULL_HANDLE;
     };
 
     // ================================================================================================================
@@ -40,7 +85,7 @@ namespace vku
     class PhysicalDeviceSurfaceSupportKHR
     {
     public:
-        PhysicalDeviceSurfaceSupportKHR(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
+        PhysicalDeviceSurfaceSupportKHR(WsiInstance const &instance,
                                         VkSurfaceKHR surface);
 
         bool operator () (VkPhysicalDevice physicalDevice,
@@ -49,8 +94,8 @@ namespace vku
 
     private:
         // members:
-        PFN_vkGetPhysicalDeviceSurfaceSupportKHR m_pfnGetPhysicalDeviceSurfaceSupportKHR = nullptr;
-        VkSurfaceKHR m_VkSurfaceKHR = VK_NULL_HANDLE;
+        WsiInstance const *m_InstancePtr  = nullptr;
+        VkSurfaceKHR       m_VkSurfaceKHR = VK_NULL_HANDLE;
     };
 
     // ================================================================================================================
@@ -60,10 +105,10 @@ namespace vku
         , private SelectQueueFamilyWithFlags
     {
     public:
-        SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
+        SelectQueueFamilyWithFlagsAndSurfaceSupport(WsiInstance const &instance,
                                                     VkSurfaceKHR surface,
                                                     VkQueueFlags requiredQueueFlags);
-        SelectQueueFamilyWithFlagsAndSurfaceSupport(PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfnGetPhysicalDeviceSurfaceSupportKHR,
+        SelectQueueFamilyWithFlagsAndSurfaceSupport(WsiInstance const &instance,
                                                     VkSurfaceKHR surface,
                                                     VkQueueFlags requiredQueueFlags,
                                                     VkQueueFlags allowedQueueFlags);
@@ -75,7 +120,7 @@ namespace vku
 
     // ================================================================================================================
 
-    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfnGetPhysicalDeviceSurfaceFormatsKHR,
+    std::vector<VkSurfaceFormatKHR> GetPhysicalDeviceSurfaceFormatsKHR(WsiInstance const &instance,
                                                                        VkPhysicalDevice physicalDevice,
                                                                        VkSurfaceKHR surface);
 
@@ -86,7 +131,7 @@ namespace vku
 
     // ================================================================================================================
 
-    std::vector<VkPresentModeKHR> GetPhysicalDeviceSurfacePresentModesKHR(PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfnGetPhysicalDeviceSurfacePresentModesKHR,
+    std::vector<VkPresentModeKHR> GetPhysicalDeviceSurfacePresentModesKHR(WsiInstance const &instance,
                                                                           VkPhysicalDevice physicalDevice,
                                                                           VkSurfaceKHR surface);
 
@@ -99,8 +144,6 @@ namespace vku
 
     struct SwapchainCreateInfo
     {
-        PFN_vkCreateSwapchainKHR      pfnCreateSwapchainKHR;
-        VkDevice                      device;
         VkSurfaceKHR                  surface;
         uint32_t                      minImageCount;
         VkFormat                      imageFormat;
@@ -120,11 +163,7 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    SwapchainCreateInfo CreateSwapchainCreateInfo(PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfnGetPhysicalDeviceSurfaceFormatsKHR,
-                                                  PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR pfnGetPhysicalDeviceSurfaceCapabilitiesKHR,
-                                                  PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfnGetPhysicalDeviceSurfacePresentModesKHR,
-                                                  PFN_vkCreateSwapchainKHR pfnCreateSwapchainKHR,
-                                                  VkDevice device,
+    SwapchainCreateInfo CreateSwapchainCreateInfo(WsiInstance const &instance,
                                                   VkPhysicalDevice physicalDevice,
                                                   VkSurfaceKHR surface,
                                                   uint32_t requestedImageCount,
@@ -138,8 +177,8 @@ namespace vku
     {
     public:
         Swapchain() = default;
-        explicit Swapchain(PFN_vkGetSwapchainImagesKHR pfnGetSwapchainImagesKHR,
-                           PFN_vkDestroySwapchainKHR pfnDestroySwapchainKHR,
+        explicit Swapchain(WsiInstance const &instance,
+                           WsiDevice const &device,
                            SwapchainCreateInfo const &createInfo);
         Swapchain(Swapchain &&rhs);
         Swapchain& operator = (Swapchain &&rhs);
@@ -152,6 +191,7 @@ namespace vku
         Swapchain(Swapchain const &rhs) = delete;
         Swapchain& operator = (Swapchain const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // types:
@@ -160,6 +200,11 @@ namespace vku
             VkImage     image;
             ImageView   imageView;
         };
+
+        static std::vector<ImageEntry> CreateSwapchainImageEntries(WsiInstance const &instance,
+                                                                   WsiDevice const &device,
+                                                                   VkSwapchainKHR const swapchain,
+                                                                   SwapchainCreateInfo const &createInfo);
 
         // members:
         PFN_vkDestroySwapchainKHR m_pfnDestroySwapchainKHR = nullptr;
@@ -170,12 +215,12 @@ namespace vku
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    VkSwapchainKHR CreateSwapchain(SwapchainCreateInfo const &createInfo);
+    VkSwapchainKHR CreateSwapchain(WsiDevice const &device,
+                                   SwapchainCreateInfo const &createInfo);
 
     // ================================================================================================================
 
-    std::vector<VkImage> GetSwapchainImages(PFN_vkGetSwapchainImagesKHR pfnGetSwapchainImagesKHR,
-                                            VkDevice device,
+    std::vector<VkImage> GetSwapchainImages(WsiDevice const &device,
                                             VkSwapchainKHR swapchain);
 
     // ================================================================================================================

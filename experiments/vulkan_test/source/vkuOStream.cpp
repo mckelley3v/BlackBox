@@ -154,30 +154,6 @@ std::string vku::iostream::queue_flags_to_string(VkQueueFlags const &value)
 
 // ====================================================================================================================
 
-std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDevice const &value)
-{
-    VkPhysicalDeviceProperties properties = {};
-    vkGetPhysicalDeviceProperties(value, &properties);
-
-    VkPhysicalDeviceFeatures features = {};
-    vkGetPhysicalDeviceFeatures(value, &features);
-
-    std::vector<LayerExtensionProperties> const layer_extension_properties = EnumeratePhysicalDeviceLayersExtensionProperties(value);
-
-    std::vector<VkQueueFamilyProperties> const queue_families = vku::GetPhysicalDeviceQueueFamilyProperties(value);
-
-    out << "\n";
-    out << indent_push;
-    out << indent << "properties:    " << properties << "\n";
-    out << indent << "features:      " << features << "\n";
-    out << indent << "layers:        " << layer_extension_properties << "\n";
-    out << indent << "queueFamilies: " << queue_families << "\n";
-    out << indent_pop;
-    return out;
-}
-
-// ====================================================================================================================
-
 std::ostream& vku::iostream::operator << (std::ostream &out, VkPhysicalDeviceProperties const &value)
 {
     out << "\n";

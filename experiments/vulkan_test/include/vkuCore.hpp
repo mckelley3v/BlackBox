@@ -2,11 +2,12 @@
 #define VKU_CORE_HPP
 
 #include <vulkan/vulkan.h>
+#include <cstddef>
 
 // ====================================================================================================================
 
-#define VKU_DECLARE_VK_PROC(func_name) extern vku::VkProc<PFN_ ## func_name> const func_name
-#define VKU_DEFINE_VK_PROC(func_name) vku::VkProc<PFN_ ## func_name> const func_name {#func_name}
+#define VKU_DECLARE_CORE_PROC(func_name) extern vku::VkProc<PFN_ ## func_name> const func_name
+#define VKU_CORE_PROC(func_name)               vku::VkProc<PFN_ ## func_name> const func_name {vku::GetCoreProcAddr(#func_name)}
 
 // ====================================================================================================================
 
@@ -14,11 +15,21 @@ namespace vku
 {
     // ================================================================================================================
 
+    PFN_vkVoidFunction GetCoreProcAddr(char const *func_name);
+
+    // ================================================================================================================
+
     class VkProcBase
     {
     public:
         VkProcBase() = default;
-        explicit VkProcBase(char const *func_name);
+        explicit VkProcBase(PFN_vkVoidFunction func_ptr);
+        VkProcBase(VkProcBase &&rhs);
+        VkProcBase(VkProcBase const &rhs) = default;
+        VkProcBase& operator = (VkProcBase &&rhs);
+        VkProcBase& operator = (VkProcBase const &rhs) = default;
+        VkProcBase& operator = (std::nullptr_t);
+        ~VkProcBase() = default;
 
     protected:
         // members:
@@ -36,8 +47,10 @@ namespace vku
     class VkProc<R (VKAPI_PTR*)(Args...)> : public VkProcBase
     {
     public:
+        typedef R (VKAPI_PTR *proc_type)(Args...);
+
         using VkProcBase::VkProcBase;
-        using proc_type = R (VKAPI_PTR*)(Args...);
+        using VkProcBase::operator = ;
 
         proc_type get() const;
         R operator () (Args... args) const;
@@ -48,10 +61,12 @@ namespace vku
 
 // ====================================================================================================================
 
-extern PFN_vkGetInstanceProcAddr const vkGetInstanceProcAddr;
-VKU_DECLARE_VK_PROC(vkCreateInstance);
-VKU_DECLARE_VK_PROC(vkEnumerateInstanceExtensionProperties);
-VKU_DECLARE_VK_PROC(vkEnumerateInstanceLayerProperties);
+extern "C" VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInstance instance,
+                                                                          const char *pName);
+
+VKU_DECLARE_CORE_PROC(vkCreateInstance);
+VKU_DECLARE_CORE_PROC(vkEnumerateInstanceExtensionProperties);
+VKU_DECLARE_CORE_PROC(vkEnumerateInstanceLayerProperties);
 
 // ====================================================================================================================
 

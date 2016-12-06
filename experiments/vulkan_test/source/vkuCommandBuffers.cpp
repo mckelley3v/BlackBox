@@ -1,13 +1,16 @@
 #include "vkuCommandBuffers.hpp"
+#include "vkuInstance.hpp"
 #include <cassert>
 
 // ====================================================================================================================
 
-/*explicit*/ vku::CommandBuffers::CommandBuffers(VkDevice const device,
+/*explicit*/ vku::CommandBuffers::CommandBuffers(Instance const &instance,
+                                                 VkDevice const device,
                                                  VkCommandPool const commandPool,
                                                  VkCommandBuffer * const commandBufferPtr,
                                                  uint32_t const commandBufferCount)
-    : m_VkDevice(device)
+    : m_pfnFreeCommandBuffers(instance.vkFreeCommandBuffers.get())
+    , m_VkDevice(device)
     , m_VkCommandPool(commandPool)
     , m_CommandBufferCount(commandBufferCount)
     , m_VkCommandBufferPtr(commandBufferPtr)
@@ -17,32 +20,28 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::CommandBuffers::CommandBuffers(CommandBuffers &&rhs)
-    : m_VkDevice(rhs.m_VkDevice)
+    : m_pfnFreeCommandBuffers(rhs.m_pfnFreeCommandBuffers)
+    , m_VkDevice(rhs.m_VkDevice)
     , m_VkCommandPool(rhs.m_VkCommandPool)
     , m_CommandBufferCount(rhs.m_CommandBufferCount)
     , m_VkCommandBufferPtr(rhs.m_VkCommandBufferPtr)
 {
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkCommandPool = VK_NULL_HANDLE;
-    rhs.m_CommandBufferCount = 0;
-    rhs.m_VkCommandBufferPtr = nullptr;
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::CommandBuffers& vku::CommandBuffers::operator = (CommandBuffers &&rhs)
 {
-    Reset();
+    Release();
 
+    m_pfnFreeCommandBuffers = rhs.m_pfnFreeCommandBuffers;
     m_VkDevice = rhs.m_VkDevice;
     m_VkCommandPool = rhs.m_VkCommandPool;
     m_CommandBufferCount = rhs.m_CommandBufferCount;
     m_VkCommandBufferPtr = rhs.m_VkCommandBufferPtr;
 
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkCommandPool = VK_NULL_HANDLE;
-    rhs.m_CommandBufferCount = 0;
-    rhs.m_VkCommandBufferPtr = nullptr;
+    rhs.Reset();
 
     return *this;
 }
@@ -51,7 +50,7 @@ vku::CommandBuffers& vku::CommandBuffers::operator = (CommandBuffers &&rhs)
 
 vku::CommandBuffers::~CommandBuffers()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -106,23 +105,32 @@ VkCommandBuffer const* vku::CommandBuffers::end() const
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::CommandBuffers::Reset()
+void vku::CommandBuffers::Release()
 {
-    if((m_VkDevice != VK_NULL_HANDLE) &&
+    if((m_pfnFreeCommandBuffers != nullptr) &&
+       (m_VkDevice != VK_NULL_HANDLE) &&
        (m_VkCommandPool != VK_NULL_HANDLE) &&
        (m_CommandBufferCount != 0) &&
        (m_VkCommandBufferPtr != nullptr))
     {
-        vkFreeCommandBuffers(m_VkDevice,
-                             m_VkCommandPool,
-                             m_CommandBufferCount,
-                             m_VkCommandBufferPtr);
+        m_pfnFreeCommandBuffers(m_VkDevice,
+                                m_VkCommandPool,
+                                m_CommandBufferCount,
+                                m_VkCommandBufferPtr);
 
-        m_VkDevice = VK_NULL_HANDLE;
-        m_VkCommandPool = VK_NULL_HANDLE;
-        m_CommandBufferCount = 0;
-        m_VkCommandBufferPtr = nullptr;
+        Reset();
     }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::CommandBuffers::Reset()
+{
+    m_pfnFreeCommandBuffers = nullptr;
+    m_VkDevice = VK_NULL_HANDLE;
+    m_VkCommandPool = VK_NULL_HANDLE;
+    m_CommandBufferCount = 0;
+    m_VkCommandBufferPtr = nullptr;
 }
 
 // ====================================================================================================================

@@ -1,26 +1,30 @@
 #include "vkuDevice.hpp"
+#include "vkuInstance.hpp"
 #include "vkuUtility.hpp"
 #include <utility>
 #include <cassert>
 
 // ====================================================================================================================
 
-static std::vector<VkLayerProperties> enumerate_device_layer_properties(VkPhysicalDevice physical_device);
+static std::vector<VkLayerProperties> enumerate_device_layer_properties(vku::Instance const &instance,
+                                                                        VkPhysicalDevice physical_device);
 
-static std::vector<VkExtensionProperties> enumerate_device_layer_extension_properties(VkPhysicalDevice physical_device,
+static std::vector<VkExtensionProperties> enumerate_device_layer_extension_properties(vku::Instance const &instance,
+                                                                                      VkPhysicalDevice physical_device,
                                                                                       VkLayerProperties const &layer);
 
-static std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(VkPhysicalDevice physicalDevice,
+static std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(vku::Instance const &instance,
+                                                                                               VkPhysicalDevice physicalDevice,
                                                                                                std::vector<vku::PhysicalDeviceRequestedQueueProperties> const &requestedQueues);
 
 // ====================================================================================================================
 
-std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const instance)
+std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(Instance const &instance)
 {
     uint32_t device_count = 0;
-    switch(vkEnumeratePhysicalDevices(instance,
-                                      &device_count,
-                                      nullptr))
+    switch(instance.vkEnumeratePhysicalDevices(instance,
+                                               &device_count,
+                                               nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -40,9 +44,9 @@ std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const ins
     }
 
     std::vector<VkPhysicalDevice> devices(device_count, VK_NULL_HANDLE);
-    switch(vkEnumeratePhysicalDevices(instance,
-                                      &device_count,
-                                      devices.data()))
+    switch(instance.vkEnumeratePhysicalDevices(instance,
+                                               &device_count,
+                                               devices.data()))
     {
         case VK_SUCCESS:
             break;
@@ -68,32 +72,38 @@ std::vector<VkPhysicalDevice> vku::EnumeratePhysicalDevices(VkInstance const ins
 
 // ====================================================================================================================
 
-std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice const physicalDevice)
+std::vector<VkQueueFamilyProperties> vku::GetPhysicalDeviceQueueFamilyProperties(Instance const &instance,
+                                                                                 VkPhysicalDevice const physicalDevice)
 {
     uint32_t family_property_count = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
-                                             &family_property_count,
-                                             nullptr);
+    instance.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+                                                      &family_property_count,
+                                                      nullptr);
 
     std::vector<VkQueueFamilyProperties> family_properties(family_property_count);
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
-                                             &family_property_count,
-                                             family_properties.data());
+    instance.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,
+                                                      &family_property_count,
+                                                      family_properties.data());
 
     return family_properties;
 }
 
 // ====================================================================================================================
 
-std::vector<vku::LayerExtensionProperties> vku::EnumeratePhysicalDeviceLayersExtensionProperties(VkPhysicalDevice const physicalDevice)
+std::vector<vku::LayerExtensionProperties> vku::EnumeratePhysicalDeviceLayersExtensionProperties(Instance const &instance,
+                                                                                                 VkPhysicalDevice const physicalDevice)
 {
     std::vector<LayerExtensionProperties> device_layer_extensions;
-    std::vector<VkLayerProperties> const layers = enumerate_device_layer_properties(physicalDevice);
+    std::vector<VkLayerProperties> const layers = enumerate_device_layer_properties(instance,
+                                                                                    physicalDevice);
     device_layer_extensions.reserve(layers.size());
 
     for(VkLayerProperties const &layer : layers)
     {
-        device_layer_extensions.push_back(LayerExtensionProperties{layer, enumerate_device_layer_extension_properties(physicalDevice, layer)});
+        device_layer_extensions.push_back(LayerExtensionProperties{layer,
+                                                                   enumerate_device_layer_extension_properties(instance,
+                                                                                                               physicalDevice,
+                                                                                                               layer)});
     }
 
     return device_layer_extensions;
@@ -128,24 +138,26 @@ bool vku::SelectQueueFamilyWithFlags::operator () (VkPhysicalDevice const /*phys
 
 // ====================================================================================================================
 
-vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(VkInstance const instance,
-                                                                std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
-                                                                std::vector<std::string> const &requiredLayers,
-                                                                std::vector<std::string> const &allowedLayers,
-                                                                std::vector<std::string> const &requiredExtensions,
-                                                                std::vector<std::string> const &allowedExtensions)
+vku::DeviceCreateInfo vku::CreateDeviceCreateInfo(Instance const &instance,
+                                                  std::vector<PhysicalDeviceRequestedQueueProperties> const &requestedQueues,
+                                                  std::vector<std::string> const &requiredLayers,
+                                                  std::vector<std::string> const &allowedLayers,
+                                                  std::vector<std::string> const &requiredExtensions,
+                                                  std::vector<std::string> const &allowedExtensions)
 {
     assert(!requestedQueues.empty());
 
     std::vector<VkPhysicalDevice> const physical_devices = EnumeratePhysicalDevices(instance);
     for(VkPhysicalDevice const &physical_device : physical_devices)
     {
-        std::vector<LayerExtensionProperties> layer_extension_properties = EnumeratePhysicalDeviceLayersExtensionProperties(physical_device);
+        std::vector<LayerExtensionProperties> layer_extension_properties = EnumeratePhysicalDeviceLayersExtensionProperties(instance,
+                                                                                                                            physical_device);
         if(HasRequiredLayersExtension(layer_extension_properties,
                                       requiredLayers,
                                       requiredExtensions))
         {
-            std::vector<PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families = enumerate_selected_queue_families(physical_device,
+            std::vector<PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families = enumerate_selected_queue_families(instance,
+                                                                                                                         physical_device,
                                                                                                                          requestedQueues);
             if(!selected_queue_families.empty())
             {
@@ -160,79 +172,119 @@ vku::LogicalDeviceCreateInfo vku::CreateLogicalDeviceCreateInfo(VkInstance const
                                                        requiredExtensions,
                                                        allowedExtensions);
 
-                return LogicalDeviceCreateInfo{physical_device,
-                                               std::move(selected_queue_families),
-                                               std::move(layer_extension_properties),
-                                               std::move(layer_names),
-                                               std::move(extension_names)};
+                return DeviceCreateInfo{physical_device,
+                                        std::move(selected_queue_families),
+                                        std::move(layer_extension_properties),
+                                        std::move(layer_names),
+                                        std::move(extension_names)};
             }
         }
     }
 
-    throw std::runtime_error("error: vku::CreateLogicalDeviceCreateInfo unable to find physical device matching requirements");
+    throw std::runtime_error("error: vku::CreateDeviceCreateInfo unable to find physical device matching requirements");
 }
 
 // ====================================================================================================================
 
-/*explicit*/ vku::LogicalDevice::LogicalDevice(VkDevice const device)
-    : m_VkDevice(device)
+/*explicit*/ vku::Device::Device(Instance const &instance,
+                                         VkDevice const device)
+    : m_pfnDestroyDevice(instance.vkDestroyDevice.get())
+    , m_pfnGetDeviceProcAddr(instance.vkGetDeviceProcAddr.get())
+    , m_VkDevice(device)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::LogicalDevice::LogicalDevice(LogicalDevice &&rhs)
-    : m_VkDevice(rhs.m_VkDevice)
+vku::Device::Device(Device &&rhs)
+    : m_pfnDestroyDevice(rhs.m_pfnDestroyDevice)
+    , m_pfnGetDeviceProcAddr(rhs.m_pfnGetDeviceProcAddr)
+    , m_VkDevice(rhs.m_VkDevice)
 {
-    rhs.m_VkDevice = VK_NULL_HANDLE;
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::LogicalDevice& vku::LogicalDevice::operator = (LogicalDevice &&rhs)
+vku::Device& vku::Device::operator = (Device &&rhs)
 {
-    Reset();
+    Release();
+
+    m_pfnDestroyDevice = rhs.m_pfnDestroyDevice;
+    m_pfnGetDeviceProcAddr = rhs.m_pfnGetDeviceProcAddr;
     m_VkDevice = rhs.m_VkDevice;
-    rhs.m_VkDevice = VK_NULL_HANDLE;
+
+    rhs.Reset();
+
     return *this;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::LogicalDevice::~LogicalDevice()
+vku::Device::~Device()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-/*explicit*/ vku::LogicalDevice::operator bool() const
+/*explicit*/ vku::Device::operator bool() const
 {
     return m_VkDevice != VK_NULL_HANDLE;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::LogicalDevice::operator VkDevice() const
+vku::Device::operator VkDevice() const
 {
     return m_VkDevice;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::LogicalDevice::Reset()
+PFN_vkVoidFunction vku::Device::GetDeviceProcAddr(char const *func_name) const
 {
-    if(m_VkDevice != VK_NULL_HANDLE)
+    if (m_pfnGetDeviceProcAddr != nullptr)
     {
-        vkDestroyDevice(m_VkDevice, // pDevice
-                        nullptr); // pAllocator
-        m_VkDevice = VK_NULL_HANDLE;
+        PFN_vkVoidFunction const func_ptr = m_pfnGetDeviceProcAddr(m_VkDevice, func_name);
+        if(func_ptr == nullptr)
+        {
+            throw std::runtime_error(make_string("error: vkGetDeviceProcAddr(\"", func_name, "\") returned nullptr"));
+        }
+
+        return func_ptr;
     }
+
+    return nullptr;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Device::Release()
+{
+    if((m_pfnDestroyDevice != nullptr) &&
+       (m_VkDevice != VK_NULL_HANDLE))
+    {
+        m_pfnDestroyDevice(m_VkDevice, // pDevice
+                           nullptr); // pAllocator
+
+        Reset();
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::Device::Reset()
+{
+    m_pfnDestroyDevice = nullptr;
+    m_pfnGetDeviceProcAddr = nullptr;
+    m_VkDevice = VK_NULL_HANDLE;
 }
 
 // ====================================================================================================================
 
-VkDevice vku::CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo)
+VkDevice vku::CreateDevice(Instance const &instance,
+                           DeviceCreateInfo const &createInfo)
 {
     std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
     queue_create_infos.reserve(createInfo.queueFamilies.size());
@@ -262,10 +314,10 @@ VkDevice vku::CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo)
     };
 
     VkDevice device = VK_NULL_HANDLE;
-    switch(vkCreateDevice(createInfo.physicalDevice, // physicalDevice
-                          &device_create_info, // pCreateInfo
-                          nullptr, // pAllocator
-                          &device))
+    switch(instance.vkCreateDevice(createInfo.physicalDevice, // physicalDevice
+                                   &device_create_info, // pCreateInfo
+                                   nullptr, // pAllocator
+                                   &device))
     {
         case VK_SUCCESS:
             break;
@@ -303,24 +355,13 @@ VkDevice vku::CreateLogicalDevice(LogicalDeviceCreateInfo const &createInfo)
 
 // ====================================================================================================================
 
-vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
-                                    char const * const func_name)
-    : m_FuncPtr(vkGetDeviceProcAddr(device, func_name))
-{
-    if(m_FuncPtr == nullptr)
-    {
-        throw std::runtime_error(make_string("error: vkGetDeviceProcAddr(\"", func_name, "\") returned nullptr"));
-    }
-}
-
-// ====================================================================================================================
-
-/*static*/ std::vector<VkLayerProperties> enumerate_device_layer_properties(VkPhysicalDevice const physical_device)
+/*static*/ std::vector<VkLayerProperties> enumerate_device_layer_properties(vku::Instance const &instance,
+                                                                            VkPhysicalDevice const physical_device)
 {
     uint32_t layer_count = 0;
-    switch(vkEnumerateDeviceLayerProperties(physical_device,
-                                            &layer_count,
-                                            nullptr))
+    switch(instance.vkEnumerateDeviceLayerProperties(physical_device,
+                                                     &layer_count,
+                                                     nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -338,9 +379,9 @@ vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
 
     // add 1 for unnamed implicit layer
     std::vector<VkLayerProperties> layer_properties(layer_count + 1, VkLayerProperties());
-    switch(vkEnumerateDeviceLayerProperties(physical_device,
-                                            &layer_count,
-                                            layer_properties.data() + 1))
+    switch(instance.vkEnumerateDeviceLayerProperties(physical_device,
+                                                     &layer_count,
+                                                     layer_properties.data() + 1))
     {
         case VK_SUCCESS:
             break;
@@ -363,16 +404,17 @@ vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
 
 // ====================================================================================================================
 
-/*static*/ std::vector<VkExtensionProperties> enumerate_device_layer_extension_properties(VkPhysicalDevice const physical_device,
+/*static*/ std::vector<VkExtensionProperties> enumerate_device_layer_extension_properties(vku::Instance const &instance,
+                                                                                          VkPhysicalDevice const physical_device,
                                                                                           VkLayerProperties const &layer)
 {
     char const * const layerName = (layer.layerName[0] != '\0') ? layer.layerName : nullptr;
 
     uint32_t extension_count = 0;
-    switch(vkEnumerateDeviceExtensionProperties(physical_device,
-                                                layerName,
-                                                &extension_count,
-                                                nullptr))
+    switch(instance.vkEnumerateDeviceExtensionProperties(physical_device,
+                                                         layerName,
+                                                         &extension_count,
+                                                         nullptr))
     {
         case VK_SUCCESS:
         case VK_INCOMPLETE:
@@ -392,10 +434,10 @@ vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
     }
 
     std::vector<VkExtensionProperties> layer_extension_properties(extension_count, VkExtensionProperties());
-    switch(vkEnumerateDeviceExtensionProperties(physical_device,
-                                                layerName,
-                                                &extension_count,
-                                                layer_extension_properties.data()))
+    switch(instance.vkEnumerateDeviceExtensionProperties(physical_device,
+                                                         layerName,
+                                                         &extension_count,
+                                                         layer_extension_properties.data()))
     {
         case VK_SUCCESS:
             break;
@@ -421,12 +463,13 @@ vku::DeviceProcBase::DeviceProcBase(VkDevice const device,
 
 // ====================================================================================================================
 
-/*static*/ std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(VkPhysicalDevice const physicalDevice,
+/*static*/ std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> enumerate_selected_queue_families(vku::Instance const &instance,
+                                                                                                   VkPhysicalDevice const physicalDevice,
                                                                                                    std::vector<vku::PhysicalDeviceRequestedQueueProperties> const &requestedQueues)
 {
     std::vector<vku::PhysicalDeviceQueueFamilyCreateInfo> selected_queue_families;
 
-    std::vector<VkQueueFamilyProperties> const queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(physicalDevice);
+    std::vector<VkQueueFamilyProperties> const queue_families_properties = vku::GetPhysicalDeviceQueueFamilyProperties(instance, physicalDevice);
     uint32_t const queue_family_count = static_cast<uint32_t>(queue_families_properties.size());
 
     for(vku::PhysicalDeviceRequestedQueueProperties const &requested_queue : requestedQueues)

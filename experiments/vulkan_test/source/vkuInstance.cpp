@@ -1,6 +1,5 @@
 #include "vkuInstance.hpp"
 #include "vkuUtility.hpp"
-#include "vkuCore.hpp"
 #include <utility>
 
 // ====================================================================================================================
@@ -59,72 +58,87 @@ vku::InstanceCreateInfo vku::CreateInstanceCreateInfo(ApplicationInfo const &app
 
 // ====================================================================================================================
 
-vku::InstanceProcBase::InstanceProcBase(VkInstance const instance,
-                                        char const * const func_name)
-    : m_FuncPtr(vkGetInstanceProcAddr(instance, func_name))
-{
-    if(m_FuncPtr == nullptr)
-    {
-        throw std::runtime_error(make_string("error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"));
-    }
-}
-
-// ====================================================================================================================
-
-vku::Instance::Instance(VkInstance const instance)
+vku::InstanceBase::InstanceBase(VkInstance const instance)
     : m_VkInstance(instance)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::Instance::Instance(Instance &&rhs)
+vku::InstanceBase::InstanceBase(InstanceBase &&rhs)
     : m_VkInstance(rhs.m_VkInstance)
 {
-    rhs.m_VkInstance = VK_NULL_HANDLE;
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::Instance& vku::Instance::operator = (Instance &&rhs)
+vku::InstanceBase& vku::InstanceBase::operator = (InstanceBase &&rhs)
 {
-    Reset();
+    Release();
+
     m_VkInstance = rhs.m_VkInstance;
-    rhs.m_VkInstance = VK_NULL_HANDLE;
+
+    rhs.Reset();
+
     return *this;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::Instance::~Instance()
+vku::InstanceBase::~InstanceBase()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-/*explicit*/ vku::Instance::operator bool() const
+/*explicit*/ vku::InstanceBase::operator bool() const
 {
     return m_VkInstance != VK_NULL_HANDLE;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::Instance::operator VkInstance() const
+vku::InstanceBase::operator VkInstance() const
 {
     return m_VkInstance;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::Instance::Reset()
+PFN_vkVoidFunction vku::InstanceBase::GetInstanceProcAddr(char const *func_name) const
 {
-    if(m_VkInstance != VK_NULL_HANDLE)
+    PFN_vkVoidFunction const func_ptr = vkGetInstanceProcAddr(m_VkInstance, func_name);
+
+    if(func_ptr == nullptr)
+    {
+        throw std::runtime_error(make_string("error: vkGetInstanceProcAddr(\"", func_name, "\") returned nullptr"));
+    }
+
+    return func_ptr;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::InstanceBase::Release()
+{
+    if((m_VkInstance != VK_NULL_HANDLE) &&
+       (vkDestroyInstance.get() != nullptr))
     {
         vkDestroyInstance(m_VkInstance, // pInstance
                           nullptr); // pAllocator
-        m_VkInstance = VK_NULL_HANDLE;
+
+        Reset();
     }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::InstanceBase::Reset()
+{
+    m_VkInstance = VK_NULL_HANDLE;
+    vkDestroyInstance = nullptr;
 }
 
 // ====================================================================================================================

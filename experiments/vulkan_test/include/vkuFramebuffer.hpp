@@ -9,11 +9,16 @@ namespace vku
 {
     // ================================================================================================================
 
+    class Instance;
+
+    // ================================================================================================================
+
     class Framebuffer
     {
     public:
         Framebuffer() = default;
-        explicit Framebuffer(VkDevice device,
+        explicit Framebuffer(Instance const &instance,
+                             VkDevice device,
                              VkFramebuffer framebuffer);
         Framebuffer(Framebuffer &&rhs);
         Framebuffer& operator = (Framebuffer &&rhs);
@@ -26,11 +31,13 @@ namespace vku
         Framebuffer(Framebuffer const &rhs) = delete;
         Framebuffer& operator = (Framebuffer const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // members:
-        VkDevice      m_VkDevice      = VK_NULL_HANDLE;
-        VkFramebuffer m_VkFramebuffer = VK_NULL_HANDLE;
+        PFN_vkDestroyFramebuffer m_pfnDestroyFramebuffer = nullptr;
+        VkDevice                 m_VkDevice              = VK_NULL_HANDLE;
+        VkFramebuffer            m_VkFramebuffer         = VK_NULL_HANDLE;
     };
 
     // ================================================================================================================

@@ -9,11 +9,16 @@ namespace vku
 {
     // ================================================================================================================
 
+    class Instance;
+
+    // ================================================================================================================
+
     class ImageView
     {
     public:
         ImageView() = default;
-        explicit ImageView(VkDevice device,
+        explicit ImageView(Instance const &instance,
+                           VkDevice device,
                            VkImageView imageView);
         ImageView(ImageView &&rhs);
         ImageView& operator = (ImageView &&rhs);
@@ -26,11 +31,13 @@ namespace vku
         ImageView(ImageView const &rhs) = delete;
         ImageView& operator = (ImageView const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // members:
-        VkDevice    m_VkDevice    = VK_NULL_HANDLE;
-        VkImageView m_VkImageView = VK_NULL_HANDLE;
+        PFN_vkDestroyImageView m_pfnDestroyImageView = nullptr;
+        VkDevice               m_VkDevice            = VK_NULL_HANDLE;
+        VkImageView            m_VkImageView         = VK_NULL_HANDLE;
     };
 
     // ================================================================================================================

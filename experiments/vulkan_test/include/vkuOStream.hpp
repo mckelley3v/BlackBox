@@ -37,7 +37,6 @@ namespace iostream
 
     template <typename T>
     std::ostream& operator << (std::ostream &out, std::vector<T> const &values);
-    std::ostream& operator << (std::ostream &out, VkPhysicalDevice const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceProperties const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceType const &value);
     std::ostream& operator << (std::ostream &out, VkPhysicalDeviceLimits const &value);

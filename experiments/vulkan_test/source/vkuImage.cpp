@@ -1,10 +1,13 @@
 #include "vkuImage.hpp"
+#include "vkuInstance.hpp"
 
 // ====================================================================================================================
 
-/*explicit*/ vku::ImageView::ImageView(VkDevice const device,
+/*explicit*/ vku::ImageView::ImageView(Instance const &instance,
+                                       VkDevice const device,
                                        VkImageView const imageView)
-    : m_VkDevice(device)
+    : m_pfnDestroyImageView(instance.vkDestroyImageView.get())
+    , m_VkDevice(device)
     , m_VkImageView(imageView)
 {
 }
@@ -12,24 +15,24 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::ImageView::ImageView(ImageView &&rhs)
-    : m_VkDevice(rhs.m_VkDevice)
+    : m_pfnDestroyImageView(rhs.m_pfnDestroyImageView)
+    , m_VkDevice(rhs.m_VkDevice)
     , m_VkImageView(rhs.m_VkImageView)
 {
-    rhs.m_VkDevice = VK_NULL_HANDLE;
-    rhs.m_VkImageView = VK_NULL_HANDLE;
+    rhs.Reset();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
 vku::ImageView& vku::ImageView::operator = (ImageView &&rhs)
 {
-    Reset();
+    Release();
 
+    m_pfnDestroyImageView = rhs.m_pfnDestroyImageView;
     m_VkDevice    = rhs.m_VkDevice;
     m_VkImageView = rhs.m_VkImageView;
 
-    rhs.m_VkDevice    = VK_NULL_HANDLE;
-    rhs.m_VkImageView = VK_NULL_HANDLE;
+    rhs.Reset();
 
     return *this;
 }
@@ -38,7 +41,7 @@ vku::ImageView& vku::ImageView::operator = (ImageView &&rhs)
 
 vku::ImageView::~ImageView()
 {
-    Reset();
+    Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -57,18 +60,27 @@ vku::ImageView::operator VkImageView() const
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::ImageView::Reset()
+void vku::ImageView::Release()
 {
-    if ((m_VkDevice != VK_NULL_HANDLE) &&
+    if ((m_pfnDestroyImageView != nullptr) &&
+        (m_VkDevice != VK_NULL_HANDLE) &&
         (m_VkImageView != VK_NULL_HANDLE))
     {
-        vkDestroyImageView(m_VkDevice,
-                           m_VkImageView,
-                           nullptr); // pAllocator
+        m_pfnDestroyImageView(m_VkDevice,
+                              m_VkImageView,
+                              nullptr); // pAllocator
 
-        m_VkDevice = VK_NULL_HANDLE;
-        m_VkImageView = VK_NULL_HANDLE;
+        Reset();
     }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+void vku::ImageView::Reset()
+{
+    m_pfnDestroyImageView = nullptr;
+    m_VkDevice = VK_NULL_HANDLE;
+    m_VkImageView = VK_NULL_HANDLE;
 }
 
 // ====================================================================================================================

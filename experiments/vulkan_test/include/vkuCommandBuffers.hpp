@@ -9,11 +9,16 @@ namespace vku
 {
     // ================================================================================================================
 
+    class Instance;
+
+    // ================================================================================================================
+
     class CommandBuffers
     {
     public:
         CommandBuffers() = default;
-        explicit CommandBuffers(VkDevice device,
+        explicit CommandBuffers(Instance const &instance,
+                                VkDevice device,
                                 VkCommandPool commandPool,
                                 VkCommandBuffer *commandBufferPtr,
                                 uint32_t commandBufferCount);
@@ -35,13 +40,15 @@ namespace vku
         CommandBuffers(CommandBuffers const &rhs) = delete;
         CommandBuffers& operator = (CommandBuffers const &rhs) = delete;
 
+        void Release();
         void Reset();
 
         // members:
-        VkDevice         m_VkDevice           = VK_NULL_HANDLE;
-        VkCommandPool    m_VkCommandPool      = VK_NULL_HANDLE;
-        uint32_t         m_CommandBufferCount = 0;
-        VkCommandBuffer *m_VkCommandBufferPtr = nullptr;
+        PFN_vkFreeCommandBuffers m_pfnFreeCommandBuffers = nullptr;
+        VkDevice                 m_VkDevice              = VK_NULL_HANDLE;
+        VkCommandPool            m_VkCommandPool         = VK_NULL_HANDLE;
+        uint32_t                 m_CommandBufferCount    = 0;
+        VkCommandBuffer         *m_VkCommandBufferPtr    = nullptr;
     };
 
     // ================================================================================================================
