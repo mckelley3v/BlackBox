@@ -31,7 +31,7 @@ namespace m1
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    namespace literals
+    inline namespace literals
     {
         constexpr crc32 operator "" _crc32(char const *str,
                                            std::size_t len) noexcept;

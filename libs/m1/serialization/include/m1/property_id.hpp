@@ -30,7 +30,7 @@ namespace serialization
 
 namespace m1
 {
-namespace literals
+inline namespace literals
 {
     // ================================================================================================================
 

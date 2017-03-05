@@ -88,7 +88,7 @@ namespace m1
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    namespace literals
+    inline namespace literals
     {
        ustring operator "" _us(char const *c_str, std::size_t length) noexcept; // ascii string literal
        ustring operator "" _us(wchar_t const *w_str, std::size_t length) noexcept; // wide string literal
