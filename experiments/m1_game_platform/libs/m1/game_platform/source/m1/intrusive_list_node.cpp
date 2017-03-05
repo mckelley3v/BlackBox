@@ -64,32 +64,32 @@ bool m1::intrusive_list_node::is_linked() const noexcept
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void m1::intrusive_list_node::insert_link(intrusive_list_node &next) noexcept
+void m1::intrusive_list_node::insert_link(intrusive_list_node &prev) noexcept
 {
-    m_NextPtr = &next;
-    m_PrevPtr = next.m_PrevPtr;
-    next.m_PrevPtr->m_NextPtr = this;
-    next.m_PrevPtr = this;
+    assert(!prev.is_linked());
+
+    m_PrevPtr->m_NextPtr = &prev;
+    prev.m_PrevPtr = m_PrevPtr;
+    prev.m_NextPtr = this;
+    m_PrevPtr = &prev;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void m1::intrusive_list_node::splice_link_range(intrusive_list_node &next,
-                                                intrusive_list_node &end) noexcept
+void m1::intrusive_list_node::splice_link_range(intrusive_list_node &prev_begin,
+                                                intrusive_list_node &prev_end) noexcept
 {
-    intrusive_list_node * const n = m_NextPtr;
-    intrusive_list_node * const p = next.m_PrevPtr;
-    intrusive_list_node * const e = end.m_PrevPtr;
+    intrusive_list_node * const this_prev = m_PrevPtr;
+    intrusive_list_node * const prev_head = prev_begin.m_PrevPtr;
+    intrusive_list_node * const prev_back = prev_end.m_PrevPtr;
 
-    p->m_NextPtr = &end;
-    end.m_PrevPtr = p;
+    this_prev->m_NextPtr = &prev_begin;
+    prev_begin.m_PrevPtr = this_prev;
+    prev_back->m_NextPtr = this;
+    m_PrevPtr = prev_back;
 
-    m_NextPtr = &next;
-    next.m_PrevPtr = this;
-
-    e->m_NextPtr = n;
-    n->m_PrevPtr = e;
-
+    prev_head->m_NextPtr = &prev_end;
+    prev_end.m_PrevPtr = prev_head;
 }
 
 // --------------------------------------------------------------------------------------------------------------------

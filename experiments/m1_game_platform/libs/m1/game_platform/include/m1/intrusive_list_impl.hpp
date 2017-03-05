@@ -66,6 +66,8 @@ namespace m1
         void pop_front() noexcept;
         void pop_back() noexcept;
 
+        void insert(node_type &at, node_type &node) noexcept;
+
         void swap(intrusive_list_impl &rhs) noexcept;
         void clear() noexcept;
 

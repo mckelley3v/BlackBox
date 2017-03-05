@@ -232,7 +232,7 @@ namespace m1
         template <typename Compare>
         iterator sort_impl(iterator first,
                            iterator last,
-                           Compare comp,
+                           Compare &comp,
                            size_type size) noexcept;
 
         impl_type& impl();
@@ -523,7 +523,7 @@ typename m1::intrusive_list<T>::value_type const& m1::intrusive_list<T>::back() 
 template <typename T>
 void m1::intrusive_list<T>::push_front(value_type &node) noexcept
 {
-    node.insert_link(*begin_node_ptr());
+    impl_type::push_front(node);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -531,7 +531,7 @@ void m1::intrusive_list<T>::push_front(value_type &node) noexcept
 template <typename T>
 void m1::intrusive_list<T>::push_back(value_type &node) noexcept
 {
-    node.insert_link(*end_node_ptr());
+    impl_type::push_back(node);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ template <typename T>
 typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::insert(iterator at,
                                                                        value_type &node) noexcept
 {
-    node.insert_link(*at);
+    impl_type::insert(*at, node);
     return iterator(&node);
 }
 
@@ -556,7 +556,7 @@ void m1::intrusive_list<T>::insert(iterator at,
 
     for(InputIterator range_itr = range_first; range_itr != range_last; ++range_itr)
     {
-        insert(at, *range_itr);
+        impl_type::insert(*at, *range_itr);
     }
 }
 
@@ -652,7 +652,7 @@ void m1::intrusive_list<T>::splice(iterator at,
     splice(at,
            from_list,
            from_position,
-           from_list.end());
+           std::next(from_position));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -665,7 +665,7 @@ void m1::intrusive_list<T>::splice(iterator at,
     splice(at,
            from_list,
            from_position,
-           from_list.end());
+           std::next(from_position));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -826,7 +826,11 @@ void m1::intrusive_list<T>::merge(intrusive_list<T> &&from_list,
 template <typename T>
 void m1::intrusive_list<T>::sort() noexcept
 {
-    sort(std::less<T>());
+    std::less<T> comp;
+    sort_impl(begin(),
+              end(),
+              comp,
+              std::distance(begin(), end()));
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -847,7 +851,7 @@ template <typename T>
 template <typename Compare>
 typename m1::intrusive_list<T>::iterator m1::intrusive_list<T>::sort_impl(iterator first,
                                                                           iterator last,
-                                                                          Compare comp,
+                                                                          Compare &comp,
                                                                           size_type size) noexcept
 {
     if(size < 2)

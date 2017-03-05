@@ -57,7 +57,7 @@ TEST_CASE("Test m1::intrusive_list", "[m1]")
     CHECK(std::distance(l.begin(), l.end()) == 2);
 
     l.push_back(x2);
-    CHECK(std::distance(l.begin(), l.end()) == 2);
+    CHECK(std::distance(l.begin(), l.end()) == 3);
 
     l.push_back(x3);
     CHECK(std::distance(l.begin(), l.end()) == 4);

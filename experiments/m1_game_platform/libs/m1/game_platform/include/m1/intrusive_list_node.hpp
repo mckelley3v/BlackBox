@@ -27,9 +27,9 @@ namespace m1
 
         // methods:
         bool is_linked() const noexcept;
-        void insert_link(intrusive_list_node &next) noexcept;
-        void splice_link_range(intrusive_list_node &next,
-                               intrusive_list_node &end) noexcept;
+        void insert_link(intrusive_list_node &prev) noexcept;
+        void splice_link_range(intrusive_list_node &prev_begin,
+                               intrusive_list_node &prev_end) noexcept;
         void swap_links(intrusive_list_node &rhs) noexcept;
         void clear_links() noexcept;
 
