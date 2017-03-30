@@ -58,14 +58,14 @@ vku::InstanceCreateInfo vku::CreateInstanceCreateInfo(ApplicationInfo const &app
 
 // ====================================================================================================================
 
-vku::InstanceBase::InstanceBase(VkInstance const instance)
+vku::Instance::Instance(VkInstance const instance)
     : m_VkInstance(instance)
 {
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::InstanceBase::InstanceBase(InstanceBase &&rhs)
+vku::Instance::Instance(Instance &&rhs)
     : m_VkInstance(rhs.m_VkInstance)
 {
     rhs.Reset();
@@ -73,7 +73,7 @@ vku::InstanceBase::InstanceBase(InstanceBase &&rhs)
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::InstanceBase& vku::InstanceBase::operator = (InstanceBase &&rhs)
+vku::Instance& vku::Instance::operator = (Instance &&rhs)
 {
     Release();
 
@@ -86,28 +86,28 @@ vku::InstanceBase& vku::InstanceBase::operator = (InstanceBase &&rhs)
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::InstanceBase::~InstanceBase()
+vku::Instance::~Instance()
 {
     Release();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-/*explicit*/ vku::InstanceBase::operator bool() const
+/*explicit*/ vku::Instance::operator bool() const
 {
     return m_VkInstance != VK_NULL_HANDLE;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-vku::InstanceBase::operator VkInstance() const
+vku::Instance::operator VkInstance() const
 {
     return m_VkInstance;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-PFN_vkVoidFunction vku::InstanceBase::GetInstanceProcAddr(char const *func_name) const
+PFN_vkVoidFunction vku::Instance::GetInstanceProcAddr(char const *func_name) const
 {
     PFN_vkVoidFunction const func_ptr = vkGetInstanceProcAddr(m_VkInstance, func_name);
 
@@ -121,10 +121,9 @@ PFN_vkVoidFunction vku::InstanceBase::GetInstanceProcAddr(char const *func_name)
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::InstanceBase::Release()
+void vku::Instance::Release()
 {
-    if((m_VkInstance != VK_NULL_HANDLE) &&
-       (vkDestroyInstance.get() != nullptr))
+    if(m_VkInstance != VK_NULL_HANDLE)
     {
         vkDestroyInstance(m_VkInstance, // pInstance
                           nullptr); // pAllocator
@@ -135,10 +134,9 @@ void vku::InstanceBase::Release()
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void vku::InstanceBase::Reset()
+void vku::Instance::Reset()
 {
     m_VkInstance = VK_NULL_HANDLE;
-    vkDestroyInstance = nullptr;
 }
 
 // ====================================================================================================================

@@ -265,6 +265,8 @@ void vku::Device::Release()
     if((m_pfnDestroyDevice != nullptr) &&
        (m_VkDevice != VK_NULL_HANDLE))
     {
+        vkDeviceWaitIdle(m_VkDevice);
+
         m_pfnDestroyDevice(m_VkDevice, // pDevice
                            nullptr); // pAllocator
 
