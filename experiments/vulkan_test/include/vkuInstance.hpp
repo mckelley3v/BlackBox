@@ -50,14 +50,13 @@ namespace vku
 
     // ================================================================================================================
 
-    class InstanceBase
+    class Instance
     {
     public:
-        InstanceBase() = default;
-        explicit InstanceBase(VkInstance instance);
-        InstanceBase(InstanceBase &&rhs);
-        InstanceBase& operator = (InstanceBase &&rhs);
-        ~InstanceBase();
+        explicit Instance(VkInstance instance);
+        Instance(Instance &&rhs);
+        Instance& operator = (Instance &&rhs);
+        ~Instance();
 
         explicit operator bool() const;
         operator VkInstance() const;
@@ -65,26 +64,18 @@ namespace vku
         PFN_vkVoidFunction GetInstanceProcAddr(char const *func_name) const;
 
     private:
-        InstanceBase(InstanceBase const &rhs) = delete;
-        InstanceBase& operator = (InstanceBase const &rhs) = delete;
+        Instance(Instance const &rhs) = delete;
+        Instance& operator = (Instance const &rhs) = delete;
 
         void Release();
         void Reset();
 
         // members:
         VkInstance m_VkInstance = VK_NULL_HANDLE;
-        VKU_INSTANCE_PROC_MEMBER(vkDestroyInstance);
-    };
 
-    // ----------------------------------------------------------------------------------------------------------------
-
-    class Instance
-        : public InstanceBase
-    {
     public:
-        using InstanceBase::InstanceBase;
-
         // core procs:
+        VKU_INSTANCE_PROC_MEMBER(vkDestroyInstance);
         VKU_INSTANCE_PROC_MEMBER(vkEnumeratePhysicalDevices);
         VKU_INSTANCE_PROC_MEMBER(vkGetPhysicalDeviceQueueFamilyProperties);
         VKU_INSTANCE_PROC_MEMBER(vkEnumerateDeviceLayerProperties);

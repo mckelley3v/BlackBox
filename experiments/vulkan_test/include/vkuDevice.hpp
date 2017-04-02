@@ -113,7 +113,6 @@ namespace vku
     class Device
     {
     public:
-        Device() = default;
         explicit Device(Instance const &instance,
                         VkDevice device);
         Device(Device &&rhs);
@@ -139,6 +138,7 @@ namespace vku
 
     public:
         // core procs:
+        VKU_DEVICE_PROC_MEMBER(vkDeviceWaitIdle);
         VKU_DEVICE_PROC_MEMBER(vkGetDeviceQueue);
     };
 
