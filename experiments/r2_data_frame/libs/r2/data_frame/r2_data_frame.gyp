@@ -14,6 +14,7 @@
                 "include/r2/data_frame.hpp",
                 "include/r2/data_sequence.hpp",
                 "include/r2/data_source.hpp",
+                "include/r2/memory_of.hpp",
                 "source/r2/data_frame.cpp",
                 "source/r2/data_sequence.cpp",
                 "source/r2/data_source.cpp",
@@ -44,6 +45,7 @@
             [
                 "test/test_main.cpp",
                 "test/test_data_frame.cpp",
+                "test/test_memory_of.cpp",
             ],
             "dependencies":
             [

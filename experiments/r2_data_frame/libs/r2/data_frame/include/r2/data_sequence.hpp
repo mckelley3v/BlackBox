@@ -47,7 +47,46 @@ namespace r2
     // ----------------------------------------------------------------------------------------------------------------
 
     // non-member functions:
+    //  arithmetic operators:
+    template <typename T> data_sequence<T>& operator += (data_sequence<T> &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T>& operator -= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T>& operator *= (data_sequence<T> &lhs, typename data_sequence<T>::value_type const &rhs);
+    template <typename T> data_sequence<T>& operator /= (data_sequence<T> &lhs, typename data_sequence<T>::value_type const &rhs);
+    template <typename T> data_sequence<T> operator + (data_sequence<T> const &v);
+    template <typename T> data_sequence<T> operator - (data_sequence<T> const &v);
+    template <typename T> data_sequence<T> operator + (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator - (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator * (typename data_sequence<T>::value_type const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator * (data_sequence<T> const &lhs, typename data_sequence<T>::value_type const &rhs);
+    template <typename T> data_sequence<T> operator / (data_sequence<T> const &lhs, typename data_sequence<T>::value_type const &rhs);
+
+    //  bitwise operators:
+    template <typename T> data_sequence<T>& operator &= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T>& operator |= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T>& operator ^= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator ~ (data_sequence<T> const &v);
+    template <typename T> data_sequence<T> operator & (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator | (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<T> operator ^ (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+
+    //  logical operators:
+    template <typename T> data_sequence<bool> operator ! (data_sequence<T> const &v);
+    template <typename T> data_sequence<bool> operator && (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator || (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+
+    //  relational operators:
+    template <typename T> data_sequence<bool> operator == (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator != (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator <  (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator <= (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator >  (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+    template <typename T> data_sequence<bool> operator >= (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
+
     //  logical functions:
+    bool all_of(data_sequence<bool> const &v);
+    bool any_of(data_sequence<bool> const &v);
+    bool none_of(data_sequence<bool> const &v);
+    template <typename T> data_sequence<T> select(data_sequence<bool> const &condition, data_sequence<T> const &lhs, data_sequence<T> const &rhs);
     template <typename T> data_sequence<bool> is_close(data_sequence<T> &lhs, data_sequence<T> const &rhs);
     template <typename T> data_sequence<bool> is_close(data_sequence<T> &lhs, data_sequence<T> const &rhs, T const &relative_tolerance, T const &absolute_tolerance);
     template <typename T> data_sequence<bool> is_finite(data_sequence<T> const &v);
@@ -89,10 +128,10 @@ namespace r2
     template <typename T> data_sequence<T> log2(data_sequence<T> const &v);
     template <typename T> data_sequence<T> max(data_sequence<T> const &v);
     template <typename T> data_sequence<T> max(data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T, typename ...TN> data_sequence<T> max(data_sequence<T> const &v0, data_sequence<T> const &v1, data_sequence<Ts> const &...vN);
+    template <typename T, typename ...TN> data_sequence<T> max(data_sequence<T> const &v0, data_sequence<T> const &v1, data_sequence<TN> const &...vN);
     template <typename T> data_sequence<T> min(data_sequence<T> const &v);
     template <typename T> data_sequence<T> min(data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T, typename ...TN> data_sequence<T> min(data_sequence<T> const &v0, data_sequence<T> const &v1, data_sequence<Ts> const &...vN);
+    template <typename T, typename ...TN> data_sequence<T> min(data_sequence<T> const &v0, data_sequence<T> const &v1, data_sequence<TN> const &...vN);
     template <typename T> data_sequence<T> mirror(data_sequence<T> const &v, T const &min_value, T const &max_value);
     template <typename T> data_sequence<T> mirror(data_sequence<T> const &v, data_sequence<T> const &min_value, data_sequence<T> const &max_value);
     template <typename T> data_sequence<T> mix(data_sequence<T> const &v0, data_sequence<T> const &v1, T const &t);
@@ -121,47 +160,6 @@ namespace r2
     template <typename T> data_sequence<T> tan(data_sequence<T> const &v);
     template <typename T> data_sequence<T> tanh(data_sequence<T> const &v);
     template <typename T> data_sequence<T> trunc(data_sequence<T> const &v);
-
-    //  arithmetic operators:
-    template <typename T> data_sequence<T>& operator += (data_sequence<T> &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T>& operator -= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T>& operator *= (data_sequence<T> &lhs, typename data_sequence<T>::value_type const &rhs);
-    template <typename T> data_sequence<T>& operator /= (data_sequence<T> &lhs, typename data_sequence<T>::value_type const &rhs);
-    template <typename T> data_sequence<T> operator + (data_sequence<T> const &v);
-    template <typename T> data_sequence<T> operator - (data_sequence<T> const &v);
-    template <typename T> data_sequence<T> operator + (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator - (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator * (typename data_sequence<T>::value_type const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator * (data_sequence<T> const &lhs, typename data_sequence<T>::value_type const &rhs);
-    template <typename T> data_sequence<T> operator / (data_sequence<T> const &lhs, typename data_sequence<T>::value_type const &rhs);
-
-    //  logical operators:
-    template <typename T> data_sequence<bool> operator ! (data_sequence<T> const &v);
-    template <typename T> data_sequence<bool> operator && (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator || (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-
-    //  relational operators:
-    template <typename T> data_sequence<bool> operator == (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator != (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator <  (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator <= (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator >  (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<bool> operator >= (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-
-    //  logical functions:
-    bool all_of(data_sequence<bool> const &v);
-    bool any_of(data_sequence<bool> const &v);
-    bool none_of(data_sequence<bool> const &v);
-    template <typename T> data_sequence<T> select(data_sequence<bool> const &condition, data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-
-    //  bitwise operators:
-    template <typename T> data_sequence<T>& operator &= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T>& operator |= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T>& operator ^= (data_sequence<T> &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator ~ (data_sequence<T> const &v);
-    template <typename T> data_sequence<T> operator & (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator | (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
-    template <typename T> data_sequence<T> operator ^ (data_sequence<T> const &lhs, data_sequence<T> const &rhs);
 
     //  vector functions:
     template <typename T> data_sequence<T> normalize(data_sequence<T> const &v);
