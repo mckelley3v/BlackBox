@@ -90,7 +90,6 @@ template <typename U>
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
 template <typename U>
 /*explicit*/ r2::data_source_adaptor<U>::data_source_adaptor(U const &underlying_data)
     : base_type()
@@ -100,7 +99,6 @@ template <typename U>
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
 template <typename U>
 /*virtual*/ std::size_t r2::data_source_adaptor<U>::size() const /*override*/
 {
@@ -109,9 +107,8 @@ template <typename U>
 
 // --------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
 template <typename U>
-/*virtual*/ T const& r2::data_source_adaptor<U>::operator [] (std::size_t const index) const /*override*/
+/*virtual*/ typename r2::data_source_adaptor<U>::value_type const& r2::data_source_adaptor<U>::operator [] (std::size_t const index) const /*override*/
 {
     assert(index < size());
     return m_UnderlyingData[index];

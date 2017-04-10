@@ -30,18 +30,15 @@ namespace r2
         std::size_t size() const;
         value_type const& operator [] (std::size_t index) const;
 
-        source_ptr_type const& get_source_ptr() const;
+        std::shared_ptr<data_source<T>> const& get_source_ptr() const;
 
     private:
         // copy (deleted):
         data_sequence(data_sequence const &rhs) = delete;
         data_sequence& operator = (data_sequence const &rhs) = delete;
 
-        // types:
-        typedef std::shared_ptr<data_source<T>> source_ptr_type;
-
         // members:
-        source_ptr_type m_SourcePtr {};
+        std::shared_ptr<data_source<T>> m_SourcePtr {nullptr};
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -204,7 +201,7 @@ typename r2::data_sequence<T>::value_type const& r2::data_sequence<T>::operator 
 // --------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-typename r2::data_sequence<T>::source_ptr_type const& r2::data_sequence<T>::get_source_ptr() const
+typename std::shared_ptr<r2::data_source<T>> const& r2::data_sequence<T>::get_source_ptr() const
 {
     return m_SourcePtr;
 }
