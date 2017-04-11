@@ -14,17 +14,11 @@ namespace r2
 {
     // ================================================================================================================
 
-    struct data_frame_buffer
-    {
-        std::shared_ptr<void> ptr;
-        void const           *end;
-    };
-
-    // ================================================================================================================
-
     template <typename ...Ts>
     class data_frame
     {
+        typedef data_frame<Ts...> this_type;
+
     public:
     //private:
         // helpers:
@@ -36,7 +30,7 @@ namespace r2
 
     // ================================================================================================================
 
-    // shared_ptr to buffer containing entire data_frame, but with stride/offset to just one column
+    // raw pointer to buffer containing entire data_frame's buffer, but with stride/offset to just one column
     template <typename T>
     class data_frame_buffer_source
         : public data_source<T>
@@ -49,7 +43,7 @@ namespace r2
 
         // construct/move/destroy:
         data_frame_buffer_source() = default;
-        data_frame_buffer_source(std::shared_ptr<void> const &buffer_ptr,
+        data_frame_buffer_source(void const *buffer_ptr,
                                  void const *buffer_end,
                                  std::size_t elem_count,
                                  std::ptrdiff_t elem_offset,
@@ -71,10 +65,11 @@ namespace r2
         unsigned char const* get_unchecked_elem_ptr(std::size_t index) const;
 
         // members:
-        data_frame_buffer m_Buffer {};
-        std::size_t       m_Count  {0};
-        std::ptrdiff_t    m_Offset {0};
-        std::ptrdiff_t    m_Stride {0};
+        void const    *m_BufferPtr {nullptr};
+        void const    *m_BufferEnd {nullptr};
+        std::size_t    m_Count     {0};
+        std::ptrdiff_t m_Offset    {0};
+        std::ptrdiff_t m_Stride    {0};
     };
 
     // ================================================================================================================
@@ -119,6 +114,8 @@ namespace data_frame_impl
 
     // ================================================================================================================
 
+    // this is a simple allocator that "over" allocates by the given memory_size_description
+    // so that the user can construct additional objects in the extra memory
     template <typename T>
     class data_frame_buffer_allocator
     {
@@ -194,8 +191,10 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     using namespace data_frame_impl;
 
     // note: primary goal of the complexity here is to construct the entire data_frame's columns' data
-    // and data_sequences in a single allocation
+    // and data_sequences in a single allocation but still using shared_ptr to manage memory safely
     //  this should provide maximal performance and cache locality
+    //  the shared_ptr aliasing constructor is crucial to the separate columns sharing memory
+    //  http://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
 
     // construct a buffer big enough to hold a column for each T, with row_count number of values
     // use memory_size_description to help calculate appropriate buffer sizes and alignments
@@ -218,23 +217,25 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     //      the data's lifetime is tied to the buffer but without any additional allocations
     // the data_frame's tuple of data_sequence (which hold shared_ptr to data_source) will be assigned
     //  to the data_frame_buffer_source's created here
-    typedef std::tuple<data_frame_buffer_source<Ts>...> header_tuple_type;
 
-    std::initializer_list<memory_size_description> const column_mem_descs = {(memory_of<Ts>() * row_count)...};
-    memory_size_description const buffer_mem_desc = memory_of(column_mem_descs);
-
-    // the data_frame_buffer_allocator will append space for the given memory_size_description to the given allocation
-    // so we'll use allocate_shared to construct a shared_ptr to the header, then get the allocated pointer and do some
-    // arithmetic to the beginning of the actual buffer memory
-    // example:
-    //  shared_ptr::ref_count rc:
+    // memory layout:
+    //  data_frame:
+    //      m_Column0:
+    //          shared_ptr<data_source<T0>> m_SourcePtr:
+    //              {rc, buffer_ptr}
+    //              &col0_header
+    //      m_Column1:
+    //      ...
+    //      m_ColumnN
+    //
+    //  buffer:
+    //      shared_ptr::ref_count rc
     //      data_frame_buffer_source<T0> col0_header:
-    //          buffer:
-    //              ptr = {rc, buffer_ptr}
-    //              end = buffer_end
-    //          count = row_count
-    //          offset = col0 - buffer_ptr
-    //          stride = sizeof(T0)
+    //          m_BufferPtr = buffer_ptr
+    //          m_BufferEnd = buffer_end
+    //          m_Count = row_count
+    //          m_Offset = &col0 - buffer_ptr
+    //          m_Stride = sizeof(T0)
     //      data_frame_buffer_source<T1> col1_header
     //      ...
     //      data_frame_buffer_source<TN> colN_header
@@ -245,6 +246,26 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     //      TN colN[row_count]
     //  buffer_end:
 
+    //  when the data_frame goes out of scope:
+    //      once there are no other data_frames/data_sequences sharing any data:
+    //          -   m_Column's destructor will destroy their m_SourcePtr
+    //          -   since all the m_SourcePtr are pointing to the same underlying buffer, they just decrement their ref-count
+    //          -   the last column will trigger deletion of the underlying buffer (header_ptr)
+    //          -   header_tuple_type will destroy the data_frame_buffer_source's
+    //          -   header_ptr will deallocate the buffer (via data_frame_buffer_allocator)
+    //          -   data_frame_buffer_allocator will free the memory
+    //      if any other data_frame/data_sequence has a shared_ptr to the column's data source then
+    //      this process will be blocked until the last reference is removed
+
+    typedef std::tuple<data_frame_buffer_source<Ts>...> header_tuple_type;
+
+    std::initializer_list<memory_size_description> const column_mem_descs = {(memory_of<Ts>() * row_count)...};
+    memory_size_description const buffer_mem_desc = memory_of(column_mem_descs);
+
+    // the data_frame_buffer_allocator will append space for the given memory_size_description to the given allocation
+    // so we'll use allocate_shared to construct a shared_ptr to the header, then get the allocated pointer and do some
+    // arithmetic to the beginning of the actual buffer memory
+
     std::shared_ptr<header_tuple_type> const header_ptr = std::allocate_shared<header_tuple_type>(data_frame_buffer_allocator<header_tuple_type>(buffer_mem_desc));
     void * const header_end = increment_ptr(header_ptr.get(), sizeof(header_tuple_type));
 
@@ -252,7 +273,8 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     void * const buffer_end = increment_ptr(buffer_ptr.get(), buffer_mem_desc.size);
 
     // some trickery here to assign to a tuple with runtime indexing
-    typedef void (*header_assign_column_func)(header_tuple_type &header,
+    typedef void (*header_assign_column_func)(this_type &self,
+                                              header_tuple_type &header,
                                               std::shared_ptr<void> const &buffer_ptr,
                                               void const * const buffer_end,
                                               std::size_t const elem_count,
@@ -261,20 +283,27 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
 
     header_assign_column_func const header_assign_column_funcs[] =
         {
-            [](header_tuple_type &header,
+            [](this_type &self,
+               header_tuple_type &header,
                std::shared_ptr<void> const &buffer_ptr,
                void const * const buffer_end,
                std::size_t const elem_count,
                std::ptrdiff_t const elem_offset,
                std::ptrdiff_t const elem_stride)
             {
-                std::get<data_frame_buffer_source<Ts>>(header) = data_frame_buffer_source<Ts>(buffer_ptr,
-                                                                                              buffer_end,
-                                                                                              elem_count,
-                                                                                              elem_offset,
-                                                                                              elem_stride);
+                // construct data_source with the buffer pointer and column's offset/stride
+                data_frame_buffer_source<Ts> &data_source_ref = std::get<data_frame_buffer_source<Ts>>(header);
+                data_source_ref = data_frame_buffer_source<Ts>(buffer_ptr.get(),
+                                                               buffer_end,
+                                                               elem_count,
+                                                               elem_offset,
+                                                               elem_stride);
+                // construct data_sequence with shared_ptr to the data_source, but using the aliasing constructor so that the
+                // lifetime of the data_source is tied to entire buffer
+                std::shared_ptr<data_frame_buffer_source<Ts>> data_source_ptr(buffer_ptr, &data_source_ref);
+                std::get<data_sequence<Ts>>(self.m_Columns) = data_sequence<Ts>(std::move(data_source_ptr));
             }
-            ...
+            ... // repeat for each T in Ts
         };
 
     // calculate each column's offset and construct a data_frame_buffer_source for each column
@@ -282,13 +311,15 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     std::size_t const column_count = column_mem_descs.size();
     for(std::size_t column_index = 0; column_index < column_count; ++column_index)
     {
+        // get the column's memory description, then calculate the offset/stride
         memory_size_description const &column_mem_desc = column_mem_descs.begin()[column_index];
         std::size_t const column_offset = offset_of(column_offset_desc, column_mem_desc);
         std::ptrdiff_t const column_stride = static_cast<std::ptrdiff_t>(column_mem_desc.size);
 
         // std::get<column_index>(*header_ptr) isn't valid so must be routed through header_assign_column_funcs
         // which has "erased" the compile-type indexing
-        header_assign_column_funcs[column_index](*header_ptr,
+        header_assign_column_funcs[column_index](*this,
+                                                 *header_ptr,
                                                  buffer_ptr,
                                                  buffer_end,
                                                  row_count,
@@ -305,18 +336,19 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
 // ====================================================================================================================
 
 template <typename T>
-r2::data_frame_buffer_source<T>::data_frame_buffer_source(std::shared_ptr<void> const &buffer_ptr,
+r2::data_frame_buffer_source<T>::data_frame_buffer_source(void const * const buffer_ptr,
                                                           void const * const buffer_end,
                                                           std::size_t const elem_count,
                                                           std::ptrdiff_t const elem_offset,
                                                           std::ptrdiff_t const elem_stride)
     : base_type()
-    , m_Buffer{buffer_ptr, buffer_end}
+    , m_BufferPtr(buffer_ptr)
+    , m_BufferEnd(buffer_end)
     , m_Count(elem_count)
     , m_Offset(elem_offset)
     , m_Stride(elem_stride)
 {
-    assert(get_unchecked_elem_ptr(m_Count) <= m_Buffer.end);
+    assert(get_unchecked_elem_ptr(m_Count) <= m_BufferEnd);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -333,10 +365,10 @@ template <typename T>
 /*virtual*/ typename r2::data_frame_buffer_source<T>::value_type const& r2::data_frame_buffer_source<T>::operator [] (std::size_t const index) const /*override*/
 {
     assert(index < m_Count);
-    assert(m_Buffer.ptr);
+    assert(m_BufferPtr);
 
     unsigned char const * const elem_ptr = get_unchecked_elem_ptr(index);
-    assert(elem_ptr + sizeof(T) <= m_Buffer.end);
+    assert(elem_ptr + sizeof(T) <= m_BufferEnd);
     assert(reinterpret_cast<std::uintptr_t>(elem_ptr) % alignof(T) == 0);
 
     return *reinterpret_cast<value_type const*>(elem_ptr);
@@ -347,7 +379,7 @@ template <typename T>
 template <typename T>
 unsigned char const* r2::data_frame_buffer_source<T>::get_unchecked_elem_ptr(std::size_t const index) const
 {
-    return reinterpret_cast<unsigned char const*>(m_Buffer.ptr.get()) + m_Offset + index * m_Stride;
+    return reinterpret_cast<unsigned char const*>(m_BufferPtr) + m_Offset + index * m_Stride;
 }
 
 // ====================================================================================================================
