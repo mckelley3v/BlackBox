@@ -17,10 +17,8 @@ namespace r2
     template <typename ...Ts>
     class data_frame
     {
-        typedef data_frame<Ts...> this_type;
-
     public:
-    //private:
+    private:
         // helpers:
         void build_buffer(std::size_t row_count);
 
@@ -270,10 +268,10 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
     void * const header_end = increment_ptr(header_ptr.get(), sizeof(header_tuple_type));
 
     std::shared_ptr<void> const buffer_ptr(header_ptr, align_up(header_end, buffer_mem_desc.align));
-    void * const buffer_end = increment_ptr(buffer_ptr.get(), buffer_mem_desc.size);
+    void const * const buffer_end = increment_ptr(buffer_ptr.get(), buffer_mem_desc.size);
 
     // some trickery here to assign to a tuple with runtime indexing
-    typedef void (*header_assign_column_func)(this_type &self,
+    typedef void (*header_assign_column_func)(data_frame<Ts...> &self,
                                               header_tuple_type &header,
                                               std::shared_ptr<void> const &buffer_ptr,
                                               void const * const buffer_end,
@@ -283,7 +281,7 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
 
     header_assign_column_func const header_assign_column_funcs[] =
         {
-            [](this_type &self,
+            [](data_frame<Ts...> &self,
                header_tuple_type &header,
                std::shared_ptr<void> const &buffer_ptr,
                void const * const buffer_end,
@@ -298,6 +296,7 @@ void r2::data_frame<Ts...>::build_buffer(std::size_t const row_count)
                                                                elem_count,
                                                                elem_offset,
                                                                elem_stride);
+
                 // construct data_sequence with shared_ptr to the data_source, but using the aliasing constructor so that the
                 // lifetime of the data_source is tied to entire buffer
                 std::shared_ptr<data_frame_buffer_source<Ts>> data_source_ptr(buffer_ptr, &data_source_ref);
