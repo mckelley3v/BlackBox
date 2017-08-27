@@ -50,6 +50,7 @@
             "sources":
             [
                 "test/array_size.hpp",
+                "test/utf8_test_data.hpp",
                 "test/test_main.cpp",
                 "test/test_byte_order.cpp",
                 "test/test_code_unit_terminator.cpp",
@@ -57,6 +58,7 @@
                 "test/test_utf8_decode.cpp",
                 "test/test_utf16_decode.cpp",
                 "test/test_utf32_decode.cpp",
+                "test/utf8_test_data.cpp",
             ],
             "dependencies":
             [

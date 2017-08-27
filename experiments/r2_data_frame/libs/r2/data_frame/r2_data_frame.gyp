@@ -14,10 +14,12 @@
                 "include/r2/data_frame.hpp",
                 "include/r2/data_sequence.hpp",
                 "include/r2/data_source.hpp",
+                "include/r2/data_table.hpp",
                 "include/r2/memory_of.hpp",
                 "source/r2/data_frame.cpp",
                 "source/r2/data_sequence.cpp",
                 "source/r2/data_source.cpp",
+                "source/r2/data_table.cpp",
                 "r2_data_frame.gyp",
             ],
             "dependencies":

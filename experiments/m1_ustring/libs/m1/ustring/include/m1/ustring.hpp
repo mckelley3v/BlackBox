@@ -111,7 +111,7 @@ namespace m1
        // types:
         typedef std::size_t size_type;
 
-        // iterator types: 
+        // iterator types:
         class code_point_iterator; // random access
         typedef std::reverse_iterator<code_point_iterator> reverse_code_point_iterator;
 

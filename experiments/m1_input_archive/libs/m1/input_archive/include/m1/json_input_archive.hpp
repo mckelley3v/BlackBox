@@ -117,7 +117,7 @@ namespace serialization
 
         // members:
         ustreambuf m_Buffer;
-        location m_Location = {};
+        location   m_Location = {};
     };
 
     // ----------------------------------------------------------------------------------------------------------------

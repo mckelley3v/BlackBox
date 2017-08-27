@@ -31,6 +31,10 @@
             ],
             "direct_dependent_settings":
             {
+                "defines":
+                [
+                    "VK_NO_PROTOTYPES",
+                ],
                 "include_dirs":
                 [
                     "<(vulkan_sdk_dir)/include",

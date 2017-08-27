@@ -56,7 +56,7 @@ namespace m1
         wstring_builder& operator = (wstring_builder const &rhs) = delete;
 
         // members:
-        std::locale m_Locale;
+        std::locale  m_Locale;
         std::wstring m_Str;
     };
 
